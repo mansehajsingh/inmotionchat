@@ -9,11 +9,9 @@ public abstract class InMotionService {
 
     public abstract String getServiceName();
 
-    public void start() {
+    public void awaken() {
         this.started = true;
     }
-
-    public abstract void stop();
 
     public synchronized Boolean isRunning() {
         return this.started;
