@@ -16,7 +16,7 @@ public class InMotion {
         options.addOption(configurationDirectory);
 
         CommandLineParser parser = new DefaultParser();
-        CommandLine commandLine = parser.parse(options, args);
+        CommandLine commandLine = parser.parse(options, args, true);
 
         InMotion inMotion = new InMotion(commandLine, args);
     }
