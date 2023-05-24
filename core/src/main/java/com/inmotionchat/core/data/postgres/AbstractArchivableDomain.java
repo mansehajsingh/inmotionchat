@@ -6,7 +6,7 @@ import jakarta.persistence.MappedSuperclass;
 import java.time.ZonedDateTime;
 
 @MappedSuperclass
-public class AbstractArchivableDomain extends AbstractDomain implements ArchivableDomain {
+public abstract class AbstractArchivableDomain extends AbstractDomain implements ArchivableDomain {
 
     protected ZonedDateTime archivedAt;
 

@@ -12,7 +12,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import java.time.ZonedDateTime;
 
 @MappedSuperclass
-public class AbstractDomain implements Domain {
+public abstract class AbstractDomain implements Domain {
 
     @Id
     @GeneratedValue
