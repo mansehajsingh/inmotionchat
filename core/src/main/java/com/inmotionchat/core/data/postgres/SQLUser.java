@@ -135,4 +135,13 @@ public class SQLUser extends AbstractArchivableDomain implements User {
         this.verificationCode = verificationCode;
     }
 
+    @Override
+    public String toString() {
+        return String.format(
+                "SQLUser[id=%d,email=%s,username=%s,passwordHash=%s,password=%s,firstName=%s,lastName=%s,verificationCode=%d]@"
+                        + this.metadata().toString(),
+                this.id, this.email, this.username, this.passwordHash, this.password, this.firstName, this.lastName, this.verificationCode
+        );
+    }
+
 }

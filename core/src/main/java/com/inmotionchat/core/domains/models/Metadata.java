@@ -21,4 +21,11 @@ public class Metadata {
         this.lastUpdatedBy = lastUpdatedBy;
     }
 
+    @Override
+    public String toString() {
+        return String.format(
+                "Metadata[createdAt=%s,createdBy=%d,lastUpdatedAt=%s,lastUpdatedBy=%d",
+                this.createdAt.toString(), this.createdBy.getId(), this.lastUpdatedAt.toString(), this.lastUpdatedBy.getId()
+        );
+    }
 }
