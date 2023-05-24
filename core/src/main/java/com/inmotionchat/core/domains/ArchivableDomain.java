@@ -4,10 +4,10 @@ import java.time.ZonedDateTime;
 
 public interface ArchivableDomain extends Domain {
 
-    Boolean isDeleted();
+    Boolean isArchived();
 
-    ZonedDateTime getDeletedAt();
+    ZonedDateTime getArchivedAt();
 
-    void setDeletedAt(ZonedDateTime deletedAt);
+    void setArchivedAt(ZonedDateTime archivedAt);
 
 }

@@ -28,7 +28,7 @@ public interface User extends ArchivableDomain {
 
     void setLastName(String lastName);
 
-    Boolean hasVerificationCode();
+    Integer getVerificationCode();
 
     void setVerificationCode(Integer verificationCode);
 

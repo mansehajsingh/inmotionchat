@@ -6,7 +6,7 @@ public interface Domain {
 
     Long getId();
 
-    void setId();
+    void setId(Long id);
 
     Boolean isNew();
 
