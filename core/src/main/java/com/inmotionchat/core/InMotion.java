@@ -2,6 +2,7 @@ package com.inmotionchat.core;
 
 import com.inmotionchat.core.soa.InMotionRootConfigurationParser;
 import org.apache.commons.cli.*;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
@@ -17,12 +18,19 @@ public class InMotion {
         CommandLineParser parser = new DefaultParser();
         CommandLine commandLine = parser.parse(options, args);
 
-        InMotion inMotion = new InMotion(commandLine);
+        InMotion inMotion = new InMotion(commandLine, args);
     }
 
-    public InMotion(CommandLine options) throws Exception {
+    /**
+     * Default constructor for Spring startup.
+     */
+    public InMotion() {}
+
+    public InMotion(CommandLine options, String[] args) throws Exception {
         String configDirectoryPath = options.getOptionValue("conf");
         InMotionRootConfigurationParser rootConfigurationParser = new InMotionRootConfigurationParser(configDirectoryPath + "/inmotion.json");
+        InMotionConfiguration.init(rootConfigurationParser);
+        SpringApplication.run(InMotion.class, args);
     }
 
 }
