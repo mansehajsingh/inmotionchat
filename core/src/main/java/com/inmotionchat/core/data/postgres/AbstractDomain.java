@@ -3,6 +3,7 @@ package com.inmotionchat.core.data.postgres;
 import com.inmotionchat.core.domains.Domain;
 import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.domains.models.Metadata;
+import com.inmotionchat.core.exceptions.DomainInvalidException;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -54,6 +55,16 @@ public abstract class AbstractDomain implements Domain {
         return new Metadata(createdAt, createdBy, lastUpdatedAt, lastUpdatedBy);
     }
 
+    @Override
+    public void setMetadata(Metadata metadata) {
+        this.createdBy = metadata.createdBy == null ?
+                null : SQLUser.fromId(metadata.createdBy.getId());
+        this.createdAt = metadata.createdAt;
+        this.lastUpdatedBy = metadata.lastUpdatedBy == null ?
+                null : SQLUser.fromId(metadata.lastUpdatedBy.getId());
+        this.lastUpdatedAt = metadata.lastUpdatedAt;
+    }
+
     public void setCreatedAt(ZonedDateTime createdAt) {
         this.createdAt = createdAt;
     }
@@ -69,5 +80,11 @@ public abstract class AbstractDomain implements Domain {
     public void setLastUpdatedBy(User lastUpdatedBy) {
         this.lastUpdatedBy = SQLUser.fromId(lastUpdatedBy.getId());
     }
+
+    @Override
+    public void validate() throws DomainInvalidException {}
+
+    @Override
+    public void validateForCreate() throws DomainInvalidException {}
 
 }

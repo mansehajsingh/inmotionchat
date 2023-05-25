@@ -1,8 +1,18 @@
 package com.inmotionchat.core.data.postgres;
 
+import com.inmotionchat.core.domains.Domain;
 import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.domains.models.Metadata;
+import com.inmotionchat.core.exceptions.DomainInvalidException;
+import com.inmotionchat.core.util.validation.AbstractRule;
+import com.inmotionchat.core.util.validation.StringRule;
+import com.inmotionchat.core.util.validation.Violation;
 import jakarta.persistence.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 @Entity
 @Table(
@@ -12,6 +22,14 @@ import jakarta.persistence.*;
         }
 )
 public class SQLUser extends AbstractArchivableDomain implements User {
+
+    private static final Pattern emailPattern
+            = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
+    // 1 upper case character, 1 lowercase character, 1 number, 1 symbol
+    private static final Pattern passwordPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])((?=.*[-+_!@#$%^&*.,?])|(?=.*_))");
+
+    private static final Pattern alphanumericUnderscorePattern = Pattern.compile("^[A-Za-z0-9_]*$");
 
     @Column(nullable = false, unique = false)
     private String email;
@@ -42,18 +60,24 @@ public class SQLUser extends AbstractArchivableDomain implements User {
 
     public SQLUser() {}
 
-    public SQLUser(
-            String email,
-            String username,
-            String password,
-            String firstName,
-            String lastName
-    ) {
+    public SQLUser(String email, String username, String password, String firstName, String lastName) {
         this.email = email;
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public SQLUser(
+            String email,
+            String username,
+            String password,
+            PasswordEncoder passwordEncoder,
+            String firstName,
+            String lastName
+    ) {
+        this(email, username, password, firstName, lastName);
+        this.passwordHash = passwordEncoder.encode(password);
     }
 
     @Override
@@ -142,6 +166,81 @@ public class SQLUser extends AbstractArchivableDomain implements User {
                         + this.metadata().toString(),
                 this.id, this.email, this.username, this.passwordHash, this.password, this.firstName, this.lastName, this.verificationCode
         );
+    }
+
+    @Override
+    public Domain copy() {
+        SQLUser copy = new SQLUser();
+        copy.setId(this.id);
+        copy.setEmail(this.email);
+        copy.setUsername(this.username);
+        copy.setFirstName(this.firstName);
+        copy.setPassword(this.password);
+        copy.setLastName(this.lastName);
+        copy.setPasswordHash(this.passwordHash);
+        copy.setVerificationCode(this.verificationCode);
+        copy.setMetadata(this.metadata());
+
+        return copy;
+    }
+
+    @Override
+    public void validate() throws DomainInvalidException {
+        AbstractRule<String> emailRule = StringRule.forField("email")
+                .isNotNull().isNotEmpty().matches(emailPattern, "Not a valid email.");
+
+        AbstractRule<String> usernameRule = StringRule.forField("username")
+                .isNotNull()
+                .minimumLength(4)
+                .maximumLength(20)
+                .doesNotContain(" ", "Username cannot contain spaces.")
+                .matches(alphanumericUnderscorePattern, "Username can only contain alphanumeric characters and underscores.");
+
+        AbstractRule<String> firstNameRule = StringRule.forField("firstName")
+                .isNotNull()
+                .isNotEmpty()
+                .maximumLength(30);
+
+        AbstractRule<String> lastNameRule = StringRule.forField("lastName")
+                .isNotNull()
+                .maximumLength(30);
+
+        List<Violation> violations = new ArrayList<>();
+        violations.addAll(emailRule.collectViolations(this.email));
+        violations.addAll(usernameRule.collectViolations(this.username));
+        violations.addAll(firstNameRule.collectViolations(this.firstName));
+        violations.addAll(lastNameRule.collectViolations(this.lastName));
+
+        if (!violations.isEmpty())
+            throw new DomainInvalidException(violations);
+    }
+
+    @Override
+    public void validateForCreate() throws DomainInvalidException {
+        List<Violation> violations = new ArrayList<>();
+
+        try {
+            validate();
+        } catch (DomainInvalidException e) {
+            violations.addAll(e.getViolations());
+        }
+
+        AbstractRule<String> passwordRule = StringRule.forField("password")
+                .isNotNull()
+                .minimumLength(8)
+                .matches(
+                        passwordPattern,
+                        "Password must contain at least 1 uppercase character," +
+                                " 1 lowercase character, 1 number, 1 special character from the following: -+_!@#$%^&*.,?");
+
+        AbstractRule<String> passwordHashRule = StringRule.forField("passwordHash")
+                        .isNotNull();
+
+        violations.addAll(passwordRule.collectViolations(this.password));
+        violations.addAll(passwordHashRule.collectViolations(this.passwordHash));
+
+        if (!violations.isEmpty())
+            throw new DomainInvalidException(violations);
     }
 
 }

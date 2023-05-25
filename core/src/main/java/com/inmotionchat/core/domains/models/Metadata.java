@@ -28,4 +28,9 @@ public class Metadata {
                 this.createdAt.toString(), this.createdBy.getId(), this.lastUpdatedAt.toString(), this.lastUpdatedBy.getId()
         );
     }
+
+    public Metadata copy() {
+        return new Metadata(this.createdAt, this.createdBy, this.lastUpdatedAt, this.lastUpdatedBy);
+    }
+
 }
