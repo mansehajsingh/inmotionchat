@@ -1,5 +1,6 @@
 package com.inmotionchat.core.data.postgres;
 
+import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.domains.Domain;
 import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.domains.models.Metadata;
@@ -17,6 +18,7 @@ import java.util.regex.Pattern;
 @Entity
 @Table(
         name = "users",
+        schema = Schema.IdentityPlatform,
         uniqueConstraints = {
                 @UniqueConstraint(name = "UNIQUE_USERNAME", columnNames = "username")
         }
