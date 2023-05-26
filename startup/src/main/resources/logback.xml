@@ -11,6 +11,7 @@
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} -%kvp- %msg%n</pattern>
         </encoder>
+        <append>true</append>
     </appender>
 
     <logger name="com.inmotionchat" level="INFO" additivity="false">
