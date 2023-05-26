@@ -7,7 +7,7 @@
     </appender>
 
     <appender name="APPFILE" class="ch.qos.logback.core.FileAppender">
-        <file>C:\Users\mseha\im\app.log</file>
+        <file><!--CONF_FILL: Fill your log file path here--></file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} -%kvp- %msg%n</pattern>
         </encoder>
