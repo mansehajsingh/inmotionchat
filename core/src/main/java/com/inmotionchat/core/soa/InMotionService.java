@@ -5,7 +5,7 @@ import java.util.List;
 
 public abstract class InMotionService {
 
-    private Boolean started = false;
+    protected Boolean started = false;
 
     public abstract String getServiceName();
 
