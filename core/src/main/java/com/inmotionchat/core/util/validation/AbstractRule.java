@@ -1,7 +1,5 @@
 package com.inmotionchat.core.util.validation;
 
-import com.inmotionchat.core.exceptions.DomainInvalidException;
-
 import java.util.ArrayList;
 import java.util.List;
 

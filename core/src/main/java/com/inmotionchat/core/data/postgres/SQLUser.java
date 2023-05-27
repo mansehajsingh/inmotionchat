@@ -1,7 +1,7 @@
 package com.inmotionchat.core.data.postgres;
 
 import com.inmotionchat.core.data.Schema;
-import com.inmotionchat.core.domains.Domain;
+import com.inmotionchat.core.data.dto.UserDTO;
 import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.domains.models.Metadata;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
                 @UniqueConstraint(name = "UNIQUE_USERNAME", columnNames = "username")
         }
 )
-public class SQLUser extends AbstractArchivableDomain implements User {
+public class SQLUser extends AbstractArchivableDomain<User> implements User {
 
     private static final Pattern emailPattern
             = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
@@ -80,6 +80,17 @@ public class SQLUser extends AbstractArchivableDomain implements User {
     ) {
         this(email, username, password, firstName, lastName);
         this.passwordHash = passwordEncoder.encode(password);
+    }
+
+    public SQLUser(UserDTO proto, PasswordEncoder passwordEncoder) {
+        this(
+                proto.email(),
+                proto.username(),
+                proto.password(),
+                passwordEncoder,
+                proto.firstName(),
+                proto.lastName()
+        );
     }
 
     @Override
@@ -171,7 +182,7 @@ public class SQLUser extends AbstractArchivableDomain implements User {
     }
 
     @Override
-    public Domain copy() {
+    public SQLUser copy() {
         SQLUser copy = new SQLUser();
         copy.setId(this.id);
         copy.setEmail(this.email);
@@ -184,6 +195,12 @@ public class SQLUser extends AbstractArchivableDomain implements User {
         copy.setMetadata(this.metadata());
 
         return copy;
+    }
+
+    public void update(UserDTO prototype) {
+        this.username = prototype.username();
+        this.firstName = prototype.firstName();
+        this.lastName = prototype.lastName();
     }
 
     @Override

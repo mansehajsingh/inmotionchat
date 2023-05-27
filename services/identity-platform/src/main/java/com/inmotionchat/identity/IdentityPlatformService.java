@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class IdentityPlatformService extends InMotionService {
-
     private static Logger log = LoggerFactory.getLogger(IdentityPlatformService.class);
 
     public String getServiceName() {

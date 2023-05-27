@@ -5,11 +5,13 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableAutoConfiguration
 @ComponentScan(basePackages = {"com.inmotionchat"})
 @EntityScan(basePackages = {"com.inmotionchat"})
+@EnableJpaRepositories(basePackages = {"com.inmotionchat"})
 public class InMotion {
 
     public static void main(String[] args) throws Exception {

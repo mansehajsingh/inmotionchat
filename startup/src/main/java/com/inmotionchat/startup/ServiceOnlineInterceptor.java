@@ -27,12 +27,18 @@ public class ServiceOnlineInterceptor implements HandlerInterceptor {
         return false;
     }
 
+    private static String artifact(Package pkg) {
+        // eg com.inmotionchat.<artifact>
+        return pkg.getName().split("\\.")[2];
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Package pkg = ((HandlerMethod) handler).getBean().getClass().getPackage();
+        String serviceArtifact = artifact(pkg);
 
         // check which service package the controller belongs to
-        if (pkg == IdentityPlatformService.class.getPackage()) {
+        if (serviceArtifact.equals(artifact(IdentityPlatformService.class.getPackage()))) {
             return handleServiceStatus(this.identityPlatformService, response);
         }
 

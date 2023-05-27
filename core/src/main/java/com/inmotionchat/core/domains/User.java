@@ -1,6 +1,6 @@
 package com.inmotionchat.core.domains;
 
-public interface User extends ArchivableDomain {
+public interface User extends ArchivableDomain<User> {
 
     String getEmail();
 

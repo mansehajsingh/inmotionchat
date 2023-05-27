@@ -13,7 +13,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import java.time.ZonedDateTime;
 
 @MappedSuperclass
-public abstract class AbstractDomain implements Domain {
+public abstract class AbstractDomain<T extends Domain<T>> implements Domain<T> {
 
     @Id
     @GeneratedValue
@@ -86,5 +86,8 @@ public abstract class AbstractDomain implements Domain {
 
     @Override
     public void validateForCreate() throws DomainInvalidException {}
+
+    @Override
+    public void validateForUpdate() throws DomainInvalidException {}
 
 }
