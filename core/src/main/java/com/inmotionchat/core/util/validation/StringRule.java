@@ -56,6 +56,16 @@ public class StringRule extends AbstractRule<String> {
         return this;
     }
 
+    public StringRule search(Pattern p, String reason) {
+        this.addConstraint(((value, protect) -> {
+
+            if (!p.matcher(value).find())
+                throw new Violation(field, value, reason, protect);
+
+        }));
+        return this;
+    }
+
     public StringRule doesNotContain(String cannotContain, String reason) {
         this.addConstraint(((value, protect) -> {
             if (value.contains(cannotContain))

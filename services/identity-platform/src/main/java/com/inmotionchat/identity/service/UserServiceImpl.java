@@ -9,6 +9,7 @@ import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.util.query.SearchCriteria;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
+import com.inmotionchat.identity.model.EmailVerificationStatus;
 import com.inmotionchat.identity.postgres.SQLUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -39,16 +40,15 @@ public class UserServiceImpl implements UserService {
     }
 
     private SQLUser retrieveUser(Long id, ArchivalStatus archivalStatus)  throws NotFoundException {
-        return this.sqlUserRepository.findById(id, archivalStatus)
-                .orElseThrow(() -> {
-                    String archiveMsg;
+        return retrieveUser(id, EmailVerificationStatus.VERIFIED, archivalStatus);
+    }
 
-                    if (archivalStatus == ArchivalStatus.ANY) archiveMsg = "any";
-                    else if (archivalStatus == ArchivalStatus.ARCHIVED) archiveMsg = "archived";
-                    else archiveMsg = "unarchived";
-
-                    return new NotFoundException("Could not find " + archiveMsg + " user with id " + id + ".");
-                });
+    private SQLUser retrieveUser(Long id, EmailVerificationStatus verificationStatus, ArchivalStatus archivalStatus)
+            throws NotFoundException
+    {
+        return this.sqlUserRepository.findById(id, archivalStatus, verificationStatus)
+                .orElseThrow(() -> new NotFoundException("Could not find a user that fit these parameters: [verified=" +
+                        verificationStatus.name() + ", archived=" + archivalStatus.name() + "]."));
     }
 
     @Override

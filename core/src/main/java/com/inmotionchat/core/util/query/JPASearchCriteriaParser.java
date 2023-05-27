@@ -14,6 +14,8 @@ public class JPASearchCriteriaParser {
             return parseString(criteriaBuilder, root, (SearchCriteria<String>) searchCriteria);
         } else if (value instanceof NullConstant) {
             return parseNullConstraint(criteriaBuilder, root, (SearchCriteria<NullConstant>) searchCriteria);
+        } else if (value instanceof Number) {
+            return parseSimple(criteriaBuilder, root, (SearchCriteria<Number>) searchCriteria);
         }
 
         throw new UnsupportedOperationException();

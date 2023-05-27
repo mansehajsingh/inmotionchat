@@ -9,6 +9,7 @@ import com.inmotionchat.core.util.validation.AbstractRule;
 import com.inmotionchat.core.util.validation.StringRule;
 import com.inmotionchat.core.util.validation.Violation;
 import jakarta.persistence.*;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
@@ -32,6 +33,10 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
     private static final Pattern passwordPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])((?=.*[-+_!@#$%^&*.,?])|(?=.*_))");
 
     private static final Pattern alphanumericUnderscorePattern = Pattern.compile("^[A-Za-z0-9_]*$");
+
+    private static int generateVerificationCode() {
+        return Integer.parseInt(RandomStringUtils.randomNumeric(6));
+    }
 
     @Column(nullable = false, unique = false)
     private String email;
@@ -80,6 +85,7 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
     ) {
         this(email, username, password, firstName, lastName);
         this.passwordHash = passwordEncoder.encode(password);
+        this.verificationCode = generateVerificationCode();
     }
 
     public SQLUser(UserDTO proto, PasswordEncoder passwordEncoder) {
@@ -174,9 +180,16 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
 
     @Override
     public String toString() {
+
+        String metadataAsString = "";
+
+        if (metadata() != null) {
+            metadataAsString = metadata().toString();
+        }
+
         return String.format(
                 "SQLUser[id=%d,email=%s,username=%s,passwordHash=%s,password=%s,firstName=%s,lastName=%s,verificationCode=%d]@"
-                        + this.metadata().toString(),
+                        + metadataAsString,
                 this.id, this.email, this.username, this.passwordHash, this.password, this.firstName, this.lastName, this.verificationCode
         );
     }
@@ -247,7 +260,7 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
         AbstractRule<String> passwordRule = StringRule.forField("password")
                 .isNotNull()
                 .minimumLength(8)
-                .matches(
+                .search(
                         passwordPattern,
                         "Password must contain at least 1 uppercase character," +
                                 " 1 lowercase character, 1 number, 1 special character from the following: -+_!@#$%^&*.,?");
@@ -255,8 +268,8 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
         AbstractRule<String> passwordHashRule = StringRule.forField("passwordHash")
                         .isNotNull();
 
-        violations.addAll(passwordRule.collectViolations(this.password));
-        violations.addAll(passwordHashRule.collectViolations(this.passwordHash));
+        violations.addAll(passwordRule.collectViolations(this.password, true));
+        violations.addAll(passwordHashRule.collectViolations(this.passwordHash, true));
 
         if (!violations.isEmpty())
             throw new DomainInvalidException(violations);
