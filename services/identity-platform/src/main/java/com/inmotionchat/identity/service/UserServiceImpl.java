@@ -1,5 +1,6 @@
 package com.inmotionchat.identity.service;
 
+import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.dto.UserDTO;
 import com.inmotionchat.core.data.postgres.SQLUser;
 import com.inmotionchat.core.domains.User;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
 import java.time.ZonedDateTime;
+
+import static com.inmotionchat.core.util.query.Operation.EQUALS;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -51,6 +54,13 @@ public class UserServiceImpl implements UserService {
                         verificationStatus.name() + ", archived=" + archivalStatus.name() + "]."));
     }
 
+    private Boolean verifiedUserWithEmailExists(String email) {
+        return this.sqlUserRepository.exists(
+                EmailVerificationStatus.VERIFIED,
+                new SearchCriteria<>("email", EQUALS, email)
+        );
+    }
+
     @Override
     public User retrieveById(Long id) throws NotFoundException {
         return retrieveUser(id, ArchivalStatus.NOT_ARCHIVED);
@@ -66,6 +76,13 @@ public class UserServiceImpl implements UserService {
     public User create(UserDTO prototype) throws DomainInvalidException, ConflictException {
         SQLUser user = new SQLUser(prototype, passwordEncoder);
         user.validateForCreate();
+
+        if (verifiedUserWithEmailExists(user.getEmail())) {
+            throw new ConflictException(
+                    LogicalConstraints.User.UNIQUE_EMAIL_FOR_VERIFIED_USERS,
+                    "An email-verified user with email " + user.getEmail() + " exists already."
+            );
+        }
 
         return this.sqlUserRepository.store(user);
     }

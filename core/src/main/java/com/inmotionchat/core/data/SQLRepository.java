@@ -9,6 +9,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -18,8 +19,8 @@ import java.util.Optional;
 @NoRepositoryBean
 public interface SQLRepository<T extends AbstractDomain> extends JpaRepository<T, Long>, JpaSpecificationExecutor<T> {
 
-    default Optional<T> filterOne(SearchCriteria<?> ...criteria) {
-        return findOne((root, criteriaQuery, criteriaBuilder) -> {
+    default Specification<T> generateSpec(SearchCriteria<?> ...criteria) {
+        return (root, criteriaQuery, criteriaBuilder) -> {
             Predicate buildablePredicate = null;
 
             for (SearchCriteria<?> searchCriteria : criteria) {
@@ -33,25 +34,19 @@ public interface SQLRepository<T extends AbstractDomain> extends JpaRepository<T
             }
 
             return buildablePredicate;
-        });
+        };
+    }
+
+    default Boolean exists(SearchCriteria<?> ...criteria) {
+        return exists(generateSpec(criteria));
+    }
+
+    default Optional<T> filterOne(SearchCriteria<?> ...criteria) {
+        return findOne(generateSpec(criteria));
     }
 
     default Page<T> filter(Pageable pageable, SearchCriteria<?> ...criteria) {
-        return findAll((root, query, criteriaBuilder) -> {
-            Predicate buildablePredicate = null;
-
-            for (SearchCriteria<?> searchCriteria : criteria) {
-
-                if (buildablePredicate == null) {
-                    buildablePredicate = JPASearchCriteriaParser.parse(criteriaBuilder, root, searchCriteria);
-                } else {
-                    buildablePredicate = criteriaBuilder.and(buildablePredicate, JPASearchCriteriaParser.parse(criteriaBuilder, root, searchCriteria));
-                }
-
-            }
-
-            return buildablePredicate;
-        }, pageable);
+        return findAll(generateSpec(criteria), pageable);
     }
 
     default T store(T entity) throws ConflictException {

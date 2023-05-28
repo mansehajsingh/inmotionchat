@@ -1,5 +1,6 @@
 package com.inmotionchat.core.data.postgres;
 
+import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.dto.UserDTO;
 import com.inmotionchat.core.domains.User;
@@ -21,7 +22,7 @@ import java.util.regex.Pattern;
         name = "users",
         schema = Schema.IdentityPlatform,
         uniqueConstraints = {
-                @UniqueConstraint(name = "UNIQUE_USERNAME", columnNames = "username")
+                @UniqueConstraint(name = LogicalConstraints.User.UNIQUE_USERNAME , columnNames = "username")
         }
 )
 public class SQLUser extends AbstractArchivableDomain<User> implements User {
