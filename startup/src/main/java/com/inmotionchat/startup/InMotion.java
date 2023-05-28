@@ -1,5 +1,6 @@
 package com.inmotionchat.startup;
 
+import com.inmotionchat.core.data.SQLRepositoryImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,7 +12,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableAutoConfiguration
 @ComponentScan(basePackages = {"com.inmotionchat"})
 @EntityScan(basePackages = {"com.inmotionchat"})
-@EnableJpaRepositories(basePackages = {"com.inmotionchat"})
+@EnableJpaRepositories(basePackages = {"com.inmotionchat"}, repositoryBaseClass = SQLRepositoryImpl.class)
 public class InMotion {
 
     public static void main(String[] args) throws Exception {

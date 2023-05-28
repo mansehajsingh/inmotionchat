@@ -14,10 +14,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
 
+import java.util.List;
 import java.util.Optional;
 
 @NoRepositoryBean
 public interface SQLRepository<T extends AbstractDomain> extends JpaRepository<T, Long>, JpaSpecificationExecutor<T> {
+
+    void detach(T t);
 
     default Specification<T> generateSpec(SearchCriteria<?> ...criteria) {
         return (root, criteriaQuery, criteriaBuilder) -> {
@@ -42,11 +45,17 @@ public interface SQLRepository<T extends AbstractDomain> extends JpaRepository<T
     }
 
     default Optional<T> filterOne(SearchCriteria<?> ...criteria) {
-        return findOne(generateSpec(criteria));
+        Optional<T> optionalFound = findOne(generateSpec(criteria));
+        optionalFound.ifPresent(this::detach);
+        return optionalFound;
     }
 
     default Page<T> filter(Pageable pageable, SearchCriteria<?> ...criteria) {
         return findAll(generateSpec(criteria), pageable);
+    }
+
+    default List<T> filter(SearchCriteria<?> ...criteria) {
+        return findAll(generateSpec(criteria));
     }
 
     default T store(T entity) throws ConflictException {
