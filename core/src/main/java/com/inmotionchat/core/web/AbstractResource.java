@@ -21,8 +21,8 @@ public abstract class AbstractResource<T extends Domain<T>, DTO> {
     }
 
     @PostMapping
-    public void create(@RequestBody DTO dto) throws ConflictException, DomainInvalidException, NotFoundException {
-        this.domainService.create(dto);
+    public IdResponse create(@RequestBody DTO dto) throws ConflictException, DomainInvalidException, NotFoundException {
+        return new IdResponse(this.domainService.create(dto).getId());
     }
 
     @GetMapping("/{id}")
