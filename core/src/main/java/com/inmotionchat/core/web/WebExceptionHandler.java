@@ -47,4 +47,9 @@ public class WebExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(e.getMessage()));
     }
 
+    @ExceptionHandler(value = MethodUnsupportedException.class)
+    public ResponseEntity<String> handleMethodUnsupportedException(MethodUnsupportedException e) {
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("HTTP Method not allowed.");
+    }
+
 }

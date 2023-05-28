@@ -31,4 +31,14 @@ public class UserResource extends AbstractResource<User, UserDTO> {
         this.userService.verify(id, verifyUser.getVerificationCode());
     }
 
+    @Override
+    protected boolean isCreateEnabled() {
+        return true;
+    }
+
+    @Override
+    protected boolean isGetEnabled() {
+        return true;
+    }
+
 }

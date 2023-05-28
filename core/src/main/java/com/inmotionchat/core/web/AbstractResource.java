@@ -21,13 +21,27 @@ public abstract class AbstractResource<T extends Domain<T>, DTO> {
     }
 
     @PostMapping
-    public IdResponse create(@RequestBody DTO dto) throws ConflictException, DomainInvalidException, NotFoundException {
+    public IdResponse create(@RequestBody DTO dto) throws ConflictException, DomainInvalidException, NotFoundException, MethodUnsupportedException {
+        if (!isCreateEnabled())
+            throw new MethodUnsupportedException();
+
         return new IdResponse(this.domainService.create(dto).getId());
     }
 
     @GetMapping("/{id}")
-    public T get(@PathVariable Long id) throws NotFoundException {
+    public T get(@PathVariable Long id) throws NotFoundException, MethodUnsupportedException {
+        if (!isGetEnabled())
+            throw new MethodUnsupportedException();
+
         return this.domainService.retrieveById(id);
+    }
+
+    protected boolean isCreateEnabled() {
+        return false;
+    }
+
+    protected boolean isGetEnabled() {
+        return false;
     }
 
 }
