@@ -5,6 +5,7 @@ import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.util.query.JPASearchCriteriaParser;
 import com.inmotionchat.core.util.query.SearchCriteria;
 import jakarta.persistence.criteria.Predicate;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -57,7 +58,9 @@ public interface SQLRepository<T extends AbstractDomain> extends JpaRepository<T
         try {
             return saveAndFlush(entity);
         } catch (DataIntegrityViolationException e) {
-            throw new ConflictException("A conflict occurred when trying to create this resource.");
+            ConstraintViolationException constraintEx = ((ConstraintViolationException) e.getCause());
+            String constraint = constraintEx.getConstraintName();
+            throw new ConflictException(constraint, "A conflict occurred when trying to create this resource.");
         }
     }
 
@@ -65,7 +68,9 @@ public interface SQLRepository<T extends AbstractDomain> extends JpaRepository<T
         try {
             return saveAndFlush(entity);
         } catch (DataIntegrityViolationException e) {
-            throw new ConflictException("A conflict occurred when trying to update this resource.");
+            ConstraintViolationException constraintEx = ((ConstraintViolationException) e.getCause());
+            String constraint = constraintEx.getConstraintName();
+            throw new ConflictException(constraint, "A conflict occurred when trying to create this resource.");
         }
     }
 
