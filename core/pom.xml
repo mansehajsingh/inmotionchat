@@ -20,6 +20,13 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>com.inmotionchat</groupId>
+            <artifactId>test</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-crypto -->
         <dependency>
             <groupId>org.springframework.security</groupId>
