@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private static SearchCriteriaMapper searchCriteriaMapper = new SearchCriteriaMapper()
+    private static final SearchCriteriaMapper searchCriteriaMapper = new SearchCriteriaMapper()
             .key("email", String.class)
             .key("username", String.class)
             .key("firstName", String.class)
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User create(UserDTO prototype) throws DomainInvalidException, ConflictException {
+    public User create(UserDTO prototype) throws DomainInvalidException, ConflictException, NotFoundException {
         SQLUser user = new SQLUser(prototype, passwordEncoder);
         user.validateForCreate();
 

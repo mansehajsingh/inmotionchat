@@ -36,7 +36,7 @@ public interface DomainService<T extends Domain<T>, DTO> {
 
     public Page<? extends T> search(MultiValueMap<String, Object> parameters, Pageable pageable);
 
-    public T create(DTO prototype) throws DomainInvalidException, ConflictException;
+    public T create(DTO prototype) throws DomainInvalidException, ConflictException, NotFoundException;
 
     public T update(Long id, DTO prototype) throws DomainInvalidException, NotFoundException, ConflictException;
 
