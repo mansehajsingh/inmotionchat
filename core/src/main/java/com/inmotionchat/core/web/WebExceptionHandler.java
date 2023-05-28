@@ -1,6 +1,7 @@
 package com.inmotionchat.core.web;
 
 import com.inmotionchat.core.exceptions.ConflictException;
+import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +26,17 @@ public class WebExceptionHandler {
     }
 
     @ExceptionHandler(value = ConflictException.class)
-    public ResponseEntity<ConflictResponse> handleConflictResponse(ConflictException e) throws ClassNotFoundException {
+    public ResponseEntity<ConflictResponse> handleConflictException(ConflictException e) throws ClassNotFoundException {
         Logger log = getClassLogger(e);
         log.debug("Constraint: {}, Message: {}", e.getViolatedConstraint(), e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new ConflictResponse(
                 e.getViolatedConstraint(), e.getMessage()));
+    }
+
+    @ExceptionHandler(value = DomainInvalidException.class)
+    public ResponseEntity<DomainInvalidResponse> handleDomainInvalidException(DomainInvalidException e) {
+        // TODO: add logging
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new DomainInvalidResponse(e));
     }
 
 }
