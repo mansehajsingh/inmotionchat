@@ -1,5 +1,6 @@
 package com.inmotionchat.core.data.postgres;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.dto.UserDTO;
@@ -46,9 +47,11 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
     private String username;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String passwordHash;
 
     @Transient
+    @JsonIgnore
     private String password; // Not persisted, only filled at creation time of a new user.
 
     @Column(nullable = false)
@@ -58,6 +61,7 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
     private String lastName;
 
     @Column(nullable = true)
+    @JsonIgnore
     private Integer verificationCode;
 
     public static SQLUser fromId(Long id) {

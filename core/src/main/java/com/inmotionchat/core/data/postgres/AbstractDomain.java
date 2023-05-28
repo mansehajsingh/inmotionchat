@@ -1,5 +1,6 @@
 package com.inmotionchat.core.data.postgres;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inmotionchat.core.domains.Domain;
 import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.domains.models.Metadata;
@@ -46,6 +47,7 @@ public abstract class AbstractDomain<T extends Domain<T>> implements Domain<T> {
     }
 
     @Override
+    @JsonIgnore
     public Boolean isNew() {
         return this.id == null;
     }
