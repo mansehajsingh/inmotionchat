@@ -11,7 +11,6 @@ import com.inmotionchat.core.util.validation.AbstractRule;
 import com.inmotionchat.core.util.validation.StringRule;
 import com.inmotionchat.core.util.validation.Violation;
 import jakarta.persistence.*;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
