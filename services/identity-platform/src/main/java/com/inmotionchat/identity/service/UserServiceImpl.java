@@ -1,6 +1,8 @@
 package com.inmotionchat.identity.service;
 
 import com.inmotionchat.core.data.LogicalConstraints;
+import com.inmotionchat.core.data.ThrowingTransactionTemplate;
+import com.inmotionchat.core.data.TransactionTemplateFactory;
 import com.inmotionchat.core.data.dto.UserDTO;
 import com.inmotionchat.core.data.postgres.SQLUser;
 import com.inmotionchat.core.domains.User;
@@ -8,6 +10,7 @@ import com.inmotionchat.core.domains.models.ArchivalStatus;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
+import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.util.query.SearchCriteria;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import com.inmotionchat.identity.model.EmailVerificationStatus;
@@ -17,11 +20,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.MultiValueMap;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
+import static com.inmotionchat.core.util.query.NullConstant.NULL;
 import static com.inmotionchat.core.util.query.Operation.EQUALS;
+import static com.inmotionchat.core.util.query.Operation.NOT_EQUALS;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -36,10 +43,16 @@ public class UserServiceImpl implements UserService {
             .key("firstName", String.class)
             .key("lastName", String.class);
 
+    private final ThrowingTransactionTemplate transactionTemplate;
+
     @Autowired
-    public UserServiceImpl(SQLUserRepository sqlUserRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(PlatformTransactionManager transactionManager,
+                           SQLUserRepository sqlUserRepository,
+                           PasswordEncoder passwordEncoder
+    ) {
         this.sqlUserRepository = sqlUserRepository;
         this.passwordEncoder = passwordEncoder;
+        this.transactionTemplate = TransactionTemplateFactory.getThrowingTransactionTemplate(transactionManager);
     }
 
     private SQLUser retrieveUser(Long id, ArchivalStatus archivalStatus)  throws NotFoundException {
@@ -120,4 +133,26 @@ public class UserServiceImpl implements UserService {
         return userToHardDelete;
     }
 
+    @Override
+    public void verify(Long id, int verificationCode) throws NotFoundException, UnauthorizedException, ConflictException, DomainInvalidException {
+        SQLUser userToVerify = retrieveUser(id, EmailVerificationStatus.NOT_VERIFIED, ArchivalStatus.NOT_ARCHIVED);
+
+        if (verificationCode != userToVerify.getVerificationCode()) {
+            throw new UnauthorizedException("Incorrect verification code.");
+        }
+
+        this.transactionTemplate.execute(status -> {
+            userToVerify.setVerificationCode(null);
+
+            this.sqlUserRepository.update(userToVerify);
+
+            List<SQLUser> usersWithSameEmail = this.sqlUserRepository.filter(
+                    new SearchCriteria<>("email", EQUALS, userToVerify.getEmail()),
+                    new SearchCriteria<>("verificationCode", NOT_EQUALS, NULL)
+            );
+
+            this.sqlUserRepository.deleteAll(usersWithSameEmail);
+            return null;
+        });
+    }
 }

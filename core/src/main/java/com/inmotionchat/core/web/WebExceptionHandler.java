@@ -3,6 +3,7 @@ package com.inmotionchat.core.web;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
+import com.inmotionchat.core.exceptions.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,13 @@ public class WebExceptionHandler {
     public ResponseEntity<DomainInvalidResponse> handleDomainInvalidException(DomainInvalidException e) {
         // TODO: add logging
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new DomainInvalidResponse(e));
+    }
+
+    @ExceptionHandler(value = UnauthorizedException.class)
+    public ResponseEntity<MessageResponse> handleUnauthorizedException(UnauthorizedException e) throws ClassNotFoundException {
+        Logger log = getClassLogger(e);
+        log.debug("Unauthorized Exception: {}. ", e.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(e.getMessage()));
     }
 
 }
