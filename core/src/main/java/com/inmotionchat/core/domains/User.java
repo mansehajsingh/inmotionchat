@@ -1,5 +1,7 @@
 package com.inmotionchat.core.domains;
 
+import java.util.UUID;
+
 public interface User extends ArchivableDomain<User> {
 
     String getEmail();
@@ -28,8 +30,8 @@ public interface User extends ArchivableDomain<User> {
 
     void setLastName(String lastName);
 
-    Integer getVerificationCode();
+    UUID getVerificationCode();
 
-    void setVerificationCode(Integer verificationCode);
+    void setVerificationCode(UUID verificationCode);
 
 }

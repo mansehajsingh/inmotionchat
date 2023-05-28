@@ -25,6 +25,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static com.inmotionchat.core.util.query.NullConstant.NULL;
 import static com.inmotionchat.core.util.query.Operation.EQUALS;
@@ -134,10 +135,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void verify(Long id, int verificationCode) throws NotFoundException, UnauthorizedException, ConflictException, DomainInvalidException {
+    public void verify(Long id, UUID verificationCode) throws NotFoundException, UnauthorizedException, ConflictException, DomainInvalidException {
         SQLUser userToVerify = retrieveUser(id, EmailVerificationStatus.NOT_VERIFIED, ArchivalStatus.NOT_ARCHIVED);
 
-        if (verificationCode != userToVerify.getVerificationCode()) {
+        if (!verificationCode.equals(userToVerify.getVerificationCode())) {
             throw new UnauthorizedException("Incorrect verification code.");
         }
 

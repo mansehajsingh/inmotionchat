@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Entity
@@ -36,8 +37,8 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
 
     private static final Pattern alphanumericUnderscorePattern = Pattern.compile("^[A-Za-z0-9_]*$");
 
-    private static int generateVerificationCode() {
-        return Integer.parseInt(RandomStringUtils.randomNumeric(6));
+    private static UUID generateVerificationCode() {
+        return UUID.randomUUID();
     }
 
     @Column(nullable = false, unique = false)
@@ -62,7 +63,7 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
 
     @Column(nullable = true)
     @JsonIgnore
-    private Integer verificationCode;
+    private UUID verificationCode;
 
     public static SQLUser fromId(Long id) {
         SQLUser onlyContainsId = new SQLUser();
@@ -174,12 +175,12 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
         this.lastName = lastName;
     }
 
-    public Integer getVerificationCode() {
+    public UUID getVerificationCode() {
         return verificationCode;
     }
 
     @Override
-    public void setVerificationCode(Integer verificationCode) {
+    public void setVerificationCode(UUID verificationCode) {
         this.verificationCode = verificationCode;
     }
 

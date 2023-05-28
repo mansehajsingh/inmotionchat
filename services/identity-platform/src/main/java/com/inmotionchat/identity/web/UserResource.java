@@ -28,7 +28,7 @@ public class UserResource extends AbstractResource<User, UserDTO> {
 
     @PatchMapping("/{id}")
     public void verify(@PathVariable Long id, @RequestBody VerifyUser verifyUser) throws UnauthorizedException, NotFoundException, ConflictException, DomainInvalidException {
-        this.userService.verify(id, verifyUser.verificationCode);
+        this.userService.verify(id, verifyUser.getVerificationCode());
     }
 
 }

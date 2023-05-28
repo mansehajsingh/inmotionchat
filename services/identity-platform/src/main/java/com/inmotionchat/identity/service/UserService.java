@@ -8,8 +8,10 @@ import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
 
+import java.util.UUID;
+
 public interface UserService extends ArchivingDomainService<User, UserDTO> {
 
-    void verify(Long id, int verificationCode) throws NotFoundException, UnauthorizedException, ConflictException, DomainInvalidException;
+    void verify(Long id, UUID verificationCode) throws NotFoundException, UnauthorizedException, ConflictException, DomainInvalidException;
 
 }
