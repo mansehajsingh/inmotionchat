@@ -39,8 +39,7 @@ public interface SQLUserRepository extends SQLArchivingRepository<SQLUser> {
         SearchCriteria<?>[] newCriteria = Arrays.copyOf(criteria, criteria.length + 1);
         newCriteria[criteria.length] = verificationSearchCriteria(verificationStatus);
 
-        return SQLArchivingRepository.super
-                .exists(newCriteria);
+        return SQLArchivingRepository.super.exists(newCriteria);
     }
 
 }

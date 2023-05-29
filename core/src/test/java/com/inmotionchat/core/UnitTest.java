@@ -1,7 +1,4 @@
-package com.inmotionchat.test;
+package com.inmotionchat.core;
 
 public abstract class UnitTest {
-
-
-
 }

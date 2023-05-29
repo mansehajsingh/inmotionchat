@@ -1,7 +1,7 @@
 package com.inmotionchat.core.data.postgres;
 
+import com.inmotionchat.core.UnitTest;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
-import com.inmotionchat.test.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 

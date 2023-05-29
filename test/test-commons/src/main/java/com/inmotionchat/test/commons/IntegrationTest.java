@@ -1,4 +1,4 @@
-package com.inmotionchat.test;
+package com.inmotionchat.test.commons;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -27,6 +27,7 @@ public class IntegrationTest {
         registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
         registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
         registry.add("JWT_SECRET", () -> "dfcce544-fb4e-4b90-9fe7-dccc63bd67fb");
+        registry.add( "spring.jpa.properties.javax.persistence.create-database-schemas", () -> true);
     }
 
 }
