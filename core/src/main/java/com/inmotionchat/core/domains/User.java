@@ -34,4 +34,6 @@ public interface User extends ArchivableDomain<User> {
 
     void setVerificationCode(UUID verificationCode);
 
+    boolean isVerified();
+
 }

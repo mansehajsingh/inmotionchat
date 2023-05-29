@@ -184,6 +184,12 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
     }
 
     @Override
+    @JsonIgnore
+    public boolean isVerified() {
+        return this.verificationCode == null;
+    }
+
+    @Override
     public String toString() {
 
         String metadataAsString = "";
