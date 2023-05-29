@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import java.time.Period;
 import java.time.ZonedDateTime;
 
+@Entity
 @Table(name = "sessions", schema = Schema.IdentityPlatform)
 public class SQLSession implements Session {
 
