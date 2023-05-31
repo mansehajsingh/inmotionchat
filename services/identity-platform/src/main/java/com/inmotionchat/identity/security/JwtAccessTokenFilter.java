@@ -72,11 +72,10 @@ public class JwtAccessTokenFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         for (Endpoint e : InMotionSecurityProperties.doNotAuthenticate()) {
-            if (
-                    e.getMethod().toString().equalsIgnoreCase(request.getMethod()) &&
-                    e.getPath().equals(request.getRequestURI())
-            ) {
-                return true;
+            if (e.getMethod().toString().equalsIgnoreCase(request.getMethod())) {
+                String cleaned = e.getPath().replace("**", "[^\\/]+");
+                cleaned = cleaned.replace("/", "\\/");
+                return request.getRequestURI().matches(cleaned);
             }
         }
 
