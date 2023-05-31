@@ -32,14 +32,16 @@ public interface DomainService<T extends Domain<T>, DTO> {
         return searchCriteria.toArray(new SearchCriteria[0]);
     }
 
-    public T retrieveById(Long id) throws NotFoundException;
+    T retrieveById(Long id) throws NotFoundException;
 
-    public Page<? extends T> search(MultiValueMap<String, Object> parameters, Pageable pageable);
+    Page<? extends T> search(Pageable pageable, MultiValueMap<String, Object> parameters);
 
-    public T create(DTO prototype) throws DomainInvalidException, ConflictException, NotFoundException;
+    Page<? extends T> search(Pageable pageable, SearchCriteria<?> ...criteria);
 
-    public T update(Long id, DTO prototype) throws DomainInvalidException, NotFoundException, ConflictException;
+    T create(DTO prototype) throws DomainInvalidException, ConflictException, NotFoundException;
 
-    public T delete(Long id) throws NotFoundException, ConflictException;
+    T update(Long id, DTO prototype) throws DomainInvalidException, NotFoundException, ConflictException;
+
+    T delete(Long id) throws NotFoundException, ConflictException;
 
 }

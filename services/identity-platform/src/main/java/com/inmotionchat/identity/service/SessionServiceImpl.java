@@ -8,6 +8,7 @@ import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
+import com.inmotionchat.core.util.query.SearchCriteria;
 import com.inmotionchat.identity.postgres.SQLSessionRepository;
 import com.inmotionchat.identity.web.dto.LoginRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.inmotionchat.core.util.query.Operation.EQUALS;
 
 @Service
 public class SessionServiceImpl implements SessionService {
@@ -46,9 +49,8 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public Session create(LoginRequest request) throws NotFoundException, ConflictException, UnauthorizedException {
         // fetch the user
-        MultiValueMap<String, Object> searchParams = new LinkedMultiValueMap<>();
-        searchParams.add("email", request.email());
-        Page<? extends User> userPage = this.userService.search(searchParams, Pageable.unpaged());
+        Page<? extends User> userPage = this.userService
+                .search(Pageable.unpaged(), new SearchCriteria<>("email", EQUALS, request.email()));
 
         if (userPage.isEmpty()) {
             throw new NotFoundException("No user with email " + request.email() + " found.");

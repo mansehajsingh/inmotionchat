@@ -81,8 +81,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<? extends User> search(MultiValueMap<String, Object> parameters, Pageable pageable) {
+    public Page<? extends User> search(Pageable pageable, MultiValueMap<String, Object> parameters) {
         SearchCriteria<?>[] criteria = getSearchCriteriaFromParameters(searchCriteriaMapper, parameters);
+        return search(pageable, criteria);
+    }
+
+    @Override
+    public Page<? extends User> search(Pageable pageable, SearchCriteria<?> ...criteria) {
         return this.sqlUserRepository.filter(pageable, criteria);
     }
 
