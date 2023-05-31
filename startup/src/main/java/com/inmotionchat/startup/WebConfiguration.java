@@ -19,11 +19,6 @@ public class WebConfiguration implements WebMvcConfigurer {
         return new ServiceOnlineInterceptor();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10, new SecureRandom());
-    }
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(serviceOnlineInterceptor());

@@ -1,6 +1,7 @@
 package com.inmotionchat.core.data.postgres;
 
 import com.inmotionchat.core.data.Schema;
+import com.inmotionchat.core.domains.Session;
 import com.inmotionchat.core.domains.User;
 import jakarta.persistence.*;
 
@@ -25,8 +26,13 @@ public class SQLSession implements Session {
 
     public SQLSession() {}
 
-    public SQLSession(Long id, SQLUser user, ZonedDateTime expiresAt) {
+    public SQLSession(Long id, SQLUser user) {
         this.id = id;
+        this.user = user;
+        this.expiresAt = ZonedDateTime.now().plus(EXPIRY_PERIOD);
+    }
+
+    public SQLSession(SQLUser user) {
         this.user = user;
         this.expiresAt = ZonedDateTime.now().plus(EXPIRY_PERIOD);
     }
@@ -46,4 +52,8 @@ public class SQLSession implements Session {
         return this.expiresAt;
     }
 
+    @Override
+    public boolean isExpired() {
+        return this.expiresAt.isAfter(ZonedDateTime.now());
+    }
 }

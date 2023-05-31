@@ -1,6 +1,4 @@
-package com.inmotionchat.core.data.postgres;
-
-import com.inmotionchat.core.domains.User;
+package com.inmotionchat.core.domains;
 
 import java.time.ZonedDateTime;
 
@@ -11,5 +9,7 @@ public interface Session {
     User getUser();
 
     ZonedDateTime getExpiresAt();
+
+    boolean isExpired();
 
 }
