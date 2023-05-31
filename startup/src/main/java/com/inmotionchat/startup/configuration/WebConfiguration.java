@@ -1,5 +1,6 @@
-package com.inmotionchat.startup;
+package com.inmotionchat.startup.configuration;
 
+import com.inmotionchat.startup.ServiceOnlineInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

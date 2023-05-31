@@ -1,4 +1,4 @@
-package com.inmotionchat.startup;
+package com.inmotionchat.startup.configuration;
 
 import com.inmotionchat.identity.security.Endpoint;
 import com.inmotionchat.identity.security.InMotionSecurityProperties;
