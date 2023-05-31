@@ -6,6 +6,8 @@ import com.inmotionchat.core.domains.models.ArchivalStatus;
 import com.inmotionchat.core.util.query.NullConstant;
 import com.inmotionchat.core.util.query.SearchCriteria;
 import com.inmotionchat.identity.model.EmailVerificationStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
@@ -40,6 +42,18 @@ public interface SQLUserRepository extends SQLArchivingRepository<SQLUser> {
         newCriteria[criteria.length] = verificationSearchCriteria(verificationStatus);
 
         return SQLArchivingRepository.super.exists(newCriteria);
+    }
+
+    @Override
+    default Page<SQLUser> filter(Pageable pageable, SearchCriteria<?>... criteria) {
+        return filter(pageable, VERIFIED, criteria);
+    }
+
+    default Page<SQLUser> filter(
+            Pageable pageable, EmailVerificationStatus verificationStatus, SearchCriteria<?> ...criteria
+    ) {
+        return SQLArchivingRepository.super.filter(
+                pageable, copyAndAddCriteria(criteria, verificationSearchCriteria(verificationStatus)));
     }
 
 }

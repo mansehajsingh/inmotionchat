@@ -18,7 +18,7 @@ import static com.inmotionchat.core.util.query.Operation.NOT_EQUALS;
 @NoRepositoryBean
 public interface SQLArchivingRepository<T extends AbstractArchivableDomain> extends SQLRepository<T> {
 
-    private SearchCriteria<?>[] copyAndAddCriteria(SearchCriteria<?>[] criteria, SearchCriteria<?> criteriaToAdd) {
+    default SearchCriteria<?>[] copyAndAddCriteria(SearchCriteria<?>[] criteria, SearchCriteria<?> criteriaToAdd) {
         SearchCriteria<?>[] newCriteria = Arrays.copyOf(criteria, criteria.length + 1);
         newCriteria[criteria.length] = criteriaToAdd;
         return newCriteria;
