@@ -1,12 +1,11 @@
 package com.inmotionchat.startup.configuration;
 
-import com.inmotionchat.identity.security.Endpoint;
-import com.inmotionchat.identity.security.InMotionSecurityProperties;
-import com.inmotionchat.identity.security.JwtAccessTokenFilter;
-import com.inmotionchat.identity.security.SpringSecurityRoles;
+import com.inmotionchat.core.data.postgres.SQLUser;
+import com.inmotionchat.identity.security.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -39,6 +38,11 @@ public class SecurityConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10, new SecureRandom());
+    }
+
+    @Bean
+    public AuditorAware<SQLUser> auditorProvider() {
+        return new SpringAuditorAware();
     }
 
     @Bean
