@@ -1,4 +1,4 @@
-package com.inmotionchat.identity.security;
+package com.inmotionchat.core.security;
 
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,6 +1,7 @@
 package com.inmotionchat.identity.security;
 
 import com.inmotionchat.core.exceptions.UnauthorizedException;
+import com.inmotionchat.core.security.AuthenticationDetails;
 import com.inmotionchat.identity.service.TokenProvider;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
