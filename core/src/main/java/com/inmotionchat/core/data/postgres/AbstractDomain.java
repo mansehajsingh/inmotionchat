@@ -87,9 +87,13 @@ public abstract class AbstractDomain<T extends Domain<T>> implements Domain<T> {
     public void validate() throws DomainInvalidException {}
 
     @Override
-    public void validateForCreate() throws DomainInvalidException {}
+    public void validateForCreate() throws DomainInvalidException {
+        validate();
+    }
 
     @Override
-    public void validateForUpdate() throws DomainInvalidException {}
+    public void validateForUpdate() throws DomainInvalidException {
+        validate();
+    }
 
 }
