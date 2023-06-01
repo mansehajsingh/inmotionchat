@@ -1,8 +1,8 @@
 package com.inmotionchat.startup;
 
 import com.inmotionchat.core.soa.InMotionService;
-import com.inmotionchat.identity.IdentityPlatformService;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,28 +15,40 @@ public class ServiceStartup {
 
     private InMotionConfiguration configuration;
 
-    private Map<String, InMotionService> services;
+    private ListableBeanFactory listableBeanFactory;
 
     @Autowired
     public ServiceStartup(
             InMotionConfiguration inMotionConfiguration,
-            IdentityPlatformService identityPlatformService
+            ListableBeanFactory listableBeanFactory
     ) {
         this.configuration = inMotionConfiguration;
-        this.services = new HashMap<>();
-        this.services.put(identityPlatformService.getServiceName(), identityPlatformService);
+        this.listableBeanFactory = listableBeanFactory;
     }
 
     @PostConstruct
     public void startServices() {
+
+        Map<String, InMotionService> servicesByBeanName = this.listableBeanFactory.getBeansOfType(InMotionService.class);
+
+        Map<String, InMotionService> servicesByClassName = new HashMap<>();
+
+        for (String beanName : servicesByBeanName.keySet()) {
+            servicesByClassName.put(
+                    servicesByBeanName.get(beanName).getClass().getName(),
+                    servicesByBeanName.get(beanName)
+            );
+        }
+
         for (String serviceName : this.configuration.getServicesToAwaken()) {
 
-            if (!this.services.containsKey(serviceName)) {
-                throw new NoSuchElementException("No service with name " + serviceName + " exists.");
+            if (!servicesByClassName.containsKey(serviceName)) {
+                throw new NoSuchElementException("No service with class name " + serviceName + " exists.");
             }
 
-            this.services.get(serviceName).awaken();
+            servicesByClassName.get(serviceName).awaken();
         }
+
     }
 
 }
