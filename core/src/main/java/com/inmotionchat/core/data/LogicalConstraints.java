@@ -15,4 +15,8 @@ public class LogicalConstraints {
         public static final String ONE_MEMBERSHIP_PER_ORG_AND_USER = "ONE_MEMBERSHIP_PER_ORG_AND_USER";
     }
 
+    public static class Invitation {
+        public static final String MAXIMUM_ACTIVE_INVITES_REACHED = "MAXIMUM_ACTIVE_INVITES_REACHED";
+    }
+
 }
