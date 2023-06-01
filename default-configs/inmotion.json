@@ -1,3 +1,6 @@
 {
-  "services": ["com.inmotionchat.identity.IdentityPlatformService"]
+  "services": [
+    "com.inmotionchat.identity.IdentityPlatformService",
+    "com.inmotionchat.organizations.OrganizationManagerService"
+  ]
 }

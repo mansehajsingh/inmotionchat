@@ -9,15 +9,12 @@ import org.springframework.stereotype.Component;
 public class IdentityPlatformService extends InMotionService {
     private static Logger log = LoggerFactory.getLogger(IdentityPlatformService.class);
 
-    public String getServiceName() {
-        return "IdentityPlatform";
+    public IdentityPlatformService() {
+        super(log);
     }
 
-    @Override
-    public void awaken() {
-        log.info("Starting " + getServiceName() + " service.");
-        this.started = true;
-        log.info("Started " + getServiceName() + " service.");
+    public String getServiceName() {
+        return "IdentityPlatform";
     }
 
 }
