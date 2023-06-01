@@ -3,6 +3,7 @@ package com.inmotionchat.identity.service;
 import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.postgres.SQLSession;
 import com.inmotionchat.core.data.postgres.SQLUser;
+import com.inmotionchat.core.data.redis.RedisSession;
 import com.inmotionchat.core.domains.Session;
 import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.exceptions.ConflictException;
@@ -10,14 +11,13 @@ import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.util.query.SearchCriteria;
 import com.inmotionchat.identity.postgres.SQLSessionRepository;
+import com.inmotionchat.identity.redis.RedisSessionRepository;
 import com.inmotionchat.identity.web.dto.LoginRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,15 +35,19 @@ public class SessionServiceImpl implements SessionService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final RedisSessionRepository redisSessionRepository;
+
     @Autowired
     public SessionServiceImpl(
             SQLSessionRepository sqlSessionRepository,
             UserService userService,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            RedisSessionRepository redisSessionRepository
     ) {
         this.sqlSessionRepository = sqlSessionRepository;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.redisSessionRepository = redisSessionRepository;
     }
 
     @Override
@@ -74,12 +78,32 @@ public class SessionServiceImpl implements SessionService {
                     "Already reached or exceeded the maximum number of sessions.");
         }
 
-        return this.sqlSessionRepository.save(new SQLSession(SQLUser.fromId(user.getId())));
+        SQLUser mappedToSQL = SQLUser.fromId(user.getId());
+
+        SQLSession sqlSession = this.sqlSessionRepository.save(new SQLSession(mappedToSQL));
+
+        this.redisSessionRepository.save(new RedisSession(sqlSession));
+
+        return sqlSession;
     }
 
     @Override
     public boolean stillExists(Long sessionId) {
-        Optional<SQLSession> sessionOptional = this.sqlSessionRepository.findById(sessionId);
-        return sessionOptional.isPresent();
+        Optional<RedisSession> sessionOptional = this.redisSessionRepository.findById(sessionId);
+
+        if (sessionOptional.isPresent()) return true; // redis session should be first point to search
+
+        // search postgres if redis does not have it
+        Optional<SQLSession> sqlSessionOptional = this.sqlSessionRepository.findById(sessionId);
+
+        if (sqlSessionOptional.isPresent()) {
+            // if postgres has it store it in redis then return true
+            RedisSession redisSession = new RedisSession(sqlSessionOptional.get());
+            this.redisSessionRepository.save(redisSession);
+            return true;
+        }
+
+        return false;
     }
+
 }
