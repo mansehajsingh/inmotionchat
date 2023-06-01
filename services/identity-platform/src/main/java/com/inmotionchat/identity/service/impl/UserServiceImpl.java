@@ -1,4 +1,4 @@
-package com.inmotionchat.identity.service;
+package com.inmotionchat.identity.service.impl;
 
 import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.ThrowingTransactionTemplate;
@@ -15,6 +15,7 @@ import com.inmotionchat.core.util.query.SearchCriteria;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import com.inmotionchat.identity.model.EmailVerificationStatus;
 import com.inmotionchat.identity.postgres.SQLUserRepository;
+import com.inmotionchat.identity.service.contract.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

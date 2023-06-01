@@ -1,4 +1,4 @@
-package com.inmotionchat.identity.service;
+package com.inmotionchat.identity.service.contract;
 
 import com.inmotionchat.core.domains.Session;
 import com.inmotionchat.core.domains.User;

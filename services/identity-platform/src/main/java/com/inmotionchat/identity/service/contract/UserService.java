@@ -1,4 +1,4 @@
-package com.inmotionchat.identity.service;
+package com.inmotionchat.identity.service.contract;
 
 import com.inmotionchat.core.data.ArchivingDomainService;
 import com.inmotionchat.core.data.dto.UserDTO;

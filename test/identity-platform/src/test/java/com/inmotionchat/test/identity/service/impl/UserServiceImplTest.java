@@ -1,4 +1,4 @@
-package com.inmotionchat.test.identity.service;
+package com.inmotionchat.test.identity.service.impl;
 
 import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.dto.UserDTO;
@@ -11,7 +11,7 @@ import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.identity.model.EmailVerificationStatus;
 import com.inmotionchat.identity.postgres.SQLUserRepository;
-import com.inmotionchat.identity.service.UserService;
+import com.inmotionchat.identity.service.contract.UserService;
 import com.inmotionchat.test.commons.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

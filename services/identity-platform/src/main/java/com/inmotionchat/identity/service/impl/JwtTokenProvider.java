@@ -1,8 +1,9 @@
-package com.inmotionchat.identity.service;
+package com.inmotionchat.identity.service.impl;
 
 import com.inmotionchat.core.domains.Session;
 import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
+import com.inmotionchat.identity.service.contract.TokenProvider;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;

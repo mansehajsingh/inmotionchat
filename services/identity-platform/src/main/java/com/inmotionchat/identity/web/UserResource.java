@@ -7,7 +7,7 @@ import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.web.AbstractResource;
-import com.inmotionchat.identity.service.UserService;
+import com.inmotionchat.identity.service.contract.UserService;
 import com.inmotionchat.identity.web.dto.VerifyUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

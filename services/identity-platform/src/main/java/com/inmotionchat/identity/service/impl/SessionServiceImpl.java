@@ -1,4 +1,4 @@
-package com.inmotionchat.identity.service;
+package com.inmotionchat.identity.service.impl;
 
 import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.postgres.SQLSession;
@@ -12,6 +12,8 @@ import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.util.query.SearchCriteria;
 import com.inmotionchat.identity.postgres.SQLSessionRepository;
 import com.inmotionchat.identity.redis.RedisSessionRepository;
+import com.inmotionchat.identity.service.contract.UserService;
+import com.inmotionchat.identity.service.contract.SessionService;
 import com.inmotionchat.identity.web.dto.LoginRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
