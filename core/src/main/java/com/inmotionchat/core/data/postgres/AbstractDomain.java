@@ -11,6 +11,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.time.ZonedDateTime;
 
 @MappedSuperclass
@@ -35,6 +37,20 @@ public abstract class AbstractDomain<T extends Domain<T>> implements Domain<T> {
     @JoinColumn(name = "last_updated_by")
     @LastModifiedBy
     protected SQLUser lastUpdatedBy;
+
+    public static <D extends Domain<D>> D forId(Class<D> clazz, Long id) {
+        Constructor<D> ctor = null;
+
+        try {
+            ctor = clazz.getConstructor();
+            D instance = ctor.newInstance();
+            instance.setId(id);
+            return instance;
+        } catch (NoSuchMethodException | InstantiationException
+                 | IllegalAccessException | InvocationTargetException e) {
+            return null;
+        }
+    }
 
     @Override
     public Long getId() {
