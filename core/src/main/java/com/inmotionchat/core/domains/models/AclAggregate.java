@@ -35,6 +35,10 @@ public class AclAggregate {
         return true;
     }
 
+    public AclPermission getAcl(Class domain) {
+        return this.aclsBySimpleName.get(domain.getSimpleName());
+    }
+
     /**
      * Merges new AclAggregate into self, overwriting existing Acls with new aggregate's acls
      * @param other
