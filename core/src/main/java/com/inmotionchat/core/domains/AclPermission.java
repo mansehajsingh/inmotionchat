@@ -12,7 +12,7 @@ public interface AclPermission {
 
     void setRole(Role role);
 
-    String getDomainSimpleName() throws ClassNotFoundException;
+    String getDomainSimpleName();
 
     void setDomainSimpleName(Class<?> domain);
 

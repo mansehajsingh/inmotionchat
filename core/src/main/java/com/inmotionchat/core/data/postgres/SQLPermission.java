@@ -49,7 +49,7 @@ public class SQLPermission implements AclPermission {
     }
 
     @Override
-    public String getDomainSimpleName() throws ClassNotFoundException {
+    public String getDomainSimpleName() {
         return this.domain;
     }
 
