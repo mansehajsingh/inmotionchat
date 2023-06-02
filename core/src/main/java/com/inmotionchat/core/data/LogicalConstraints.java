@@ -23,4 +23,8 @@ public class LogicalConstraints {
         public static final String ONE_DOMAIN_PERMISSION_PER_ROLE = "ONE_DOMAIN_PERMISSION_PER_ROLE";
     }
 
+    public static class RoleAssignment {
+        public static final String ONE_ROLE_ASSIGNMENT_PER_MEMBERSHIP = "ONE_ROLE_ASSIGNMENT_PER_MEMBERSHIP";
+    }
+
 }
