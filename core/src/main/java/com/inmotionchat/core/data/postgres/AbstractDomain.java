@@ -38,7 +38,7 @@ public abstract class AbstractDomain<T extends Domain<T>> implements Domain<T> {
     @LastModifiedBy
     protected SQLUser lastUpdatedBy;
 
-    public static <D extends Domain<D>> D forId(Class<D> clazz, Long id) {
+    public static <D extends AbstractDomain> D forId(Class<D> clazz, Long id) {
         Constructor<D> ctor = null;
 
         try {
