@@ -19,4 +19,8 @@ public class LogicalConstraints {
         public static final String MAXIMUM_ACTIVE_INVITES_REACHED = "MAXIMUM_ACTIVE_INVITES_REACHED";
     }
 
+    public static class Permission {
+        public static final String ONE_DOMAIN_PERMISSION_PER_ROLE = "ONE_DOMAIN_PERMISSION_PER_ROLE";
+    }
+
 }
