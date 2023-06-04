@@ -67,6 +67,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role createAsRoot(RoleDTO prototype) throws ConflictException, DomainInvalidException, NotFoundException {
         SQLRole role = new SQLRole(prototype);
+        role.setCreatedBy(requestingUser());
         role.setIsRoot(true);
         role.validateForCreate();
 

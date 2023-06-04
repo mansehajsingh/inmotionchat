@@ -64,6 +64,7 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     public Membership createInitialRoot(MembershipDTO membershipDTO, Role rootRole) throws DomainInvalidException, ConflictException, NotFoundException {
         SQLMembership membership = new SQLMembership(membershipDTO);
+        membership.setCreatedBy(requestingUser());
         membership.validateForCreate();
 
         return this.transactionTemplate.execute((status) -> {

@@ -67,6 +67,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public Organization create(OrganizationDTO prototype) throws DomainInvalidException, ConflictException, NotFoundException {
         SQLOrganization organization = new SQLOrganization(prototype);
+        organization.setCreatedBy(requestingUser());
         organization.validateForCreate();
 
         return this.transactionTemplate.execute((status) -> {
@@ -75,7 +76,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             Role rootRole = this.roleService.createAsRoot(new RoleDTO(createdOrg.getId(), "Root"));
             this.roleService.createAsDefault(new RoleDTO(createdOrg.getId(), "Default"));
 
-            MembershipDTO membershipDTO = new MembershipDTO(requestingUserId(), createdOrg.getId());
+            MembershipDTO membershipDTO = new MembershipDTO(requestingUser().getId(), createdOrg.getId());
             this.membershipService.createInitialRoot(membershipDTO, rootRole);
 
             return createdOrg;

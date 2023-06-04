@@ -1,6 +1,9 @@
 package com.inmotionchat.core.data;
 
+import com.inmotionchat.core.data.postgres.AbstractDomain;
+import com.inmotionchat.core.data.postgres.SQLUser;
 import com.inmotionchat.core.domains.Domain;
+import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
@@ -34,9 +37,14 @@ public interface DomainService<T extends Domain<T>, DTO> {
         return searchCriteria.toArray(new SearchCriteria[0]);
     }
 
-    default Long requestingUserId() {
-        return ((AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+    default User requestingUser() {
+        return requestingUser(false);
+    }
+
+    default User requestingUser(boolean fetchAllDetails) {
+        Long userId = ((AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
                 .getUserId();
+        return AbstractDomain.forId(SQLUser.class, userId);
     }
 
     T retrieveById(Long id) throws NotFoundException;

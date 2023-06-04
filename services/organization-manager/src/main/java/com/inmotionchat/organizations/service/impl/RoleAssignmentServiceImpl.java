@@ -49,6 +49,7 @@ public class RoleAssignmentServiceImpl implements RoleAssignmentService {
     @Override
     public RoleAssignment assignInitialRoot(RoleAssignmentDTO prototype) throws DomainInvalidException, ConflictException {
         SQLRoleAssignment roleAssignment = new SQLRoleAssignment(prototype);
+        roleAssignment.setCreatedBy(requestingUser());
         roleAssignment.validateForCreate();
 
         return this.sqlRoleAssignmentRepository.store(roleAssignment);
