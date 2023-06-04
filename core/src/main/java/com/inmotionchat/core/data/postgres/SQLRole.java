@@ -24,6 +24,9 @@ public class SQLRole extends AbstractDomain<Role> implements Role {
     private String name;
 
     private boolean isDefault = false;
+
+    private boolean isRoot = false;
+
     public SQLRole() {}
 
     public SQLRole(String name, Organization organization) {
@@ -31,9 +34,10 @@ public class SQLRole extends AbstractDomain<Role> implements Role {
         this.organization = AbstractDomain.forId(SQLOrganization.class, organization.getId());
     }
 
-    public SQLRole(String name, Organization organization, boolean isDefault) {
+    public SQLRole(String name, Organization organization, boolean isDefault, boolean isRoot) {
         this(name, organization);
         this.isDefault = isDefault;
+        this.isRoot = isRoot;
     }
 
     @Override
@@ -64,6 +68,16 @@ public class SQLRole extends AbstractDomain<Role> implements Role {
     @Override
     public void setIsDefault(boolean isDefault) {
         this.isDefault = isDefault;
+    }
+
+    @Override
+    public boolean isRoot() {
+        return this.isRoot;
+    }
+
+    @Override
+    public void setIsRoot(boolean isRoot) {
+        this.isRoot = isRoot;
     }
 
     @Override

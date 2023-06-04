@@ -14,4 +14,8 @@ public interface Role extends Domain<Role> {
 
     void setIsDefault(boolean isDefault);
 
+    boolean isRoot();
+
+    void setIsRoot(boolean isRoot);
+
 }
