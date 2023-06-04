@@ -1,6 +1,7 @@
 package com.inmotionchat.core.data.postgres;
 
 import com.inmotionchat.core.data.Schema;
+import com.inmotionchat.core.data.dto.RoleDTO;
 import com.inmotionchat.core.domains.Organization;
 import com.inmotionchat.core.domains.Role;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
@@ -32,6 +33,11 @@ public class SQLRole extends AbstractDomain<Role> implements Role {
     public SQLRole(String name, Organization organization) {
         this.name = name;
         this.organization = AbstractDomain.forId(SQLOrganization.class, organization.getId());
+    }
+
+    public SQLRole(RoleDTO prototype) {
+        this.name = prototype.name();
+        this.organization = AbstractDomain.forId(SQLOrganization.class, prototype.organizationId());
     }
 
     public SQLRole(String name, Organization organization, boolean isDefault, boolean isRoot) {

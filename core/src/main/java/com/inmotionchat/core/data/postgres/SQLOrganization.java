@@ -1,6 +1,7 @@
 package com.inmotionchat.core.data.postgres;
 
 import com.inmotionchat.core.data.Schema;
+import com.inmotionchat.core.data.dto.OrganizationDTO;
 import com.inmotionchat.core.domains.Organization;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.util.validation.AbstractRule;
@@ -31,6 +32,11 @@ public class SQLOrganization extends AbstractDomain<Organization> implements Org
     public SQLOrganization(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public SQLOrganization(OrganizationDTO prototype) {
+        this.name = prototype.name();
+        this.description = prototype.description();
     }
 
     @Override

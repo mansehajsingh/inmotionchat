@@ -2,6 +2,7 @@ package com.inmotionchat.core.data.postgres;
 
 import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.Schema;
+import com.inmotionchat.core.data.dto.MembershipDTO;
 import com.inmotionchat.core.domains.Membership;
 import com.inmotionchat.core.domains.Organization;
 import com.inmotionchat.core.domains.User;
@@ -38,6 +39,11 @@ public class SQLMembership extends AbstractArchivableDomain<Membership> implemen
     public SQLMembership(User user, Organization organization) {
         this.user = SQLUser.fromId(user.getId());
         this.organization = SQLOrganization.fromId(organization.getId());
+    }
+
+    public SQLMembership(MembershipDTO prototype) {
+        this.user = AbstractDomain.forId(SQLUser.class, prototype.userId());
+        this.organization = AbstractDomain.forId(SQLOrganization.class, prototype.organizationId());
     }
 
     @Override

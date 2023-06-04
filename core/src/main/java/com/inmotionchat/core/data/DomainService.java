@@ -4,10 +4,12 @@ import com.inmotionchat.core.domains.Domain;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
+import com.inmotionchat.core.security.AuthenticationDetails;
 import com.inmotionchat.core.util.query.SearchCriteria;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
@@ -30,6 +32,11 @@ public interface DomainService<T extends Domain<T>, DTO> {
         }
 
         return searchCriteria.toArray(new SearchCriteria[0]);
+    }
+
+    default Long requestingUserId() {
+        return ((AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+                .getUserId();
     }
 
     T retrieveById(Long id) throws NotFoundException;

@@ -28,6 +28,13 @@ public class SQLPermission implements AclPermission {
 
     private int permissionBits = 0b0;
 
+    public SQLPermission() {}
+
+    public SQLPermission(Class<?> domainClass, ActionType ...allowedActions) {
+        this.setDomainSimpleName(domainClass);
+        for (ActionType actionType : allowedActions) setAllowed(actionType, true);
+    }
+
     @Override
     public Long getId() {
         return this.id;

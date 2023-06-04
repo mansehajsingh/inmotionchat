@@ -2,6 +2,7 @@ package com.inmotionchat.core.data.postgres;
 
 import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.Schema;
+import com.inmotionchat.core.data.dto.RoleAssignmentDTO;
 import com.inmotionchat.core.domains.Membership;
 import com.inmotionchat.core.domains.Role;
 import com.inmotionchat.core.domains.RoleAssignment;
@@ -30,6 +31,11 @@ public class SQLRoleAssignment extends AbstractDomain<RoleAssignment> implements
     public SQLRoleAssignment(Membership membership, Role role) {
         this.membership = AbstractDomain.forId(SQLMembership.class, membership.getId());
         this.role = AbstractDomain.forId(SQLRole.class, role.getId());
+    }
+
+    public SQLRoleAssignment(RoleAssignmentDTO prototype) {
+        this.membership = AbstractDomain.forId(SQLMembership.class, prototype.membershipId());
+        this.role = AbstractDomain.forId(SQLRole.class, prototype.roleId());
     }
 
     @Override
