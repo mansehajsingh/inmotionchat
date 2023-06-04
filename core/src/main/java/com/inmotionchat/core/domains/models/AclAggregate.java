@@ -26,8 +26,13 @@ public class AclAggregate {
         return this.aclsBySimpleName.values().stream().toList();
     }
 
-    public boolean observesAclsFor(String ...domainSimpleNames) {
-        for (String simpleName : domainSimpleNames) {
+    public void addAcl(AclPermission aclPermission) {
+        this.aclsBySimpleName.put(aclPermission.getDomainSimpleName(), aclPermission);
+    }
+
+    public boolean observesAclsFor(Class ...domains) {
+        for (Class dom : domains) {
+            String simpleName = dom.getSimpleName();
             if (this.aclsBySimpleName.containsKey(simpleName))
                 continue;
             return false;
