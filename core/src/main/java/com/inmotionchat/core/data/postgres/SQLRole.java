@@ -94,7 +94,7 @@ public class SQLRole extends AbstractDomain<Role> implements Role {
         List<Violation> violations = new ArrayList<>();
         violations.addAll(nameRule.collectViolations(this.name));
 
-        if (violations.isEmpty())
+        if (!violations.isEmpty())
             throw new DomainInvalidException(violations);
     }
 

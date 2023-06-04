@@ -12,8 +12,10 @@ import com.inmotionchat.organizations.service.contract.RoleAssignmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
+@Service
 public class RoleAssignmentServiceImpl implements RoleAssignmentService {
 
     private SQLRoleAssignmentRepository sqlRoleAssignmentRepository;
