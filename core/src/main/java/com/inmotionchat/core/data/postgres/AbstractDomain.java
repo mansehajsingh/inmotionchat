@@ -1,6 +1,7 @@
 package com.inmotionchat.core.data.postgres;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.inmotionchat.core.data.AuditingEntityListener;
 import com.inmotionchat.core.domains.Domain;
 import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.domains.models.Metadata;
@@ -16,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.time.ZonedDateTime;
 
 @MappedSuperclass
+@EntityListeners({AuditingEntityListener.class})
 public abstract class AbstractDomain<T extends Domain<T>> implements Domain<T> {
 
     @Id

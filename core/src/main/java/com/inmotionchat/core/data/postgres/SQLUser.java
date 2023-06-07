@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
                 @UniqueConstraint(name = LogicalConstraints.User.UNIQUE_USERNAME , columnNames = "username")
         }
 )
+@ExcludeSuperclassListeners
 public class SQLUser extends AbstractArchivableDomain<User> implements User {
 
     private static final Pattern emailPattern
