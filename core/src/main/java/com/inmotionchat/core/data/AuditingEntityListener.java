@@ -19,7 +19,10 @@ public class AuditingEntityListener {
 
         if (domain.metadata().createdBy == null) {
             domain.setCreatedBy(user);
+        } else {
+            domain.setLastUpdatedBy(user);
         }
+
     }
 
 }
