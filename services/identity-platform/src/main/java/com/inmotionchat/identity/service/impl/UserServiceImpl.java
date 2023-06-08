@@ -5,6 +5,7 @@ import com.inmotionchat.core.data.ThrowingTransactionTemplate;
 import com.inmotionchat.core.data.TransactionTemplateFactory;
 import com.inmotionchat.core.data.dto.UserDTO;
 import com.inmotionchat.core.data.postgres.SQLUser;
+import com.inmotionchat.core.domains.Tenant;
 import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.domains.models.ArchivalStatus;
 import com.inmotionchat.core.exceptions.ConflictException;
@@ -161,5 +162,15 @@ public class UserServiceImpl implements UserService {
             this.sqlUserRepository.deleteAll(usersWithSameEmail);
             return null;
         });
+    }
+
+    @Override
+    public void assignTenant(Long id, Tenant tenant, boolean isTenantRoot) throws NotFoundException, ConflictException {
+        User user = retrieveById(id);
+        SQLUser sqlUser = new SQLUser(user);
+        sqlUser.setTenant(tenant);
+        sqlUser.setIsTenantRoot(isTenantRoot);
+
+        this.sqlUserRepository.update(sqlUser);
     }
 }

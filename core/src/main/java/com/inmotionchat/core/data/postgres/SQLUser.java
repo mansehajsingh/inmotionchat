@@ -134,6 +134,18 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
 
     }
 
+    public SQLUser(User user) {
+        super(user.metadata(), user.getArchivedAt());
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.username = user.getUsername();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.passwordHash = user.getPasswordHash();
+        this.isTenantRoot = user.isTenantRoot();
+        this.tenant = user.getTenant() == null ? null : new SQLTenant(user.getTenant());
+    }
+
     @Override
     public Metadata metadata() {
         return new Metadata(this.createdAt, this.createdBy == null ? this : this.createdBy, this.lastUpdatedAt, this.lastUpdatedBy);

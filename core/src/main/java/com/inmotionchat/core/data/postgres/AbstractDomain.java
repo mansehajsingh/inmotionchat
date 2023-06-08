@@ -54,6 +54,17 @@ public abstract class AbstractDomain<T extends Domain<T>> implements Domain<T> {
         }
     }
 
+    protected AbstractDomain(Metadata metadata) {
+        this.createdAt = metadata.createdAt;
+        this.createdBy = metadata.createdBy == null ?
+                null : forId(SQLUser.class, metadata.createdBy.getId());
+        this.lastUpdatedAt = metadata.lastUpdatedAt;
+        this.lastUpdatedBy = metadata.lastUpdatedBy == null ?
+                null : forId(SQLUser.class, metadata.lastUpdatedBy.getId());
+    }
+
+    protected AbstractDomain() {}
+
     @Override
     public Long getId() {
         return this.id;
