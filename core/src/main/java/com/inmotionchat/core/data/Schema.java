@@ -4,6 +4,4 @@ public class Schema {
 
     public static final String IdentityPlatform = "identityplatform";
 
-    public static final String OrganizationManager = "organizationmanager";
-
 }
