@@ -76,7 +76,10 @@ public class JwtAccessTokenFilter extends OncePerRequestFilter {
             if (e.getMethod().toString().equalsIgnoreCase(request.getMethod())) {
                 String cleaned = e.getPath().replace("**", "[^\\/]+");
                 cleaned = cleaned.replace("/", "\\/");
-                return request.getRequestURI().matches(cleaned);
+
+                if (request.getRequestURI().matches(cleaned)) {
+                    return true;
+                }
             }
         }
 

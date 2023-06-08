@@ -30,6 +30,14 @@ public interface User extends ArchivableDomain<User> {
 
     void setLastName(String lastName);
 
+    Tenant getTenant();
+
+    void setTenant(Tenant tenant);
+
+    boolean isTenantRoot();
+
+    void setIsTenantRoot(boolean isTenantRoot);
+
     UUID getVerificationCode();
 
     void setVerificationCode(UUID verificationCode);

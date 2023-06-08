@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.dto.UserDTO;
+import com.inmotionchat.core.domains.Tenant;
 import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.domains.models.Metadata;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
@@ -40,6 +41,14 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
     private static UUID generateVerificationCode() {
         return UUID.randomUUID();
     }
+
+    @ManyToOne
+    @JoinColumn(nullable = true)
+    @JsonIgnore
+    private SQLTenant tenant;
+
+    @JsonIgnore
+    private boolean isTenantRoot = false;
 
     @Column(nullable = false, unique = false)
     private String email;
@@ -94,6 +103,19 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
         this.verificationCode = generateVerificationCode();
     }
 
+    public SQLUser(
+            String email,
+            String username,
+            String password,
+            PasswordEncoder passwordEncoder,
+            String firstName,
+            String lastName,
+            Tenant tenant
+    ) {
+        this(email, username, password, passwordEncoder, firstName, lastName);
+        this.setTenant(tenant);
+    }
+
     public SQLUser(UserDTO proto, PasswordEncoder passwordEncoder) {
         this(
                 proto.email(),
@@ -103,6 +125,13 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
                 proto.firstName(),
                 proto.lastName()
         );
+
+        if (proto.tenantId() != null) {
+            SQLTenant sqlTenant = new SQLTenant();
+            sqlTenant.setId(proto.tenantId());
+            this.tenant = sqlTenant;
+        }
+
     }
 
     @Override
@@ -173,6 +202,27 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
     @Override
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isTenantRoot() {
+        return isTenantRoot;
+    }
+
+    @Override
+    public void setIsTenantRoot(boolean isTenantRoot) {
+        this.isTenantRoot = isTenantRoot;
+    }
+
+    @Override
+    public SQLTenant getTenant() {
+        return tenant;
+    }
+
+    @Override
+    public void setTenant(Tenant tenant) {
+        this.tenant = new SQLTenant(tenant);
     }
 
     public UUID getVerificationCode() {

@@ -5,5 +5,6 @@ public record UserDTO(
         String username,
         String password,
         String firstName,
-        String lastName
+        String lastName,
+        Long tenantId
 ) {}

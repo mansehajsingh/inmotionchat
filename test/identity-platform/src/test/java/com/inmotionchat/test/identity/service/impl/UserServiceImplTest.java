@@ -43,7 +43,14 @@ public class UserServiceImplTest extends IntegrationTest {
     private UserService userService;
 
     private UserDTO copyToDTO(SQLUser user) {
-        return new UserDTO(user.getEmail(), user.getUsername(), user.getPassword(), user.getFirstName(), user.getLastName());
+        return new UserDTO(
+                user.getEmail(),
+                user.getUsername(),
+                user.getPassword(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getTenant().getId()
+        );
     }
 
     private SQLUser persistOne(EmailVerificationStatus verificationStatus, ArchivalStatus archivalStatus) throws ConflictException {
