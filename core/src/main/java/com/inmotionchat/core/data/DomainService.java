@@ -37,16 +37,6 @@ public interface DomainService<T extends Domain<T>, DTO> {
         return searchCriteria.toArray(new SearchCriteria[0]);
     }
 
-    default User requestingUser() {
-        return requestingUser(false);
-    }
-
-    default User requestingUser(boolean fetchAllDetails) {
-        Long userId = ((AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-                .getUserId();
-        return AbstractDomain.forId(SQLUser.class, userId);
-    }
-
     T retrieveById(Long id) throws NotFoundException;
 
     Page<? extends T> search(Pageable pageable, MultiValueMap<String, Object> parameters);
