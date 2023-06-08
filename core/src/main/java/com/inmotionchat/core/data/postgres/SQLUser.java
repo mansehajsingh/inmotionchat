@@ -47,6 +47,10 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
     @JsonIgnore
     private SQLTenant tenant;
 
+    @ManyToOne
+    @JsonIgnore
+    private SQLRole role;
+
     @JsonIgnore
     private boolean isTenantRoot = false;
 
