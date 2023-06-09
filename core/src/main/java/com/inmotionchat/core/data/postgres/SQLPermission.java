@@ -20,6 +20,11 @@ public class SQLPermission implements Permission {
         this.domainName = domainClass.getSimpleName();
     }
 
+    public SQLPermission(Permission permission) {
+        this.actionType = permission.getActionType().value();
+        this.domainName = permission.getDomainName();
+    }
+
     @Override
     public ActionType getActionType() {
         return ActionType.forValue(this.actionType);

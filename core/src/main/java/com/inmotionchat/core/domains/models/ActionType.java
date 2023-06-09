@@ -6,6 +6,7 @@ public enum ActionType {
 
     CREATE("CREATE"),
     READ("READ"),
+    SEARCH("SEARCH"),
     UPDATE("UPDATE"),
     ARCHIVE("ARCHIVE"),
     DELETE("DELETE");

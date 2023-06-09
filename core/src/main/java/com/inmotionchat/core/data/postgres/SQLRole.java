@@ -13,6 +13,7 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "roles", schema = Schema.IdentityPlatform)
@@ -39,6 +40,20 @@ public class SQLRole extends AbstractDomain<Role> implements Role {
         this.permissions = permissions;
     }
 
+    public SQLRole(Role role) {
+        super(role.metadata());
+        this.id = role.getId();
+        this.name = role.getName();
+        this.tenant = new SQLTenant(role.getTenant());
+
+        Set<SQLPermission> sqlPermissions = role.getPermissions().stream().map(SQLPermission::new)
+                .collect(Collectors.toSet());
+
+        this.permissions = sqlPermissions;
+        this.isRoot = role.isRoot();
+        this.isDefault = role.isDefault();
+    }
+
     @Override
     public String getName() {
         return this.name;
@@ -61,7 +76,14 @@ public class SQLRole extends AbstractDomain<Role> implements Role {
 
     @Override
     public boolean isAllowedTo(ActionType actionType, Class<?> domainClass) {
+        if (this.isRoot)
+            return true;
         return this.permissions.contains(new SQLPermission(actionType, domainClass));
+    }
+
+    @Override
+    public Set<SQLPermission> getPermissions() {
+        return permissions;
     }
 
     @Override

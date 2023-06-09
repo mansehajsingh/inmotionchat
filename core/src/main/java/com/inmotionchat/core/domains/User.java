@@ -38,6 +38,10 @@ public interface User extends ArchivableDomain<User> {
 
     void setIsTenantRoot(boolean isTenantRoot);
 
+    Role getRole();
+
+    void setRole(Role role);
+
     UUID getVerificationCode();
 
     void setVerificationCode(UUID verificationCode);

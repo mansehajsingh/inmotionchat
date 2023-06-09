@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.dto.UserDTO;
+import com.inmotionchat.core.domains.Role;
 import com.inmotionchat.core.domains.Tenant;
 import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.domains.models.Metadata;
@@ -239,6 +240,16 @@ public class SQLUser extends AbstractArchivableDomain<User> implements User {
     @Override
     public void setTenant(Tenant tenant) {
         this.tenant = new SQLTenant(tenant);
+    }
+
+    @Override
+    public Role getRole() {
+        return this.role;
+    }
+
+    @Override
+    public void setRole(Role role) {
+        this.role = new SQLRole(role);
     }
 
     public UUID getVerificationCode() {

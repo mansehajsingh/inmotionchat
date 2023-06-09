@@ -5,6 +5,7 @@ import com.inmotionchat.core.data.ThrowingTransactionTemplate;
 import com.inmotionchat.core.data.TransactionTemplateFactory;
 import com.inmotionchat.core.data.dto.TenantDTO;
 import com.inmotionchat.core.data.postgres.SQLTenant;
+import com.inmotionchat.core.domains.Role;
 import com.inmotionchat.core.domains.Tenant;
 import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.exceptions.ConflictException;
@@ -12,6 +13,7 @@ import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.security.AuthenticationDetails;
 import com.inmotionchat.identity.postgres.SQLTenantRepository;
+import com.inmotionchat.identity.service.contract.RoleService;
 import com.inmotionchat.identity.service.contract.TenantService;
 import com.inmotionchat.identity.service.contract.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,8 @@ public class TenantServiceImpl implements TenantService {
 
     private final ThrowingTransactionTemplate transactionTemplate;
 
+    private final RoleService roleService;
+
     private Long requestingUserId() {
          return ((AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
                 .getUserId();
@@ -37,11 +41,13 @@ public class TenantServiceImpl implements TenantService {
     public TenantServiceImpl(
             SQLTenantRepository sqlTenantRepository,
             UserService userService,
-            PlatformTransactionManager transactionManager
+            PlatformTransactionManager transactionManager,
+            RoleService roleService
     ) {
         this.sqlTenantRepository = sqlTenantRepository;
         this.userService = userService;
         this.transactionTemplate = TransactionTemplateFactory.getThrowingTransactionTemplate(transactionManager);
+        this.roleService = roleService;
     }
 
     @Override
@@ -59,7 +65,11 @@ public class TenantServiceImpl implements TenantService {
 
         return this.transactionTemplate.execute((status) -> {
             SQLTenant createdTenant = this.sqlTenantRepository.save(tenant);
-            this.userService.assignTenant(user.getId(), createdTenant, true);
+
+            this.roleService.createDefaultRole(createdTenant);
+            Role rootRole = this.roleService.createRootRole(createdTenant);
+
+            this.userService.assignTenant(user.getId(), createdTenant, rootRole);
             return createdTenant;
         });
     }
