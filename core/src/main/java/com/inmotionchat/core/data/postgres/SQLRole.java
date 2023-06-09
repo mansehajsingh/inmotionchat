@@ -28,7 +28,7 @@ public class SQLRole extends AbstractDomain<Role> implements Role {
 
     private boolean isRoot = false;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "permissions", schema = Schema.IdentityPlatform, joinColumns = @JoinColumn(name = "role_id"))
     private Set<SQLPermission> permissions;
 

@@ -89,7 +89,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role createRootRole(Tenant tenant) throws DomainInvalidException, ConflictException {
-        SQLRole role = new SQLRole("Root", tenant, defaultPermissions());
+        SQLRole role = new SQLRole("Root", tenant, new HashSet<>());
         role.setRoot(true);
         role.validateForCreate();
 

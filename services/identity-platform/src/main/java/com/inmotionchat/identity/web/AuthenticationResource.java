@@ -8,6 +8,7 @@ import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.identity.service.contract.SessionService;
 import com.inmotionchat.identity.service.contract.TokenProvider;
+import com.inmotionchat.identity.service.contract.UserService;
 import com.inmotionchat.identity.web.dto.LoginRequest;
 import com.inmotionchat.identity.web.dto.TokenResponse;
 import io.jsonwebtoken.Claims;
@@ -32,10 +33,13 @@ public class AuthenticationResource {
 
     private TokenProvider tokenProvider;
 
+    private UserService userService;
+
     @Autowired
-    public AuthenticationResource(SessionService sessionService, TokenProvider tokenProvider) {
+    public AuthenticationResource(SessionService sessionService, TokenProvider tokenProvider, UserService userService) {
         this.sessionService = sessionService;
         this.tokenProvider = tokenProvider;
+        this.userService = userService;
     }
 
     @PostMapping(PATH + "/auth/login")
@@ -57,7 +61,7 @@ public class AuthenticationResource {
     }
 
     @GetMapping(PATH + "/auth/refresh")
-    public TokenResponse refresh(@CookieValue(REFRESH_COOKIE_NAME) String refreshToken) throws UnauthorizedException {
+    public TokenResponse refresh(@CookieValue(REFRESH_COOKIE_NAME) String refreshToken) throws UnauthorizedException, NotFoundException {
         Claims claims = this.tokenProvider.validateAndDecodeToken(refreshToken).getBody();
 
         Long sessionId = claims.get("sessionId", Long.class);
@@ -66,9 +70,7 @@ public class AuthenticationResource {
             throw new UnauthorizedException("The session was invalidated. Open a new one.");
         }
 
-        User user = SQLUser.fromId(
-                Long.parseLong(claims.getSubject())
-        );
+        User user = this.userService.retrieveById(Long.parseLong(claims.getSubject()));
 
         String accessToken = this.tokenProvider.issueAccessToken(user);
         return new TokenResponse(accessToken);

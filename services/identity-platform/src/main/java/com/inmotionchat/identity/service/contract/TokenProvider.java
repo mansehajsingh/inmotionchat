@@ -1,5 +1,6 @@
 package com.inmotionchat.identity.service.contract;
 
+import com.inmotionchat.core.domains.Role;
 import com.inmotionchat.core.domains.Session;
 import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.exceptions.UnauthorizedException;

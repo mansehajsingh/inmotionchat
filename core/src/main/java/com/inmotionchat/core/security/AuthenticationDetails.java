@@ -11,13 +11,20 @@ public class AuthenticationDetails extends SecurityProperties.User {
 
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public AuthenticationDetails(Long id, Collection<? extends GrantedAuthority> authorities) {
+    private final WebContextRole role;
+
+    public AuthenticationDetails(Long id, WebContextRole role, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
+        this.role = role;
         this.authorities = authorities;
     }
 
     public Long getUserId() {
         return this.id;
+    }
+
+    public WebContextRole getRole() {
+        return this.role;
     }
 
     public Collection<? extends GrantedAuthority> getAuthorities() {

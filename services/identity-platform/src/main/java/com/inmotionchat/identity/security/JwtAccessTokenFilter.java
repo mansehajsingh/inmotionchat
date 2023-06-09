@@ -2,6 +2,8 @@ package com.inmotionchat.identity.security;
 
 import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.security.AuthenticationDetails;
+import com.inmotionchat.core.security.IdentityContext;
+import com.inmotionchat.core.security.WebContextRole;
 import com.inmotionchat.identity.service.contract.TokenProvider;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -18,15 +20,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 
 @Component
 public class JwtAccessTokenFilter extends OncePerRequestFilter {
 
     private final TokenProvider tokenProvider;
 
+    private final IdentityContext identityContext;
+
     @Autowired
-    public JwtAccessTokenFilter(TokenProvider tokenProvider) {
+    public JwtAccessTokenFilter(TokenProvider tokenProvider, IdentityContext identityContext) {
         this.tokenProvider = tokenProvider;
+        this.identityContext = identityContext;
     }
 
     @Override
@@ -59,6 +65,7 @@ public class JwtAccessTokenFilter extends OncePerRequestFilter {
 
         AuthenticationDetails userDetails = new AuthenticationDetails(
                 Long.parseLong(claims.getSubject()),
+                new WebContextRole((LinkedHashMap<String, Object>) claims.get("role")),
                 Collections.singletonList(new SimpleGrantedAuthority(SpringSecurityRoles.ROLE_USER))
         );
 

@@ -3,6 +3,7 @@ package com.inmotionchat.identity.service.impl;
 import com.inmotionchat.core.domains.Session;
 import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
+import com.inmotionchat.core.security.WebContextRole;
 import com.inmotionchat.identity.service.contract.TokenProvider;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -23,7 +24,7 @@ public class JwtTokenProvider implements TokenProvider {
 
     private static final String ISSUER = "inmotion-identityplatform-service";
 
-    private static final Duration ACCESS_TOKEN_EXPIRATION_DURATION = Duration.of(10, ChronoUnit.MINUTES);
+    private static final Duration ACCESS_TOKEN_EXPIRATION_DURATION = Duration.of(1, ChronoUnit.MINUTES);
 
     private final String jwtSecret;
 
@@ -46,6 +47,7 @@ public class JwtTokenProvider implements TokenProvider {
     @Override
     public String issueAccessToken(User user) {
         return createBaseToken(user)
+                .claim("role", new WebContextRole(user.getRole()))
                 .setExpiration(Date.from(Instant.now().plus(ACCESS_TOKEN_EXPIRATION_DURATION)))
                 .compact();
     }

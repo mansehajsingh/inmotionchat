@@ -14,20 +14,18 @@ import org.springframework.web.context.annotation.RequestScope;
 @RequestScope
 public class IdentityContext {
 
-    private User user;
-
-    private Long userId;
-
     public IdentityContext() {}
 
     public User requestingUser() {
-
-        if (user != null) return user;
-
         Long userId = ((AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
                 .getUserId();
 
         return AbstractDomain.forId(SQLUser.class, userId);
+    }
+
+    public WebContextRole getRole() {
+        return ((AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+                .getRole();
     }
 
 }
