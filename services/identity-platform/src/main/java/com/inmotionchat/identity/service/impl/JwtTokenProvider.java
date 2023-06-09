@@ -41,6 +41,7 @@ public class JwtTokenProvider implements TokenProvider {
                 .setIssuer(ISSUER)
                 .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
                 .setSubject(user.getId().toString())
+                .claim("tenantId", user.getTenant() == null ? null : user.getTenant().getId())
                 .signWith(this.signingKey);
     }
 

@@ -66,6 +66,7 @@ public class JwtAccessTokenFilter extends OncePerRequestFilter {
         AuthenticationDetails userDetails = new AuthenticationDetails(
                 Long.parseLong(claims.getSubject()),
                 new WebContextRole((LinkedHashMap<String, Object>) claims.get("role")),
+                claims.get("tenantId", Long.class),
                 Collections.singletonList(new SimpleGrantedAuthority(SpringSecurityRoles.ROLE_USER))
         );
 

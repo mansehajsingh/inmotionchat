@@ -28,4 +28,9 @@ public class IdentityContext {
                 .getRole();
     }
 
+    public Long getTenantId() {
+        return ((AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+                .getTenantId();
+    }
+
 }

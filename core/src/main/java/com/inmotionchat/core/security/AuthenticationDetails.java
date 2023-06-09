@@ -13,10 +13,15 @@ public class AuthenticationDetails extends SecurityProperties.User {
 
     private final WebContextRole role;
 
-    public AuthenticationDetails(Long id, WebContextRole role, Collection<? extends GrantedAuthority> authorities) {
+    private final Long tenantId;
+
+    public AuthenticationDetails(
+            Long id, WebContextRole role, Long tenantId, Collection<? extends GrantedAuthority> authorities
+    ) {
         this.id = id;
         this.role = role;
         this.authorities = authorities;
+        this.tenantId = tenantId;
     }
 
     public Long getUserId() {
@@ -29,6 +34,10 @@ public class AuthenticationDetails extends SecurityProperties.User {
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.authorities;
+    }
+
+    public Long getTenantId() {
+        return this.tenantId;
     }
 
 }
