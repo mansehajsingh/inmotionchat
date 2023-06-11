@@ -2,8 +2,8 @@ package com.inmotionchat.core.security;
 
 import com.inmotionchat.core.domains.Role;
 import com.inmotionchat.core.domains.models.ActionType;
+import com.inmotionchat.core.exceptions.UnauthorizedException;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +50,11 @@ public class WebContextRole {
         return this.permissions.contains(new WebContextPermission(actionType, domainClass));
     }
 
+    public void isAllowedOrElseThrow(ActionType actionType, Class<?> domainClass) throws UnauthorizedException {
+        if (isAllowedTo(actionType, domainClass))
+            return;
+        throw new UnauthorizedException(actionType, domainClass);
+    }
 
     public Set<WebContextPermission> getPermissions() {
         return this.permissions;
