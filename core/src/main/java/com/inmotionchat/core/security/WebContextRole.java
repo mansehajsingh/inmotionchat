@@ -25,7 +25,7 @@ public class WebContextRole {
     }
 
     public WebContextRole(Map<String, Object> roleClaim) {
-        if (roleClaim == null) return;
+        if (roleClaim.get("id") == null) return;
         this.id = ((Integer) roleClaim.get("id")).longValue();
         this.root = (Boolean) roleClaim.get("root");
         List<Map<String, String>> permissionMaps = (List<Map<String, String>>) roleClaim.get("permissions");
