@@ -1,7 +1,9 @@
 version: "3.8"
 
 services:
+
   postgres:
+    container_name: postgres
     image: postgres:15.2
     restart: always
     environment:
@@ -15,6 +17,7 @@ services:
       - ./db_init.sql:/docker-entrypoint-initdb.d/create-db.sql
 
   redis:
+    container_name: redis
     image: redis:7.0.11
     restart: always
     ports:
@@ -22,6 +25,7 @@ services:
     volumes:
       - redis_data:/data
     command: 'redis-server --loglevel warning --requirepass ${REDIS_PASS}'
+
 volumes:
   pg_data:
     driver: local
