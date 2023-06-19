@@ -1,6 +1,5 @@
 package com.inmotionchat.startup.configuration;
 
-import com.inmotionchat.core.data.postgres.SQLUser;
 import com.inmotionchat.identity.security.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -21,12 +20,8 @@ import java.security.SecureRandom;
 @Configuration
 public class SecurityConfiguration {
 
-    private JwtAccessTokenFilter accessTokenFilter;
-
     @Autowired
-    public SecurityConfiguration(JwtAccessTokenFilter accessTokenFilter) {
-        this.accessTokenFilter = accessTokenFilter;
-    }
+    public SecurityConfiguration() {}
 
     @Bean
     public AuthenticationManager authenticationManager(
@@ -38,11 +33,6 @@ public class SecurityConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10, new SecureRandom());
-    }
-
-    @Bean
-    public AuditorAware<SQLUser> auditorProvider() {
-        return new SpringAuditorAware();
     }
 
     @Bean
@@ -60,7 +50,6 @@ public class SecurityConfiguration {
 
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(accessTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

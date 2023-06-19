@@ -1,23 +1,17 @@
 package com.inmotionchat.core.data.postgres;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.inmotionchat.core.data.AuditingEntityListener;
 import com.inmotionchat.core.domains.Domain;
-import com.inmotionchat.core.domains.User;
-import com.inmotionchat.core.domains.models.Metadata;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.ZonedDateTime;
 
 @MappedSuperclass
-@EntityListeners({AuditingEntityListener.class})
 public abstract class AbstractDomain<T extends Domain<T>> implements Domain<T> {
 
     @Id
@@ -27,18 +21,18 @@ public abstract class AbstractDomain<T extends Domain<T>> implements Domain<T> {
     @CreationTimestamp
     protected ZonedDateTime createdAt;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
-    @CreatedBy
-    protected SQLUser createdBy;
+//    @OneToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "created_by")
+//    @CreatedBy
+//    protected SQLUser createdBy;
 
     @UpdateTimestamp
     protected ZonedDateTime lastUpdatedAt;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "last_updated_by")
-    @LastModifiedBy
-    protected SQLUser lastUpdatedBy;
+//    @OneToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "last_updated_by")
+//    @LastModifiedBy
+//    protected SQLUser lastUpdatedBy;
 
     public static <D extends AbstractDomain> D forId(Class<D> clazz, Long id) {
         Constructor<D> ctor = null;
@@ -52,15 +46,6 @@ public abstract class AbstractDomain<T extends Domain<T>> implements Domain<T> {
                  | IllegalAccessException | InvocationTargetException e) {
             return null;
         }
-    }
-
-    protected AbstractDomain(Metadata metadata) {
-        this.createdAt = metadata.createdAt;
-        this.createdBy = metadata.createdBy == null ?
-                null : forId(SQLUser.class, metadata.createdBy.getId());
-        this.lastUpdatedAt = metadata.lastUpdatedAt;
-        this.lastUpdatedBy = metadata.lastUpdatedBy == null ?
-                null : forId(SQLUser.class, metadata.lastUpdatedBy.getId());
     }
 
     protected AbstractDomain() {}
@@ -81,36 +66,21 @@ public abstract class AbstractDomain<T extends Domain<T>> implements Domain<T> {
         return this.id == null;
     }
 
-    @Override
-    public Metadata metadata() {
-        return new Metadata(createdAt, createdBy, lastUpdatedAt, lastUpdatedBy);
-    }
-
-    @Override
-    public void setMetadata(Metadata metadata) {
-        this.createdBy = metadata.createdBy == null ?
-                null : SQLUser.fromId(metadata.createdBy.getId());
-        this.createdAt = metadata.createdAt;
-        this.lastUpdatedBy = metadata.lastUpdatedBy == null ?
-                null : SQLUser.fromId(metadata.lastUpdatedBy.getId());
-        this.lastUpdatedAt = metadata.lastUpdatedAt;
-    }
-
-    public void setCreatedAt(ZonedDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = SQLUser.fromId(createdBy.getId());
-    }
-
-    public void setLastUpdatedAt(ZonedDateTime lastUpdatedAt) {
-        this.lastUpdatedAt = lastUpdatedAt;
-    }
-
-    public void setLastUpdatedBy(User lastUpdatedBy) {
-        this.lastUpdatedBy = SQLUser.fromId(lastUpdatedBy.getId());
-    }
+//    public void setCreatedAt(ZonedDateTime createdAt) {
+//        this.createdAt = createdAt;
+//    }
+//
+//    public void setCreatedBy(User createdBy) {
+//        this.createdBy = SQLUser.fromId(createdBy.getId());
+//    }
+//
+//    public void setLastUpdatedAt(ZonedDateTime lastUpdatedAt) {
+//        this.lastUpdatedAt = lastUpdatedAt;
+//    }
+//
+//    public void setLastUpdatedBy(User lastUpdatedBy) {
+//        this.lastUpdatedBy = SQLUser.fromId(lastUpdatedBy.getId());
+//    }
 
     @Override
     public void validate() throws DomainInvalidException {}

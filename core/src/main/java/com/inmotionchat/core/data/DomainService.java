@@ -1,18 +1,13 @@
 package com.inmotionchat.core.data;
 
-import com.inmotionchat.core.data.postgres.AbstractDomain;
-import com.inmotionchat.core.data.postgres.SQLUser;
 import com.inmotionchat.core.domains.Domain;
-import com.inmotionchat.core.domains.User;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
-import com.inmotionchat.core.security.AuthenticationDetails;
 import com.inmotionchat.core.util.query.SearchCriteria;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
