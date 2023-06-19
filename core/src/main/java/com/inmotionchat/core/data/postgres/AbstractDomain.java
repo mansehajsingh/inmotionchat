@@ -3,7 +3,9 @@ package com.inmotionchat.core.data.postgres;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inmotionchat.core.domains.Domain;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
-import jakarta.persistence.*;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 

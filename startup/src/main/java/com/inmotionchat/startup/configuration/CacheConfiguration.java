@@ -13,7 +13,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 public class CacheConfiguration {
 
     @Bean
-    public RedisConnectionFactory redisConnectionFactory(String redisPassword) {
+    public RedisConnectionFactory redisConnectionFactory(@Value("REDIS_PASS") String redisPassword) {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration("localhost", 6379);
         redisStandaloneConfiguration.setPassword(RedisPassword.of(redisPassword));
         return new JedisConnectionFactory(redisStandaloneConfiguration);
