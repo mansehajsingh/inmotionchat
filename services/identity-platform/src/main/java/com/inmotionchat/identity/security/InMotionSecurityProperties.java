@@ -15,6 +15,7 @@ public class InMotionSecurityProperties {
            add(new Endpoint(HttpMethod.POST, PATH + "/users"));
            add(new Endpoint(HttpMethod.GET, PATH + "/auth/refresh"));
            add(new Endpoint(HttpMethod.PATCH, PATH + "/users/**"));
+           add(new Endpoint(HttpMethod.POST, PATH + "/tenants"));
         }};
     }
 
