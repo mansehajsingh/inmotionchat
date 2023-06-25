@@ -13,7 +13,6 @@
     <modules>
         <module>../core</module>
         <module>../services/identity-platform</module>
-        <module>../services/organization-manager</module>
     </modules>
 
     <properties>
