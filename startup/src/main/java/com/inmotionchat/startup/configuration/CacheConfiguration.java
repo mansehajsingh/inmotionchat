@@ -20,7 +20,7 @@ public class CacheConfiguration {
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(@Value("${spring.redis.password}") String redisPassword) {
+    public RedisTemplate<String, Object> redisTemplate(@Value("${spring.data.redis.password}") String redisPassword) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory(redisPassword));
         return template;
