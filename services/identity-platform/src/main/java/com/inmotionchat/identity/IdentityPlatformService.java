@@ -15,8 +15,6 @@ import java.io.IOException;
 public class IdentityPlatformService extends InMotionService {
     private static Logger log = LoggerFactory.getLogger(IdentityPlatformService.class);
 
-    private boolean useFirebaseEmulators = false;
-
     public IdentityPlatformService() {
         super(log);
     }
@@ -28,26 +26,6 @@ public class IdentityPlatformService extends InMotionService {
     @Override
     public String getServiceConfigFileName() {
         return "identity-platform.json";
-    }
-
-    @Override
-    public void awaken() throws IOException, ParseException, ServiceDeploymentException {
-        log.info("Starting " + getServiceName() + " service.");
-
-        ServicePropertyManager spm = new ServicePropertyManager(this);
-        spm.fillServiceProperties();
-
-        this.started = true;
-        log.info("Started " + getServiceName() + " service.");
-    }
-
-    @ServiceProperty(name = "useFirebaseEmulators", required = true)
-    public void setUseFirebaseEmulators(boolean useFirebaseEmulators) {
-        this.useFirebaseEmulators = useFirebaseEmulators;
-    }
-
-    public boolean useFireBaseEmulators() {
-        return this.useFirebaseEmulators;
     }
 
 }
