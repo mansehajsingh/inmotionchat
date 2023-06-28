@@ -118,4 +118,12 @@ public abstract class AbstractDomain<T extends Domain<T>> implements Domain<T> {
         validate();
     }
 
+    protected void copyTo(AbstractDomain<T> copy) {
+        copy.id = this.id;
+        copy.createdAt = this.createdAt;
+        copy.createdBy = this.createdBy;
+        copy.lastModifiedAt = this.lastModifiedAt;
+        copy.lastModifiedBy = this.lastModifiedBy;
+    }
+
 }

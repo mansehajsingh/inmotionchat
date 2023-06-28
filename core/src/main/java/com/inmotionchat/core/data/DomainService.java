@@ -4,33 +4,13 @@ import com.inmotionchat.core.domains.Domain;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
+import com.inmotionchat.core.exceptions.ServerException;
 import com.inmotionchat.core.util.query.SearchCriteria;
-import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.MultiValueMap;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public interface DomainService<T extends Domain<T>, DTO> {
-
-    default SearchCriteria<?>[] getSearchCriteriaFromParameters(
-            SearchCriteriaMapper mapper, MultiValueMap<String, Object> parameters
-    ) {
-
-        List<SearchCriteria<?>> searchCriteria = new ArrayList<>();
-
-        for (String key : mapper.keys()) {
-            if (parameters.containsKey(key)) {
-                searchCriteria.add(
-                        mapper.map(key, parameters.get(key).get(0))
-                );
-            }
-        }
-
-        return searchCriteria.toArray(new SearchCriteria[0]);
-    }
 
     T retrieveById(Long id) throws NotFoundException;
 
@@ -38,9 +18,9 @@ public interface DomainService<T extends Domain<T>, DTO> {
 
     Page<? extends T> search(Pageable pageable, SearchCriteria<?> ...criteria);
 
-    T create(DTO prototype) throws DomainInvalidException, ConflictException, NotFoundException;
+    T create(DTO prototype) throws DomainInvalidException, ConflictException, NotFoundException, ServerException;
 
-    T update(Long id, DTO prototype) throws DomainInvalidException, NotFoundException, ConflictException;
+    T update(Long id, DTO prototype) throws DomainInvalidException, NotFoundException, ConflictException, ServerException;
 
     T delete(Long id) throws NotFoundException, ConflictException;
 

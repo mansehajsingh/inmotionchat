@@ -3,6 +3,7 @@ package com.inmotionchat.identity.service.impl;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
+import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.ThrowingTransactionTemplate;
 import com.inmotionchat.core.data.TransactionTemplateFactory;
 import com.inmotionchat.core.data.aggregates.UserAggregate;
@@ -13,8 +14,10 @@ import com.inmotionchat.core.data.postgres.SQLUser;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
+import com.inmotionchat.core.exceptions.ServerException;
 import com.inmotionchat.identity.firebase.FirebaseErrorCodeTranslator;
 import com.inmotionchat.identity.postgres.SQLUserRepository;
+import com.inmotionchat.identity.service.contract.RoleService;
 import com.inmotionchat.identity.service.contract.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +34,17 @@ public class UserServiceImpl implements UserService {
 
     private final SQLUserRepository sqlUserRepository;
 
+    private final RoleService roleService;
+
     @Autowired
     public UserServiceImpl(
             PlatformTransactionManager transactionManager,
-            SQLUserRepository sqlUserRepository
+            SQLUserRepository sqlUserRepository,
+            RoleService roleService
     ) {
         this.transactionTemplate = TransactionTemplateFactory.getThrowingTransactionTemplate(transactionManager);
         this.sqlUserRepository = sqlUserRepository;
+        this.roleService = roleService;
     }
 
     @Override
@@ -67,20 +74,27 @@ public class UserServiceImpl implements UserService {
         UserRecord.UpdateRequest urq = new UserRecord.UpdateRequest(uid);
         urq.setEmailVerified(true);
 
-        UserRecord record = null;
-
-        try {
-            record = FirebaseAuth.getInstance().getUser(uid);
-        } catch (FirebaseAuthException e) {
-            FirebaseErrorCodeTranslator.getInstance().translateAuthErrorCode(e.getAuthErrorCode());
-        }
-
-        SQLTenant tenant = new SQLTenant();
-        tenant.setId(verifyDTO.tenantId());
-        SQLUser sqlUser = new SQLUser(uid, tenant, record.getEmail(), record.getDisplayName());
-
         this.transactionTemplate.execute((status) -> {
+            UserRecord record = null;
+
+            try {
+                record = FirebaseAuth.getInstance().getUser(uid);
+            } catch (FirebaseAuthException e) {
+                FirebaseErrorCodeTranslator.getInstance().translateAuthErrorCode(e.getAuthErrorCode());
+                throw new ServerException();
+            }
+
+            if (record.isEmailVerified())
+                throw new ConflictException(LogicalConstraints.User.ALREADY_VERIFIED, "User with provided uid is already verified.");
+
+            SQLTenant tenant = new SQLTenant();
+            tenant.setId(verifyDTO.tenantId());
+            SQLUser sqlUser = new SQLUser(uid, tenant, record.getEmail(), record.getDisplayName());
+
             SQLUser createdUser = this.sqlUserRepository.save(sqlUser);
+            UserAggregate aggregate = new UserAggregate(createdUser, record);
+
+            this.roleService.assignInitialRole(aggregate);
 
             try {
                 FirebaseAuth.getInstance().updateUser(urq);

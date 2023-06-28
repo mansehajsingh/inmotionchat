@@ -26,6 +26,10 @@ public class SQLTenant implements Tenant {
 
     public SQLTenant() {}
 
+    public SQLTenant(Long id) {
+        this.id = id;
+    }
+
     public SQLTenant(String name) {
         this.name = name;
     }
