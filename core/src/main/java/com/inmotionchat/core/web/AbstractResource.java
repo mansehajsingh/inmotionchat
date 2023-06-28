@@ -1,7 +1,7 @@
 package com.inmotionchat.core.web;
 
 import com.inmotionchat.core.data.DomainService;
-import com.inmotionchat.core.domains.Domain;
+import com.inmotionchat.core.data.postgres.AbstractDomain;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-public abstract class AbstractResource<T extends Domain<T>, DTO> {
+public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
 
     public static final String PATH = "/api/v1";
 

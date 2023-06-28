@@ -2,9 +2,8 @@ package com.inmotionchat.core.data.aggregates;
 
 import com.google.firebase.auth.UserRecord;
 import com.inmotionchat.core.data.dto.UserDTO;
-import com.inmotionchat.core.data.postgres.SQLUser;
-import com.inmotionchat.core.domains.Tenant;
-import com.inmotionchat.core.domains.User;
+import com.inmotionchat.core.data.postgres.Tenant;
+import com.inmotionchat.core.data.postgres.User;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.util.validation.AbstractRule;
 import com.inmotionchat.core.util.validation.StringRule;
@@ -14,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class UserAggregate implements User {
+public class UserAggregate {
 
     private static final Pattern emailPattern
         = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
@@ -24,36 +23,35 @@ public class UserAggregate implements User {
 
     private final UserRecord firebaseRecord;
 
-    private final SQLUser sqlUser;
+    private final User user;
 
-    public UserAggregate(SQLUser user, UserRecord firebaseRecord) {
-        this.sqlUser = user;
+    public UserAggregate(User user, UserRecord firebaseRecord) {
+        this.user = user;
         this.firebaseRecord = firebaseRecord;
     }
 
-    @Override
     public Long getId() {
-        return this.sqlUser.getId();
+        return this.user.getId();
     }
 
-    @Override
     public String getUid() {
         return this.firebaseRecord.getUid();
     }
 
-    @Override
     public String getEmail() {
-        return this.sqlUser.getEmail();
+        return this.user.getEmail();
     }
 
-    @Override
     public String getDisplayName() {
-        return this.sqlUser.getDisplayName();
+        return this.user.getDisplayName();
     }
 
-    @Override
     public Tenant getTenant() {
-        return this.sqlUser.getTenant();
+        return this.user.getTenant();
+    }
+
+    public User getSQLUser() {
+        return this.user;
     }
 
     public static void validate(UserDTO userDTO) throws DomainInvalidException {

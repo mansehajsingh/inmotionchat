@@ -2,12 +2,11 @@ package com.inmotionchat.identity.service.impl;
 
 import com.inmotionchat.core.data.AbstractDomainService;
 import com.inmotionchat.core.data.DomainService;
+import com.inmotionchat.core.data.aggregates.UserAggregate;
 import com.inmotionchat.core.data.dto.RoleDTO;
-import com.inmotionchat.core.data.postgres.SQLRole;
-import com.inmotionchat.core.data.postgres.SQLRoleAssignment;
-import com.inmotionchat.core.data.postgres.SQLUser;
-import com.inmotionchat.core.domains.Role;
-import com.inmotionchat.core.domains.User;
+import com.inmotionchat.core.data.postgres.Role;
+import com.inmotionchat.core.data.postgres.RoleAssignment;
+import com.inmotionchat.core.data.postgres.User;
 import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import com.inmotionchat.identity.postgres.SQLRoleAssignmentRepository;
@@ -19,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RoleServiceImpl extends AbstractDomainService<Role, SQLRole, RoleDTO> implements DomainService<Role, RoleDTO>, RoleService {
+public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implements DomainService<Role, RoleDTO>, RoleService {
 
     private static final Logger log = LoggerFactory.getLogger(RoleServiceImpl.class);
 
@@ -32,24 +31,23 @@ public class RoleServiceImpl extends AbstractDomainService<Role, SQLRole, RoleDT
 
     @Autowired
     public RoleServiceImpl(SQLRoleRepository sqlRoleRepository, SQLRoleAssignmentRepository sqlRoleAssignmentRepository) {
-        super(Role.class, SQLRole.class, RoleDTO.class, log, sqlRoleRepository, roleMapper);
+        super(Role.class, RoleDTO.class, log, sqlRoleRepository, roleMapper);
         this.sqlRoleRepository = sqlRoleRepository;
         this.sqlRoleAssignmentRepository = sqlRoleAssignmentRepository;
     }
 
     @Override
-    public void assignRole(User user, Role role) {
-        SQLUser sqlUser = new SQLUser(user.getId());
-        SQLRole sqlRole = (SQLRole) role;
+    public void assignRole(UserAggregate user, Role role) {
+        User sqlUser = user.getSQLUser();
 
-        SQLRoleAssignment assignment = new SQLRoleAssignment(sqlUser, sqlRole);
+        RoleAssignment assignment = new RoleAssignment(sqlUser, role);
 
         this.sqlRoleAssignmentRepository.save(assignment);
     }
 
     @Override
-    public void assignInitialRole(User user) throws NotFoundException {
-        SQLRole rootRole = this.sqlRoleRepository.findRootRole(user.getTenant().getId());
+    public void assignInitialRole(UserAggregate user) throws NotFoundException {
+        Role rootRole = this.sqlRoleRepository.findRootRole(user.getTenant().getId());
 
         boolean hasRootAssignment = this.sqlRoleAssignmentRepository.countSQLRoleAssignmentByRole(rootRole) > 0;
 
@@ -58,7 +56,7 @@ public class RoleServiceImpl extends AbstractDomainService<Role, SQLRole, RoleDT
             return;
         }
 
-        SQLRole restrictedRole = this.sqlRoleRepository.findRestrictedRole(user.getTenant().getId());
+        Role restrictedRole = this.sqlRoleRepository.findRestrictedRole(user.getTenant().getId());
 
         assignRole(user, restrictedRole);
     }

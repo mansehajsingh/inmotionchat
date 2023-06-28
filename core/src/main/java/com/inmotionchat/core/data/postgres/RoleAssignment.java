@@ -15,27 +15,27 @@ import jakarta.persistence.*;
                 )
         }
 )
-public class SQLRoleAssignment {
+public class RoleAssignment {
 
     @Id
     @GeneratedValue
     private Long id;
 
     @OneToOne
-    private SQLUser user;
+    private User user;
 
     @ManyToOne
-    private SQLRole role;
+    private Role role;
 
     @ManyToOne
-    private SQLTenant tenant;
+    private Tenant tenant;
 
-    public SQLRoleAssignment() {}
+    public RoleAssignment() {}
 
-    public SQLRoleAssignment(SQLUser user, SQLRole role) {
+    public RoleAssignment(User user, Role role) {
         this.user = user;
         this.role = role;
-        this.tenant = new SQLTenant(role.getTenant().getId());
+        this.tenant = role.getTenant();
     }
 
     public Long getId() {
@@ -46,19 +46,19 @@ public class SQLRoleAssignment {
         this.id = id;
     }
 
-    public SQLUser getUser() {
+    public User getUser() {
         return this.user;
     }
 
-    public void setUser(SQLUser user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
-    public SQLRole getRole() {
+    public Role getRole() {
         return this.role;
     }
 
-    public void setRole(SQLRole role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 

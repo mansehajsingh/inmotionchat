@@ -2,7 +2,6 @@ package com.inmotionchat.core.data.postgres;
 
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.dto.TenantDTO;
-import com.inmotionchat.core.domains.Tenant;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.util.validation.AbstractRule;
 import com.inmotionchat.core.util.validation.StringRule;
@@ -16,7 +15,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "tenants", schema = Schema.IdentityPlatform)
-public class SQLTenant implements Tenant {
+public class Tenant {
 
     @Id
     @GeneratedValue
@@ -24,36 +23,32 @@ public class SQLTenant implements Tenant {
 
     private String name;
 
-    public SQLTenant() {}
+    public Tenant() {}
 
-    public SQLTenant(Long id) {
+    public Tenant(Long id) {
         this.id = id;
     }
 
-    public SQLTenant(String name) {
+    public Tenant(String name) {
         this.name = name;
     }
 
-    public SQLTenant(TenantDTO proto) {
+    public Tenant(TenantDTO proto) {
         this.name = proto.name();
     }
 
-    @Override
     public Long getId() {
         return this.id;
     }
 
-    @Override
     public void setId(Long id) {
         this.id = id;
     }
 
-    @Override
     public String getName() {
         return this.name;
     }
 
-    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -73,7 +68,7 @@ public class SQLTenant implements Tenant {
 
     @Override
     public String toString() {
-        return String.format("SQLTenant[id=%s,name=%s]", this.id, this.name);
+        return String.format("Tenant[id=%s,name=%s]", this.id, this.name);
     }
 
 }
