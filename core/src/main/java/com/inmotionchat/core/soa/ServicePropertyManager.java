@@ -2,9 +2,8 @@ package com.inmotionchat.core.soa;
 
 import com.google.gson.internal.Primitives;
 import com.inmotionchat.core.exceptions.ServiceDeploymentException;
-import org.json.JSONException;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.FileReader;
