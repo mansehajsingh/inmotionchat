@@ -30,6 +30,10 @@ public class SQLUser {
 
     public SQLUser() {}
 
+    public SQLUser(Long id) {
+        this.id = id;
+    }
+
     public SQLUser(String uid, SQLTenant tenant, String email, String displayName) {
         this.uid = uid;
         this.tenant = tenant;
