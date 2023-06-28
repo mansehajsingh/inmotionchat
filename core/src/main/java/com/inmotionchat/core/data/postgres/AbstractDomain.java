@@ -77,16 +77,16 @@ public abstract class AbstractDomain<T extends AbstractDomain<T>> {
         this.lastModifiedAt = lastModifiedAt;
     }
 
-    public Long getCreatedBy() {
-        return this.createdBy.getId();
+    public User getCreatedBy() {
+        return this.createdBy;
     }
 
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
     }
 
-    public Long getLastModifiedBy() {
-        return this.lastModifiedBy.getId();
+    public User getLastModifiedBy() {
+        return this.lastModifiedBy;
     }
 
     public void setLastModifiedBy(User lastModifiedBy) {
