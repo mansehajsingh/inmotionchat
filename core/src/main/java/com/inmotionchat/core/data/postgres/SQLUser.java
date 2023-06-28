@@ -65,4 +65,14 @@ public class SQLUser {
         this.displayName = displayName;
     }
 
+    @Override
+    public String toString() {
+        return  "SQLUser[" +
+                "id="           + id                + ", " +
+                "uid="          + uid               + ", " +
+                "tenant(id)="   + tenant.getId()    + ", " +
+                "email="        + email             + ", " +
+                "displayName="  + displayName       + "]";
+    }
+
 }

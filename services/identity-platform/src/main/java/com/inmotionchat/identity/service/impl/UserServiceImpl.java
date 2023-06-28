@@ -16,12 +16,16 @@ import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.identity.firebase.FirebaseErrorCodeTranslator;
 import com.inmotionchat.identity.postgres.SQLUserRepository;
 import com.inmotionchat.identity.service.contract.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    private Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final ThrowingTransactionTemplate transactionTemplate;
 
@@ -53,6 +57,8 @@ public class UserServiceImpl implements UserService {
             FirebaseErrorCodeTranslator.getInstance().translateAuthErrorCode(e.getAuthErrorCode());
         }
 
+        log.info("Successfully created unverified Firebase user with uid {}.", uid);
+
         return uid;
     }
 
@@ -74,13 +80,15 @@ public class UserServiceImpl implements UserService {
         SQLUser sqlUser = new SQLUser(uid, tenant, record.getEmail(), record.getDisplayName());
 
         this.transactionTemplate.execute((status) -> {
-            this.sqlUserRepository.save(sqlUser);
+            SQLUser createdUser = this.sqlUserRepository.save(sqlUser);
 
             try {
                 FirebaseAuth.getInstance().updateUser(urq);
             } catch (FirebaseAuthException e) {
                 FirebaseErrorCodeTranslator.getInstance().translateAuthErrorCode(e.getAuthErrorCode());
             }
+
+            log.info("Successfully verified firebase user with uid {} and created SQL double: {}.", uid, createdUser);
 
             return null;
         });

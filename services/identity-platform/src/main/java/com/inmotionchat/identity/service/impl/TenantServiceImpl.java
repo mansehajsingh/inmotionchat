@@ -63,6 +63,8 @@ public class TenantServiceImpl implements TenantService {
 
             this.userService.createEmailPasswordUser(rootUserDTO);
 
+            log.info("Successfully created tenant: {}", createdTenant);
+
             return createdTenant;
         });
     }
