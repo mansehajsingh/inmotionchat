@@ -1,7 +1,7 @@
 package com.inmotionchat.core.data;
 
 import com.inmotionchat.core.data.postgres.AbstractArchivableDomain;
-import com.inmotionchat.core.domains.models.ArchivalStatus;
+import com.inmotionchat.core.models.ArchivalStatus;
 import com.inmotionchat.core.util.query.SearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +16,7 @@ import static com.inmotionchat.core.util.query.Operation.EQUALS;
 import static com.inmotionchat.core.util.query.Operation.NOT_EQUALS;
 
 @NoRepositoryBean
-public interface SQLArchivingRepository<T extends AbstractArchivableDomain> extends SQLRepository<T> {
+public interface SQLArchivingRepository<T extends AbstractArchivableDomain<T>> extends SQLRepository<T> {
 
     default SearchCriteria<?>[] copyAndAddCriteria(SearchCriteria<?>[] criteria, SearchCriteria<?> criteriaToAdd) {
         SearchCriteria<?>[] newCriteria = Arrays.copyOf(criteria, criteria.length + 1);

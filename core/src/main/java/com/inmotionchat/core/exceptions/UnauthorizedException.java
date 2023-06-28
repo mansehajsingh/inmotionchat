@@ -1,6 +1,6 @@
 package com.inmotionchat.core.exceptions;
 
-import com.inmotionchat.core.domains.models.ActionType;
+import com.inmotionchat.core.models.ActionType;
 
 public class UnauthorizedException extends InMotionException {
 

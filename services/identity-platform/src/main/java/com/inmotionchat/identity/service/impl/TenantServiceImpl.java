@@ -5,12 +5,11 @@ import com.inmotionchat.core.data.TransactionTemplateFactory;
 import com.inmotionchat.core.data.dto.RoleDTO;
 import com.inmotionchat.core.data.dto.TenantDTO;
 import com.inmotionchat.core.data.dto.UserDTO;
-import com.inmotionchat.core.data.postgres.SQLTenant;
-import com.inmotionchat.core.domains.Tenant;
-import com.inmotionchat.core.domains.models.RoleType;
+import com.inmotionchat.core.data.postgres.Tenant;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
+import com.inmotionchat.core.models.RoleType;
 import com.inmotionchat.identity.postgres.SQLTenantRepository;
 import com.inmotionchat.identity.service.contract.RoleService;
 import com.inmotionchat.identity.service.contract.TenantService;
@@ -57,7 +56,7 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public Tenant create(TenantDTO prototype) throws DomainInvalidException, ConflictException, NotFoundException {
-        SQLTenant tenant = new SQLTenant(prototype);
+        Tenant tenant = new Tenant(prototype);
         tenant.validateForCreate();
 
         return this.transactionTemplate.execute((status) -> {

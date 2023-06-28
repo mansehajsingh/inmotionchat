@@ -2,7 +2,6 @@ package com.inmotionchat.core.data;
 
 import com.inmotionchat.core.data.annotation.DomainUpdate;
 import com.inmotionchat.core.data.postgres.AbstractDomain;
-import com.inmotionchat.core.domains.Domain;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
@@ -20,30 +19,26 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractDomainService<T extends Domain<T>, D extends AbstractDomain<T>, DTO> implements DomainService<T, DTO> {
+public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> implements DomainService<D, DTO> {
 
     private final SQLRepository<D> repository;
 
     private final Logger log;
 
-    private final Class<T> interfaceType;
-
-    private final Class<D> implType;
+    private final Class<D> type;
 
     private final Class<DTO> dtoType;
 
     private final SearchCriteriaMapper searchCriteriaMapper;
 
     protected AbstractDomainService(
-            Class<T> interfaceType,
-            Class<D> implType,
+            Class<D> type,
             Class<DTO> dtoType,
             Logger log,
             SQLRepository<D> repository,
             SearchCriteriaMapper searchCriteriaMapper
     ) {
-        this.interfaceType = interfaceType;
-        this.implType = implType;
+        this.type = type;
         this.dtoType = dtoType;
         this.log = log;
         this.repository = repository;
@@ -68,67 +63,65 @@ public abstract class AbstractDomainService<T extends Domain<T>, D extends Abstr
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public T retrieveById(Long id) throws NotFoundException {
-        return (T) this.repository.findById(id).orElseThrow(
-                () -> new NotFoundException("No " + this.interfaceType.getSimpleName() + " with id " + id + " could be found."));
+    public D retrieveById(Long id) throws NotFoundException {
+        return this.repository.findById(id).orElseThrow(
+                () -> new NotFoundException("No " + this.type.getSimpleName() + " with id " + id + " could be found."));
     }
 
     @Override
-    public Page<? extends T> search(Pageable pageable, MultiValueMap<String, Object> parameters) {
+    public Page<? extends D> search(Pageable pageable, MultiValueMap<String, Object> parameters) {
         return search(pageable, getSearchCriteriaFromParameters(this.searchCriteriaMapper, parameters));
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Page<? extends T> search(Pageable pageable, SearchCriteria<?> ...criteria) {
-        return (Page<? extends T>) this.repository.filter(pageable, criteria);
+    public Page<? extends D> search(Pageable pageable, SearchCriteria<?> ...criteria) {
+        return this.repository.filter(pageable, criteria);
     }
 
     @Override
-    public T create(DTO prototype) throws DomainInvalidException, ConflictException, NotFoundException, ServerException {
+    public D create(DTO prototype) throws DomainInvalidException, ConflictException, NotFoundException, ServerException {
         try {
-            Constructor<D> ctor = this.implType.getConstructor(dtoType);
+            Constructor<D> ctor = this.type.getConstructor(dtoType);
             D entity = ctor.newInstance(prototype);
             entity.validate();
             entity.validateForCreate();
 
-            return this.interfaceType.cast(this.repository.store(entity));
+            return this.repository.store(entity);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            log.error("No constructor for DTO type {} was found in {}.", dtoType.getSimpleName(), implType.getSimpleName());
+            log.error("No constructor for DTO type {} was found in {}.", dtoType.getSimpleName(), type.getSimpleName());
             throw new ServerException();
         }
     }
 
     @Override
-    public T update(Long id, DTO prototype) throws DomainInvalidException, NotFoundException, ConflictException, ServerException {
+    public D update(Long id, DTO prototype) throws DomainInvalidException, NotFoundException, ConflictException, ServerException {
         try {
-            T retrieved = retrieveById(id);
+            D retrieved = retrieveById(id);
 
             Method domainUpdater = null;
 
-            for (Method m : this.implType.getDeclaredMethods())
+            for (Method m : this.type.getDeclaredMethods())
                 if (m.isAnnotationPresent(DomainUpdate.class))
                     domainUpdater = m;
 
             if (domainUpdater == null)
                 throw new NoSuchMethodException();
 
-            D updated = this.implType.cast(domainUpdater.invoke(retrieved, prototype));
+            D updated = this.type.cast(domainUpdater.invoke(retrieved, prototype));
             updated.validate();
             updated.validateForUpdate();
 
-            return this.interfaceType.cast(this.repository.update(updated));
+            return this.type.cast(this.repository.update(updated));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             log.error("No method annotated with @" + DomainUpdate.class.getSimpleName() + " with type {} was found in {}.",
-                    dtoType.getSimpleName(), implType.getSimpleName());
+                    dtoType.getSimpleName(), type.getSimpleName());
             throw new ServerException();
         }
     }
 
     @Override
-    public T delete(Long id) throws NotFoundException, ConflictException {
-        T retrieved = retrieveById(id);
+    public D delete(Long id) throws NotFoundException, ConflictException {
+        D retrieved = retrieveById(id);
         this.repository.deleteById(id);
         return retrieved;
     }

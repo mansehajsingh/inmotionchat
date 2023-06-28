@@ -9,8 +9,8 @@ import com.inmotionchat.core.data.TransactionTemplateFactory;
 import com.inmotionchat.core.data.aggregates.UserAggregate;
 import com.inmotionchat.core.data.dto.UserDTO;
 import com.inmotionchat.core.data.dto.VerifyDTO;
-import com.inmotionchat.core.data.postgres.SQLTenant;
-import com.inmotionchat.core.data.postgres.SQLUser;
+import com.inmotionchat.core.data.postgres.Tenant;
+import com.inmotionchat.core.data.postgres.User;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
@@ -87,11 +87,11 @@ public class UserServiceImpl implements UserService {
             if (record.isEmailVerified())
                 throw new ConflictException(LogicalConstraints.User.ALREADY_VERIFIED, "User with provided uid is already verified.");
 
-            SQLTenant tenant = new SQLTenant();
+            Tenant tenant = new Tenant();
             tenant.setId(verifyDTO.tenantId());
-            SQLUser sqlUser = new SQLUser(uid, tenant, record.getEmail(), record.getDisplayName());
+            User user = new User(uid, tenant, record.getEmail(), record.getDisplayName());
 
-            SQLUser createdUser = this.sqlUserRepository.save(sqlUser);
+            User createdUser = this.sqlUserRepository.save(user);
             UserAggregate aggregate = new UserAggregate(createdUser, record);
 
             this.roleService.assignInitialRole(aggregate);

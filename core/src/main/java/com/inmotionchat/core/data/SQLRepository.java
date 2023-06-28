@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @NoRepositoryBean
-public interface SQLRepository<T extends AbstractDomain> extends JpaRepository<T, Long>, JpaSpecificationExecutor<T> {
+public interface SQLRepository<T extends AbstractDomain<T>> extends JpaRepository<T, Long>, JpaSpecificationExecutor<T> {
 
     void detach(T t);
 

@@ -1,4 +1,4 @@
-package com.inmotionchat.core.domains.models;
+package com.inmotionchat.core.models;
 
 public enum ArchivalStatus {
 

@@ -1,6 +1,5 @@
 package com.inmotionchat.core.data;
 
-import com.inmotionchat.core.domains.Domain;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
@@ -10,7 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.MultiValueMap;
 
-public interface DomainService<T extends Domain<T>, DTO> {
+public interface DomainService<T, DTO> {
 
     T retrieveById(Long id) throws NotFoundException;
 

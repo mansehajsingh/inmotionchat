@@ -13,7 +13,7 @@ import jakarta.persistence.*;
                 @UniqueConstraint(name = LogicalConstraints.User.UNIQUE_UID, columnNames = "uid")
         }
 )
-public class SQLUser {
+public class User {
 
     @Id
     @GeneratedValue
@@ -22,19 +22,15 @@ public class SQLUser {
     private String uid;
 
     @ManyToOne
-    private SQLTenant tenant;
+    private Tenant tenant;
 
     private String email;
 
     private String displayName;
 
-    public SQLUser() {}
+    public User() {}
 
-    public SQLUser(Long id) {
-        this.id = id;
-    }
-
-    public SQLUser(String uid, SQLTenant tenant, String email, String displayName) {
+    public User(String uid, Tenant tenant, String email, String displayName) {
         this.uid = uid;
         this.tenant = tenant;
         this.email = email;
@@ -49,11 +45,11 @@ public class SQLUser {
         return this.uid;
     }
 
-    public SQLTenant getTenant() {
+    public Tenant getTenant() {
         return this.tenant;
     }
 
-    public void setTenant(SQLTenant tenant) {
+    public void setTenant(Tenant tenant) {
         this.tenant = tenant;
     }
 
@@ -71,7 +67,7 @@ public class SQLUser {
 
     @Override
     public String toString() {
-        return  "SQLUser[" +
+        return  "User[" +
                 "id="           + id                + ", " +
                 "uid="          + uid               + ", " +
                 "tenant(id)="   + tenant.getId()    + ", " +

@@ -1,9 +1,9 @@
 package com.inmotionchat.identity.postgres;
 
-import com.inmotionchat.core.data.postgres.SQLUser;
+import com.inmotionchat.core.data.postgres.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SQLUserRepository extends JpaRepository<SQLUser, Long> {
+public interface SQLUserRepository extends JpaRepository<User, Long> {
 }

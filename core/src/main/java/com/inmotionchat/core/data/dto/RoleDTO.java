@@ -1,6 +1,6 @@
 package com.inmotionchat.core.data.dto;
 
-import com.inmotionchat.core.domains.models.RoleType;
+import com.inmotionchat.core.models.RoleType;
 
 import java.util.Set;
 
