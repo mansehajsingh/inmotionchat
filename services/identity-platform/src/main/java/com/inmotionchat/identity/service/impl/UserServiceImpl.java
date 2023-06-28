@@ -6,7 +6,6 @@ import com.google.firebase.auth.UserRecord;
 import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.ThrowingTransactionTemplate;
 import com.inmotionchat.core.data.TransactionTemplateFactory;
-import com.inmotionchat.core.data.aggregates.UserAggregate;
 import com.inmotionchat.core.data.dto.UserDTO;
 import com.inmotionchat.core.data.dto.VerifyDTO;
 import com.inmotionchat.core.data.postgres.Tenant;
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String createEmailPasswordUser(UserDTO prototype) throws NotFoundException, DomainInvalidException, ConflictException {
-        UserAggregate.validate(prototype);
+        User.validate(prototype);
 
         UserRecord.CreateRequest crq = new UserRecord.CreateRequest();
         crq.setEmail(prototype.email());
@@ -92,9 +91,8 @@ public class UserServiceImpl implements UserService {
             User user = new User(uid, tenant, record.getEmail(), record.getDisplayName());
 
             User createdUser = this.sqlUserRepository.save(user);
-            UserAggregate aggregate = new UserAggregate(createdUser, record);
 
-            this.roleService.assignInitialRole(aggregate);
+            this.roleService.assignInitialRole(createdUser);
 
             try {
                 FirebaseAuth.getInstance().updateUser(urq);

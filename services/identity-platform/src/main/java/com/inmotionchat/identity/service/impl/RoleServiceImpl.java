@@ -2,7 +2,6 @@ package com.inmotionchat.identity.service.impl;
 
 import com.inmotionchat.core.data.AbstractDomainService;
 import com.inmotionchat.core.data.DomainService;
-import com.inmotionchat.core.data.aggregates.UserAggregate;
 import com.inmotionchat.core.data.dto.RoleDTO;
 import com.inmotionchat.core.data.postgres.Role;
 import com.inmotionchat.core.data.postgres.RoleAssignment;
@@ -37,16 +36,13 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
     }
 
     @Override
-    public void assignRole(UserAggregate user, Role role) {
-        User sqlUser = user.getSQLUser();
-
-        RoleAssignment assignment = new RoleAssignment(sqlUser, role);
-
+    public void assignRole(User user, Role role) {
+        RoleAssignment assignment = new RoleAssignment(user, role);
         this.sqlRoleAssignmentRepository.save(assignment);
     }
 
     @Override
-    public void assignInitialRole(UserAggregate user) throws NotFoundException {
+    public void assignInitialRole(User user) throws NotFoundException {
         Role rootRole = this.sqlRoleRepository.findRootRole(user.getTenant().getId());
 
         boolean hasRootAssignment = this.sqlRoleAssignmentRepository.countSQLRoleAssignmentByRole(rootRole) > 0;
