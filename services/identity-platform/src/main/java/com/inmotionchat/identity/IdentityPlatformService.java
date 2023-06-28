@@ -17,4 +17,9 @@ public class IdentityPlatformService extends InMotionService {
         return "IdentityPlatform";
     }
 
+    @Override
+    public String getServiceConfigFileName() {
+        return "identity-platform.json";
+    }
+
 }

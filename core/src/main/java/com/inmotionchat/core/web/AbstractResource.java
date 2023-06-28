@@ -5,6 +5,7 @@ import com.inmotionchat.core.domains.Domain;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
+import com.inmotionchat.core.exceptions.ServerException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +22,7 @@ public abstract class AbstractResource<T extends Domain<T>, DTO> {
     }
 
     @PostMapping
-    public IdResponse create(@RequestBody DTO dto) throws ConflictException, DomainInvalidException, NotFoundException, MethodUnsupportedException {
+    public IdResponse create(@RequestBody DTO dto) throws ConflictException, DomainInvalidException, NotFoundException, MethodUnsupportedException, ServerException {
         if (!isCreateEnabled())
             throw new MethodUnsupportedException();
 

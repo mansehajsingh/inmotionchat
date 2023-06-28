@@ -2,7 +2,9 @@ package com.inmotionchat.identity.web;
 
 import com.inmotionchat.core.data.dto.TenantDTO;
 import com.inmotionchat.core.domains.Tenant;
+import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
+import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.web.IdResponse;
 import com.inmotionchat.identity.service.contract.TenantService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,7 @@ public class TenantResource {
     }
 
     @PostMapping
-    public IdResponse create(@RequestBody TenantDTO tenantDTO) throws DomainInvalidException {
+    public IdResponse create(@RequestBody TenantDTO tenantDTO) throws DomainInvalidException, ConflictException, NotFoundException {
         Tenant createdTenant = this.tenantService.create(tenantDTO);
         return new IdResponse(createdTenant.getId());
     }

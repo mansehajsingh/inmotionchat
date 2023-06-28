@@ -5,6 +5,7 @@ import com.inmotionchat.core.domains.Domain;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -23,18 +24,14 @@ public abstract class AbstractDomain<T extends Domain<T>> implements Domain<T> {
     @CreationTimestamp
     protected ZonedDateTime createdAt;
 
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "created_by")
-//    @CreatedBy
-//    protected SQLUser createdBy;
-
     @UpdateTimestamp
-    protected ZonedDateTime lastUpdatedAt;
+    protected ZonedDateTime lastModifiedAt;
 
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "last_updated_by")
-//    @LastModifiedBy
-//    protected SQLUser lastUpdatedBy;
+    @ManyToOne
+    protected SQLUser createdBy;
+
+    @ManyToOne
+    protected SQLUser lastModifiedBy;
 
     public static <D extends AbstractDomain> D forId(Class<D> clazz, Long id) {
         Constructor<D> ctor = null;
@@ -68,21 +65,45 @@ public abstract class AbstractDomain<T extends Domain<T>> implements Domain<T> {
         return this.id == null;
     }
 
-//    public void setCreatedAt(ZonedDateTime createdAt) {
-//        this.createdAt = createdAt;
-//    }
-//
-//    public void setCreatedBy(User createdBy) {
-//        this.createdBy = SQLUser.fromId(createdBy.getId());
-//    }
-//
-//    public void setLastUpdatedAt(ZonedDateTime lastUpdatedAt) {
-//        this.lastUpdatedAt = lastUpdatedAt;
-//    }
-//
-//    public void setLastUpdatedBy(User lastUpdatedBy) {
-//        this.lastUpdatedBy = SQLUser.fromId(lastUpdatedBy.getId());
-//    }
+    @Override
+    public ZonedDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
+    @Override
+    public void setCreatedAt(ZonedDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @Override
+    public ZonedDateTime getLastModifiedAt() {
+        return this.lastModifiedAt;
+    }
+
+    @Override
+    public void setLastModifiedAt(ZonedDateTime lastModifiedAt) {
+        this.lastModifiedAt = lastModifiedAt;
+    }
+
+    @Override
+    public Long getCreatedBy() {
+        return this.createdBy.getId();
+    }
+
+    @Override
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = new SQLUser(createdBy);
+    }
+
+    @Override
+    public Long getLastModifiedBy() {
+        return this.lastModifiedBy.getId();
+    }
+
+    @Override
+    public void setLastModifiedBy(Long lastModifiedBy) {
+        this.lastModifiedBy = new SQLUser(lastModifiedBy);
+    }
 
     @Override
     public void validate() throws DomainInvalidException {}
@@ -95,6 +116,14 @@ public abstract class AbstractDomain<T extends Domain<T>> implements Domain<T> {
     @Override
     public void validateForUpdate() throws DomainInvalidException {
         validate();
+    }
+
+    protected void copyTo(AbstractDomain<T> copy) {
+        copy.id = this.id;
+        copy.createdAt = this.createdAt;
+        copy.createdBy = this.createdBy;
+        copy.lastModifiedAt = this.lastModifiedAt;
+        copy.lastModifiedBy = this.lastModifiedBy;
     }
 
 }

@@ -12,6 +12,8 @@ public class InMotionSecurityProperties {
     public static List<Endpoint> doNotAuthenticate() {
         return new ArrayList<>() {{
            add(new Endpoint(HttpMethod.POST, PATH + "/tenants"));
+           add(new Endpoint(HttpMethod.POST, PATH + "/users"));
+           add(new Endpoint(HttpMethod.POST, PATH + "/users/{}/verify"));
         }};
     }
 
