@@ -67,6 +67,10 @@ public class Role extends AbstractDomain<Role> {
         this.tenant = tenant;
     }
 
+    public Set<String> getPermissionsAsStrings() {
+        return this.permissions;
+    }
+
     public RoleType getRoleType() {
         if (!this.root && !this.restricted)
             return RoleType.CUSTOM;

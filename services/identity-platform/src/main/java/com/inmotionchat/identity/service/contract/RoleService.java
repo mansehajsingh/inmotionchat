@@ -10,6 +10,6 @@ public interface RoleService extends DomainService<Role, RoleDTO> {
 
     void assignRole(User user, Role Role);
 
-    void assignInitialRole(User user) throws NotFoundException;
+    Role assignInitialRole(User user) throws NotFoundException;
 
 }
