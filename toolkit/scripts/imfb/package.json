@@ -1,0 +1,22 @@
+{
+  "name": "imfb",
+  "version": "1.0.0",
+  "description": "In Motion Firebase command line tool.",
+  "main": "imfb.js",
+  "scripts": {
+    "build": "npx tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mansehaj Singh",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^11.0.0",
+    "firebase": "^9.23.0",
+    "prompt-sync": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.3.1",
+    "@types/prompt-sync": "^4.2.0",
+    "typescript": "^5.1.3"
+  }
+}
