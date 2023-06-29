@@ -1,7 +1,10 @@
 package com.inmotionchat.startup;
 
+import com.inmotionchat.core.exceptions.ServiceDeploymentException;
 import com.inmotionchat.core.soa.InMotionService;
+import com.inmotionchat.core.soa.ServicePropertyManager;
 import jakarta.annotation.PostConstruct;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -10,6 +13,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -37,7 +41,7 @@ public class ServiceStartup {
     }
 
     @PostConstruct
-    public void startServices() {
+    public void startServices() throws IOException, ParseException, ServiceDeploymentException {
 
         Map<String, InMotionService> servicesByBeanName = this.listableBeanFactory.getBeansOfType(InMotionService.class);
 
@@ -55,6 +59,10 @@ public class ServiceStartup {
             if (!servicesByClassName.containsKey(serviceName)) {
                 throw new NoSuchElementException("No service with class name " + serviceName + " exists.");
             }
+
+            InMotionService service = servicesByClassName.get(serviceName);
+            ServicePropertyManager propertyManager = new ServicePropertyManager(service);
+            propertyManager.fillServiceProperties();
 
             try {
                 servicesByClassName.get(serviceName).awaken();

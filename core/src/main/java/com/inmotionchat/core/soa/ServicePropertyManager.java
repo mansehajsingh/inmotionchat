@@ -5,6 +5,8 @@ import com.inmotionchat.core.exceptions.ServiceDeploymentException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -13,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServicePropertyManager {
+
+    private final Logger log = LoggerFactory.getLogger(ServicePropertyManager.class);
 
     private final JSONObject parsedConfigs;
 
@@ -59,9 +63,16 @@ public class ServicePropertyManager {
                 configValueType = Primitives.wrap(configValueType);
             }
 
+            if (configValue.getClass().isAssignableFrom(Long.class) && configValueType.isAssignableFrom(Integer.class)) {
+                configValue = ((Long) configValue).intValue();
+            }
+
             try {
                 setter.invoke(this.service, configValueType.cast(configValue));
-            } catch(Exception e) {}
+            } catch(Exception e) {
+                log.warn("@ServiceProperty {} failed to be configured for service {}. Reason: ",
+                        property.name(), service.getServiceName(), e);
+            }
         }
 
     }
