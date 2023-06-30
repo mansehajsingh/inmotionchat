@@ -19,10 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class AccessTokenFilter extends OncePerRequestFilter {
 
@@ -68,7 +65,7 @@ public class AccessTokenFilter extends OncePerRequestFilter {
         Long userId = Long.parseLong(claims.getSubject());
         Long roleId = claims.get("roleId", Long.class);
         Long tenantId = claims.get("tenantId", Long.class);
-        Set<String> permissions = new HashSet<>(Arrays.stream(claims.get("permissions", String[].class)).toList());
+        Set<String> permissions = new HashSet<>(claims.get("permissions", ArrayList.class));
 
         AuthenticationDetails details = new AuthenticationDetails(userId, roleId, permissions, tenantId);
 
