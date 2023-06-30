@@ -1,5 +1,6 @@
 package com.inmotionchat.identity.service.impl;
 
+import com.inmotionchat.core.data.RoleFactory;
 import com.inmotionchat.core.data.ThrowingTransactionTemplate;
 import com.inmotionchat.core.data.TransactionTemplateFactory;
 import com.inmotionchat.core.data.dto.RoleDTO;
@@ -62,7 +63,7 @@ public class TenantServiceImpl implements TenantService {
         return this.transactionTemplate.execute((status) -> {
             Tenant createdTenant = this.sqlTenantRepository.saveAndFlush(tenant);
 
-            RoleDTO rootRoleDTO = new RoleDTO("Root", createdTenant.getId(), RoleType.ROOT, new HashSet<>());
+            RoleDTO rootRoleDTO = RoleFactory.createRootRoleDTO(tenant);
             RoleDTO restrictedRoleDTO = new RoleDTO("Restricted", createdTenant.getId(), RoleType.RESTRICTED, new HashSet<>());
 
             this.roleService.create(rootRoleDTO);

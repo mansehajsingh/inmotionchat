@@ -22,6 +22,7 @@ public class Role extends AbstractDomain<Role> {
     private Tenant tenant;
 
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "permissions", schema = Schema.IdentityPlatform)
     private Set<String> permissions;
 
     private boolean restricted;
