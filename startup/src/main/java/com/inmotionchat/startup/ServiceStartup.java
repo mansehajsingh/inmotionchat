@@ -60,6 +60,10 @@ public class ServiceStartup {
                 throw new NoSuchElementException("No service with class name " + serviceName + " exists.");
             }
 
+            InMotionService service = servicesByClassName.get(serviceName);
+            ServicePropertyManager propertyManager = new ServicePropertyManager(service);
+            propertyManager.fillServiceProperties();
+
             try {
                 servicesByClassName.get(serviceName).awaken();
             } catch (Exception e) {
