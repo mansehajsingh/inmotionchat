@@ -42,19 +42,28 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
     }
 
     @Override
-    public void assignInitialRole(User user) throws NotFoundException {
+    public Role assignInitialRole(User user) throws NotFoundException {
         Role rootRole = this.sqlRoleRepository.findRootRole(user.getTenant().getId());
 
         boolean hasRootAssignment = this.sqlRoleAssignmentRepository.countSQLRoleAssignmentByRole(rootRole) > 0;
 
         if (!hasRootAssignment) {
             assignRole(user, rootRole);
-            return;
+            return rootRole;
         }
 
         Role restrictedRole = this.sqlRoleRepository.findRestrictedRole(user.getTenant().getId());
 
         assignRole(user, restrictedRole);
+        return restrictedRole;
+    }
+
+    @Override
+    public Role retrieveByUserId(Long userId) throws NotFoundException {
+        RoleAssignment assignment = this.sqlRoleAssignmentRepository.findRoleAssignmentByUserId(userId).orElseThrow(
+                () -> new NotFoundException("Could not locate a role for the provided user id."));
+
+        return assignment.getRole();
     }
 
 }

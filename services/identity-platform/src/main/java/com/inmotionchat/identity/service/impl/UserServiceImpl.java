@@ -8,6 +8,7 @@ import com.inmotionchat.core.data.ThrowingTransactionTemplate;
 import com.inmotionchat.core.data.TransactionTemplateFactory;
 import com.inmotionchat.core.data.dto.UserDTO;
 import com.inmotionchat.core.data.dto.VerifyDTO;
+import com.inmotionchat.core.data.postgres.Role;
 import com.inmotionchat.core.data.postgres.Tenant;
 import com.inmotionchat.core.data.postgres.User;
 import com.inmotionchat.core.exceptions.ConflictException;
@@ -23,6 +24,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -68,6 +72,15 @@ public class UserServiceImpl implements UserService {
         return uid;
     }
 
+    protected Map<String, Object> createCustomClaims(User user, Role role) {
+        Map<String, Object> customClaims = new HashMap<>();
+        customClaims.put("roleId", role.getId());
+        customClaims.put("permissions", role.getPermissionsAsStrings());
+        customClaims.put("tenantId", role.getTenant().getId());
+        customClaims.put("inMotionUserId", user.getId());
+        return customClaims;
+    }
+
     @Override
     public void verifyEmailPasswordUser(String uid, VerifyDTO verifyDTO) throws ConflictException, NotFoundException, DomainInvalidException {
         UserRecord.UpdateRequest urq = new UserRecord.UpdateRequest(uid);
@@ -92,7 +105,10 @@ public class UserServiceImpl implements UserService {
 
             User createdUser = this.sqlUserRepository.save(user);
 
-            this.roleService.assignInitialRole(createdUser);
+            Role role = this.roleService.assignInitialRole(createdUser);
+
+            Map<String, Object> customClaims = createCustomClaims(createdUser, role);
+            urq.setCustomClaims(customClaims);
 
             try {
                 FirebaseAuth.getInstance().updateUser(urq);

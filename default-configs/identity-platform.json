@@ -1,3 +1,4 @@
 {
-  "accessTokenExpirationInMinutes": 1
+  "accessTokenExpirationInMinutes": 5,
+  "jwtSecretKey": "<YOUR KEY example: 2a1e2c60-0c7f-4c69-9edf-d617d4983a53>"
 }
