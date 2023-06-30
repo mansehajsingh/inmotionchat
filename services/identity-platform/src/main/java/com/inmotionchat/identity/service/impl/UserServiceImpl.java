@@ -72,11 +72,12 @@ public class UserServiceImpl implements UserService {
         return uid;
     }
 
-    protected Map<String, Object> createCustomClaims(Role role) {
+    protected Map<String, Object> createCustomClaims(User user, Role role) {
         Map<String, Object> customClaims = new HashMap<>();
         customClaims.put("roleId", role.getId());
         customClaims.put("permissions", role.getPermissionsAsStrings());
         customClaims.put("tenantId", role.getTenant().getId());
+        customClaims.put("inMotionUserId", user.getId());
         return customClaims;
     }
 
@@ -106,7 +107,7 @@ public class UserServiceImpl implements UserService {
 
             Role role = this.roleService.assignInitialRole(createdUser);
 
-            Map<String, Object> customClaims = createCustomClaims(role);
+            Map<String, Object> customClaims = createCustomClaims(createdUser, role);
             urq.setCustomClaims(customClaims);
 
             try {

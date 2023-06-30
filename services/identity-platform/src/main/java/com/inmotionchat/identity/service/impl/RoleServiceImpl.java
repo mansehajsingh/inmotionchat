@@ -58,4 +58,12 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
         return restrictedRole;
     }
 
+    @Override
+    public Role retrieveByUserId(Long userId) throws NotFoundException {
+        RoleAssignment assignment = this.sqlRoleAssignmentRepository.findRoleAssignmentByUserId(userId).orElseThrow(
+                () -> new NotFoundException("Could not locate a role for the provided user id."));
+
+        return assignment.getRole();
+    }
+
 }

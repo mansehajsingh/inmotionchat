@@ -12,4 +12,6 @@ public interface RoleService extends DomainService<Role, RoleDTO> {
 
     Role assignInitialRole(User user) throws NotFoundException;
 
+    Role retrieveByUserId(Long userId) throws NotFoundException;
+
 }

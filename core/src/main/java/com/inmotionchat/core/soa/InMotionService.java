@@ -1,6 +1,7 @@
 package com.inmotionchat.core.soa;
 
 import com.inmotionchat.core.exceptions.ServiceDeploymentException;
+import jakarta.annotation.PostConstruct;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 
@@ -24,10 +25,16 @@ public abstract class InMotionService {
 
     public abstract String getServiceConfigFileName();
 
-    public void awaken() throws IOException, ParseException, ServiceDeploymentException {
-        log.info("Starting " + getServiceName() + " service.");
+    @PostConstruct
+    protected void construct() throws IOException, ParseException, ServiceDeploymentException {
+        ServicePropertyManager propertyManager = new ServicePropertyManager(this);
+        propertyManager.fillServiceProperties();
+        log.info("Filled service properties for service {} from {}.", getServiceName(), getServiceConfigFileName());
+    }
+
+    public void awaken() {
         this.started = true;
-        log.info("Started " + getServiceName() + " service.");
+        log.info("Started {} service.", getServiceName());
     }
 
     public synchronized Boolean isRunning() {

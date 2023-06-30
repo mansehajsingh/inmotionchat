@@ -13,6 +13,8 @@ public class IdentityPlatformService extends InMotionService {
 
     private int accessTokenExpirationInMinutes = 1;
 
+    private String jwtSecretKey;
+
     public IdentityPlatformService() {
         super(log);
     }
@@ -33,6 +35,15 @@ public class IdentityPlatformService extends InMotionService {
 
     public int getAccessTokenExpirationInMinutes() {
         return this.accessTokenExpirationInMinutes;
+    }
+
+    @ServiceProperty(name = "jwtSecretKey", required = true)
+    public void setJwtSecretKey(String jwtSecretKey) {
+        this.jwtSecretKey = jwtSecretKey;
+    }
+
+    public String getJwtSecretKey() {
+        return this.jwtSecretKey;
     }
 
 }
