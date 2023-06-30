@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
 @SpringBootApplication
-@EnableAutoConfiguration
 @ComponentScan(basePackages = {"com.inmotionchat"})
 @EntityScan(basePackages = {"com.inmotionchat"})
 @EnableJpaRepositories(basePackages = {"com.inmotionchat"}, repositoryBaseClass = SQLRepositoryImpl.class)
@@ -27,6 +26,7 @@ public class InMotion {
     public InMotion() {}
 
     public InMotion(String[] args) throws Exception {
+
         SpringApplication.run(InMotion.class, args);
     }
 
