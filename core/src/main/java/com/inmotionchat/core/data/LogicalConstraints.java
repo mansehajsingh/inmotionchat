@@ -12,4 +12,8 @@ public class LogicalConstraints {
         public static final String ONE_ROLE_ASSIGNMENT_PER_USER = "ONE_ROLE_ASSIGNMENT_PER_USER";
     }
 
+    public class Permission {
+        public static final String MISSING_PERMISSIONS = "MISSING_PERMISSIONS";
+    }
+
 }

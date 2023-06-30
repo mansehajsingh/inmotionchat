@@ -1,9 +1,6 @@
 package com.inmotionchat.core.web;
 
-import com.inmotionchat.core.exceptions.ConflictException;
-import com.inmotionchat.core.exceptions.DomainInvalidException;
-import com.inmotionchat.core.exceptions.NotFoundException;
-import com.inmotionchat.core.exceptions.UnauthorizedException;
+import com.inmotionchat.core.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -50,6 +47,18 @@ public class WebExceptionHandler {
     @ExceptionHandler(value = MethodUnsupportedException.class)
     public ResponseEntity<String> handleMethodUnsupportedException(MethodUnsupportedException e) {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("HTTP Method not allowed.");
+    }
+
+    @ExceptionHandler(value = PermissionException.class)
+    public ResponseEntity<MissingPermissionsResponse> handlePermissionException(PermissionException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                new MissingPermissionsResponse(e.getMissingPermissions()));
+    }
+
+    @ExceptionHandler(value = ServerException.class)
+    public ResponseEntity<String> handleServerException(ServerException e) throws ClassNotFoundException {
+        getClassLogger(e).error("Unexpected ServerException was triggered: {}", e.toString());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong: " + e.getMessage());
     }
 
 }
