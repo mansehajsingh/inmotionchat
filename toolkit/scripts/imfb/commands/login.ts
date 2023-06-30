@@ -1,5 +1,5 @@
-import { UserCredential, signInWithEmailAndPassword } from "firebase/auth";
-import { auth, logErr, logSuccess } from "../imfb";
+import {signInWithEmailAndPassword, UserCredential} from "firebase/auth";
+import {auth, logErr, logSuccess} from "../imfb";
 
 export default async function login(email: string, password: string): Promise<void> {
     let userCredentials: UserCredential;
