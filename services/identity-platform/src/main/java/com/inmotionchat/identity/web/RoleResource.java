@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.inmotionchat.core.models.Permission.*;
+import static com.inmotionchat.core.models.Permission.EDIT_ROLES;
+import static com.inmotionchat.core.models.Permission.READ_ROLE;
 import static com.inmotionchat.core.web.AbstractResource.PATH;
 
 @RestController

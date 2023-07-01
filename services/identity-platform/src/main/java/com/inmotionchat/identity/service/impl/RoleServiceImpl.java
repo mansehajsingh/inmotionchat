@@ -44,10 +44,12 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
             throw new UnauthorizedException("Cannot update a role created on tenant initialization.");
         }
 
-        role.validate();
-        role.validateForUpdate();
+        Role updated = role.update(prototype);
 
-        return this.sqlRoleRepository.update(role);
+        updated.validate();
+        updated.validateForUpdate();
+
+        return this.sqlRoleRepository.update(updated);
     }
 
     @Override
