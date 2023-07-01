@@ -39,7 +39,9 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
         this.dtoType = dtoType;
         this.log = log;
         this.repository = repository;
-        this.searchCriteriaMapper = searchCriteriaMapper;
+        this.searchCriteriaMapper = searchCriteriaMapper
+                .key("createdBy", Long.class)
+                .key("lastModifiedBy", Long.class);
     }
 
     protected SearchCriteria<?>[] getSearchCriteriaFromParameters(
@@ -51,7 +53,7 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
         for (String key : mapper.keys()) {
             if (parameters.containsKey(key)) {
                 searchCriteria.add(
-                        mapper.map(key, parameters.get(key).get(0))
+                        mapper.map(key, parameters.getFirst(key))
                 );
             }
         }

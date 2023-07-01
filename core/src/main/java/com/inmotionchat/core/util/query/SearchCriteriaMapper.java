@@ -26,8 +26,17 @@ public class SearchCriteriaMapper {
 
     public SearchCriteria<?> map(String key, Object value) {
         if (this.typeForKey.containsKey(key)) {
-            Pair<String, Operation> pair = parseOperationAndCleanValue((String) value);
-            return new SearchCriteria(key, pair.getSecond(), pair.getFirst());
+            Class<?> type = this.typeForKey.get(key);
+
+            if (type.isAssignableFrom(String.class)) {
+                Pair<String, Operation> pair = parseOperationAndCleanValue((String) value);
+                return new SearchCriteria<>(key, pair.getSecond(), pair.getFirst());
+            } else if (Number.class.isAssignableFrom(type)) {
+                Pair<Number, Operation> pair = Pair.of(Long.parseLong((String) value), Operation.EQUALS);
+                return new SearchCriteria<>(key, pair.getSecond(), pair.getFirst());
+            }
+
+            throw new NoSuchElementException();
         }
         throw new NoSuchElementException();
     }

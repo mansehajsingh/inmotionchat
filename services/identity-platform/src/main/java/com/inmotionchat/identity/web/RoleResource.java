@@ -36,12 +36,32 @@ public class RoleResource extends AbstractResource<Role, RoleDTO> {
     }
 
     @Override
+    protected int getDefaultPageSize() {
+        return 50;
+    }
+
+    @Override
+    protected int getMaximumPageSize() {
+        return 300;
+    }
+
+    @Override
     protected boolean isGetEnabled() {
         return true;
     }
 
     @Override
     protected Permission[] getGetPermissions() {
+        return new Permission[] { READ_ROLE };
+    }
+
+    @Override
+    protected boolean isSearchEnabled() {
+        return true;
+    }
+
+    @Override
+    protected Permission[] getSearchPermissions() {
         return new Permission[] { READ_ROLE };
     }
 

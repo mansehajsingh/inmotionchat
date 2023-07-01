@@ -5,8 +5,12 @@ import com.inmotionchat.core.data.postgres.AbstractDomain;
 import com.inmotionchat.core.exceptions.*;
 import com.inmotionchat.core.models.Permission;
 import com.inmotionchat.core.security.IdentityContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -51,6 +55,44 @@ public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
             throw new UnauthorizedException("Not authorized to read this resource for this tenant.");
 
         return this.domainService.retrieveById(id);
+    }
+
+    protected Pageable getPageable(MultiValueMap<String, Object> queryParams) {
+        int pageSize = Math.min(getMaximumPageSize(), getDefaultPageSize());
+        int pageNumber = 0;
+
+        if (queryParams.containsKey("size") && !queryParams.get("size").isEmpty()) {
+            pageSize = Integer.parseInt((String) queryParams.getFirst("size"));
+        }
+
+        if (queryParams.containsKey("page") && !queryParams.get("page").isEmpty()) {
+            pageNumber = Integer.parseInt((String) queryParams.getFirst("page"));
+        }
+
+        return PageRequest.of(pageNumber, pageSize);
+    }
+
+    protected abstract int getDefaultPageSize();
+
+    protected abstract int getMaximumPageSize();
+
+    @GetMapping
+    public ResponseEntity<PageResponse<? extends T>> search(@PathVariable Long tenantId, @RequestParam MultiValueMap<String, Object> queryParams) throws MethodUnsupportedException, PermissionException, UnauthorizedException {
+        if (!isSearchEnabled())
+            throw new MethodUnsupportedException();
+
+        throwIfMissingPermissions(getSearchPermissions());
+
+        if (!isCorrectTenant(tenantId, null))
+            throw new UnauthorizedException("Not authorized to search this resource for this tenant.");
+
+        Pageable pageable = getPageable(queryParams);
+
+        Page<? extends T> page = this.domainService.search(tenantId, pageable, queryParams);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new PageResponse<>(page.getTotalElements(), page.getTotalPages(), page.getContent())
+        );
     }
 
     @PutMapping("/{id}")

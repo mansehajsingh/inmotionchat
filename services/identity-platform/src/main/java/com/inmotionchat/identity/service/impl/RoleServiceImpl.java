@@ -23,7 +23,8 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
     private static final Logger log = LoggerFactory.getLogger(RoleServiceImpl.class);
 
     private static final SearchCriteriaMapper roleMapper = new SearchCriteriaMapper()
-            .key("name", String.class);
+            .key("name", String.class)
+            .key("createdBy", Long.class);
 
     private final SQLRoleRepository sqlRoleRepository;
 
