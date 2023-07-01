@@ -129,10 +129,34 @@ public class Role extends AbstractDomain<Role> {
 
     @Override
     public void validate() throws DomainInvalidException {
+        List<Violation> violations = new ArrayList<>();
+
         AbstractRule<String> nameRule = StringRule.forField("name")
                 .isNotNull().isNotEmpty();
 
-        List<Violation> violations = new ArrayList<>();
+        if (this.permissions == null) {
+            violations.add(new Violation("permissions", permissions, "Permissions cannot be null."));
+        } else {
+
+
+            // ensure permissions are all recognized
+            for (String perm : permissions) {
+                try {
+                    Permission.valueOf(perm);
+                } catch (IllegalArgumentException e) {
+                    violations.add(new Violation(
+                            "permissions", permissions,
+                            "One or more of the provided permissions was not recognized."
+                    ));
+                }
+            }
+
+        }
+
+        if (this.tenant == null || this.tenant.getId() == null) {
+            violations.add(new Violation("tenantId", null, "Tenant cannot be null."));
+        }
+
         violations.addAll(nameRule.collectViolations(this.name));
 
         if (!violations.isEmpty())

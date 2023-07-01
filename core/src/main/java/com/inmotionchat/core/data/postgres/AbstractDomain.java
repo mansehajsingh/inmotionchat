@@ -2,12 +2,10 @@ package com.inmotionchat.core.data.postgres;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.inmotionchat.core.data.AuditingEntityListener;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.models.Metadata;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.time.ZonedDateTime;
 
 @MappedSuperclass
+@EntityListeners({AuditingEntityListener.class})
 public abstract class AbstractDomain<T extends AbstractDomain<T>> {
 
     @Id
