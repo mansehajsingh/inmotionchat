@@ -13,11 +13,11 @@ public interface DomainService<T, DTO> {
 
     T retrieveById(Long id) throws NotFoundException;
 
-    Page<? extends T> search(Pageable pageable, MultiValueMap<String, Object> parameters);
+    Page<? extends T> search(Long tenantId, Pageable pageable, MultiValueMap<String, Object> parameters);
 
-    Page<? extends T> search(Pageable pageable, SearchCriteria<?> ...criteria);
+    Page<? extends T> search(Long tenantId, Pageable pageable, SearchCriteria<?> ...criteria);
 
-    T create(DTO prototype) throws DomainInvalidException, ConflictException, NotFoundException, ServerException;
+    T create(Long tenantId, DTO prototype) throws DomainInvalidException, ConflictException, NotFoundException, ServerException;
 
     T update(Long id, DTO prototype) throws DomainInvalidException, NotFoundException, ConflictException, ServerException;
 

@@ -31,7 +31,7 @@ public class RoleResource extends AbstractResource<Role, RoleDTO> {
 
     @Override
     public IdResponse create(@PathVariable Long tenantId, @RequestBody RoleDTO roleDTO) throws ConflictException, DomainInvalidException, NotFoundException, MethodUnsupportedException, ServerException, PermissionException, UnauthorizedException {
-        RoleDTO transformedDTO = new RoleDTO(roleDTO.name(), tenantId, RoleType.CUSTOM, roleDTO.permissions());
+        RoleDTO transformedDTO = new RoleDTO(roleDTO.name(), RoleType.CUSTOM, roleDTO.permissions());
         return super.create(tenantId, transformedDTO);
     }
 

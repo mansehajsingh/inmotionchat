@@ -3,6 +3,7 @@ package com.inmotionchat.core.data;
 import com.inmotionchat.core.data.postgres.AbstractDomain;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.util.query.JPASearchCriteriaParser;
+import com.inmotionchat.core.util.query.Operation;
 import com.inmotionchat.core.util.query.SearchCriteria;
 import jakarta.persistence.criteria.Predicate;
 import org.hibernate.exception.ConstraintViolationException;
@@ -14,6 +15,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,6 +59,12 @@ public interface SQLRepository<T extends AbstractDomain<T>> extends JpaRepositor
 
     default List<T> filter(SearchCriteria<?> ...criteria) {
         return findAll(generateSpec(criteria));
+    }
+
+    default Page<T> filter(Long tenantId, Pageable pageable, SearchCriteria<?> ...criteria) {
+        List<SearchCriteria<?>> criteriaDupe = new ArrayList<>(Arrays.stream(criteria).toList());
+        criteriaDupe.add(new SearchCriteria<>("tenant", Operation.EQUALS, tenantId));
+        return filter(pageable, criteriaDupe.toArray(SearchCriteria[]::new));
     }
 
     default T store(T entity) throws ConflictException {

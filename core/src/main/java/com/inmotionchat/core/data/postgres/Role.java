@@ -44,8 +44,8 @@ public class Role extends AbstractDomain<Role> {
             this.permissions.add(permission.value());
     }
 
-    public Role(RoleDTO prototype) {
-        this(prototype.name(), new Tenant(prototype.tenantId()), prototype.roleType(), prototype.permissions());
+    public Role(Long tenantId, RoleDTO prototype) {
+        this(prototype.name(), new Tenant(tenantId), prototype.roleType(), prototype.permissions());
     }
 
     private Role(String name, Tenant tenant, RoleType roleType, Set<String> permissions) {

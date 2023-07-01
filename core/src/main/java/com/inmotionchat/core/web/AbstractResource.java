@@ -38,7 +38,7 @@ public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
 
         throwIfMissingPermissions(getCreatePermissions());
 
-        return new IdResponse(this.domainService.create(dto).getId());
+        return new IdResponse(this.domainService.create(tenantId, dto).getId());
     }
 
     @GetMapping("/{id}")

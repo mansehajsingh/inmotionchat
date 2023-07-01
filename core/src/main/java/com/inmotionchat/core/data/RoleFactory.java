@@ -13,7 +13,7 @@ public class RoleFactory {
 
     public static RoleDTO createRootRoleDTO(Tenant tenant) {
         Set<String> permissions = new HashSet<>(Arrays.stream(Permission.values()).map(Permission::value).toList());
-        return new RoleDTO("Root", tenant.getId(), RoleType.ROOT, permissions);
+        return new RoleDTO("Root", RoleType.ROOT, permissions);
     }
 
 }

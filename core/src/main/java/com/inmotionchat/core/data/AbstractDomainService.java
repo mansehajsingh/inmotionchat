@@ -69,20 +69,20 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
     }
 
     @Override
-    public Page<? extends D> search(Pageable pageable, MultiValueMap<String, Object> parameters) {
-        return search(pageable, getSearchCriteriaFromParameters(this.searchCriteriaMapper, parameters));
+    public Page<? extends D> search(Long tenantId, Pageable pageable, MultiValueMap<String, Object> parameters) {
+        return search(tenantId, pageable, getSearchCriteriaFromParameters(this.searchCriteriaMapper, parameters));
     }
 
     @Override
-    public Page<? extends D> search(Pageable pageable, SearchCriteria<?> ...criteria) {
+    public Page<? extends D> search(Long tenantId, Pageable pageable, SearchCriteria<?> ...criteria) {
         return this.repository.filter(pageable, criteria);
     }
 
     @Override
-    public D create(DTO prototype) throws DomainInvalidException, ConflictException, NotFoundException, ServerException {
+    public D create(Long tenantId, DTO prototype) throws DomainInvalidException, ConflictException, NotFoundException, ServerException {
         try {
-            Constructor<D> ctor = this.type.getConstructor(dtoType);
-            D entity = ctor.newInstance(prototype);
+            Constructor<D> ctor = this.type.getConstructor(Long.class, dtoType);
+            D entity = ctor.newInstance(tenantId, prototype);
             entity.validate();
             entity.validateForCreate();
 

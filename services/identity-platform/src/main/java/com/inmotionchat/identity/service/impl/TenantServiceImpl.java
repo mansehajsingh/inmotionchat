@@ -64,10 +64,10 @@ public class TenantServiceImpl implements TenantService {
             Tenant createdTenant = this.sqlTenantRepository.saveAndFlush(tenant);
 
             RoleDTO rootRoleDTO = RoleFactory.createRootRoleDTO(tenant);
-            RoleDTO restrictedRoleDTO = new RoleDTO("Restricted", createdTenant.getId(), RoleType.RESTRICTED, new HashSet<>());
+            RoleDTO restrictedRoleDTO = new RoleDTO("Restricted", RoleType.RESTRICTED, new HashSet<>());
 
-            this.roleService.create(rootRoleDTO);
-            this.roleService.create(restrictedRoleDTO);
+            this.roleService.create(createdTenant.getId(), rootRoleDTO);
+            this.roleService.create(createdTenant.getId(), restrictedRoleDTO);
 
             UserDTO rootUserDTO = new UserDTO(
                     prototype.rootUser().email(),
