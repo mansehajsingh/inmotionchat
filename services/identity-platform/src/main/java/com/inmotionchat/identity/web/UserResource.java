@@ -11,10 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.inmotionchat.core.web.AbstractResource.PATH;
+import static com.inmotionchat.core.web.AbstractResource.API_V1;
 
 @RestController
-@RequestMapping(PATH + "/users")
+@RequestMapping(API_V1 + "/users")
 public class UserResource {
 
     private final UserService userService;

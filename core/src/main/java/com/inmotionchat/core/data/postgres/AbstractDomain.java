@@ -1,7 +1,9 @@
 package com.inmotionchat.core.data.postgres;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
+import com.inmotionchat.core.models.Metadata;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -21,15 +23,19 @@ public abstract class AbstractDomain<T extends AbstractDomain<T>> {
     protected Long id;
 
     @CreationTimestamp
+    @JsonIgnore
     protected ZonedDateTime createdAt;
 
     @UpdateTimestamp
+    @JsonIgnore
     protected ZonedDateTime lastModifiedAt;
 
     @ManyToOne
+    @JsonIgnore
     protected User createdBy;
 
     @ManyToOne
+    @JsonIgnore
     protected User lastModifiedBy;
 
     public static <D extends AbstractDomain<D>> D forId(Class<D> clazz, Long id) {
@@ -91,6 +97,17 @@ public abstract class AbstractDomain<T extends AbstractDomain<T>> {
 
     public void setLastModifiedBy(User lastModifiedBy) {
         this.lastModifiedBy = lastModifiedBy;
+    }
+
+    public abstract Tenant getTenant();
+
+    @JsonSerialize(using = Metadata.MetadataSerializer.class)
+    protected Metadata getMetadata() {
+        return new Metadata(
+                createdAt, lastModifiedAt,
+                createdBy != null ? createdBy.getId() : null,
+                lastModifiedBy != null ? lastModifiedBy.getId() : null
+        );
     }
 
     public void validate() throws DomainInvalidException {}

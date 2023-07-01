@@ -14,4 +14,12 @@ public class MissingPermissionsResponse {
         this.missingPermissions = missingPermissions;
     }
 
+    public String getConstraint() {
+        return this.constraint;
+    }
+
+    public List<String> getMissingPermissions() {
+        return this.missingPermissions;
+    }
+
 }

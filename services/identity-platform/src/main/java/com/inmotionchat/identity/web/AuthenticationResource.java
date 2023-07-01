@@ -24,10 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.inmotionchat.core.web.AbstractResource.PATH;
+import static com.inmotionchat.core.web.AbstractResource.API_V1;
 
 @RestController
-@RequestMapping(PATH + "/auth")
+@RequestMapping(API_V1 + "/auth")
 public class AuthenticationResource {
 
     record AccessTokenResponse(String accessToken) {}

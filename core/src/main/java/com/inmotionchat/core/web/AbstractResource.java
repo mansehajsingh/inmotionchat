@@ -15,9 +15,11 @@ import java.util.List;
 
 public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
 
-    public static final String PATH = "/api/v1";
+    public static final String API_V1 = "/api/v1";
 
-    private final IdentityContext identityContext;
+    public static final String PATH = API_V1 + "/tenants/{tenantId}";
+
+    protected final IdentityContext identityContext;
 
     protected final DomainService<T, DTO> domainService;
 
@@ -27,9 +29,12 @@ public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
     }
 
     @PostMapping
-    public IdResponse create(@RequestBody DTO dto) throws ConflictException, DomainInvalidException, NotFoundException, MethodUnsupportedException, ServerException, PermissionException {
+    public IdResponse create(@PathVariable Long tenantId, @RequestBody DTO dto) throws ConflictException, DomainInvalidException, NotFoundException, MethodUnsupportedException, ServerException, PermissionException, UnauthorizedException {
         if (!isCreateEnabled())
             throw new MethodUnsupportedException();
+
+        if (!isCorrectTenant(tenantId, dto))
+            throw new UnauthorizedException("Not authorized to create this resource for this tenant.");
 
         throwIfMissingPermissions(getCreatePermissions());
 
@@ -37,13 +42,18 @@ public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
     }
 
     @GetMapping("/{id}")
-    public T get(@PathVariable Long id) throws NotFoundException, MethodUnsupportedException, PermissionException {
+    public T get(@PathVariable Long tenantId, @PathVariable Long id) throws NotFoundException, MethodUnsupportedException, PermissionException, UnauthorizedException {
         if (!isGetEnabled())
             throw new MethodUnsupportedException();
 
         throwIfMissingPermissions(getGetPermissions());
 
-        return this.domainService.retrieveById(id);
+        T t = this.domainService.retrieveById(id);
+
+        if (!t.getTenant().getId().equals(tenantId))
+            throw new UnauthorizedException("Not authorized to read this resource for this tenant.");
+
+        return t;
     }
 
     protected boolean isCreateEnabled() {
@@ -90,6 +100,10 @@ public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
         if (!missingPermissions.isEmpty()) {
             throw new PermissionException(missingPermissions);
         }
+    }
+
+    protected boolean isCorrectTenant(Long tenantId, DTO dto) {
+        return this.identityContext.getRequester().getTenantId().equals(tenantId);
     }
 
 }

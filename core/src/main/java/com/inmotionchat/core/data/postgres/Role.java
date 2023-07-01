@@ -1,5 +1,7 @@
 package com.inmotionchat.core.data.postgres;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.dto.RoleDTO;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
@@ -19,6 +21,7 @@ public class Role extends AbstractDomain<Role> {
     private String name;
 
     @ManyToOne
+    @JsonIgnore
     private Tenant tenant;
 
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
@@ -60,6 +63,7 @@ public class Role extends AbstractDomain<Role> {
         this.name = name;
     }
 
+    @Override
     public Tenant getTenant() {
         return this.tenant;
     }
@@ -68,6 +72,7 @@ public class Role extends AbstractDomain<Role> {
         this.tenant = tenant;
     }
 
+    @JsonProperty(value = "permissions")
     public Set<String> getPermissionsAsStrings() {
         return this.permissions;
     }
