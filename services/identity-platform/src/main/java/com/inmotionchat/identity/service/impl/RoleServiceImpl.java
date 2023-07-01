@@ -6,7 +6,8 @@ import com.inmotionchat.core.data.dto.RoleDTO;
 import com.inmotionchat.core.data.postgres.Role;
 import com.inmotionchat.core.data.postgres.RoleAssignment;
 import com.inmotionchat.core.data.postgres.User;
-import com.inmotionchat.core.exceptions.NotFoundException;
+import com.inmotionchat.core.exceptions.*;
+import com.inmotionchat.core.models.RoleType;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import com.inmotionchat.identity.postgres.SQLRoleAssignmentRepository;
 import com.inmotionchat.identity.postgres.SQLRoleRepository;
@@ -33,6 +34,20 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
         super(Role.class, RoleDTO.class, log, sqlRoleRepository, roleMapper);
         this.sqlRoleRepository = sqlRoleRepository;
         this.sqlRoleAssignmentRepository = sqlRoleAssignmentRepository;
+    }
+
+    @Override
+    public Role update(Long id, RoleDTO prototype) throws DomainInvalidException, NotFoundException, ConflictException, ServerException, UnauthorizedException {
+        Role role = retrieveById(id);
+
+        if (role.getRoleType() != RoleType.CUSTOM) {
+            throw new UnauthorizedException("Cannot update a role created on tenant initialization.");
+        }
+
+        role.validate();
+        role.validateForUpdate();
+
+        return this.sqlRoleRepository.update(role);
     }
 
     @Override

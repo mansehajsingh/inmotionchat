@@ -47,7 +47,7 @@ public class AuditingEntityListener {
             if (domain.getLastModifiedBy() == null) {
                 User modifier = new User();
                 modifier.setId(details.getUserId());
-                domain.setCreatedBy(modifier);
+                domain.setLastModifiedBy(modifier);
             }
 
         }

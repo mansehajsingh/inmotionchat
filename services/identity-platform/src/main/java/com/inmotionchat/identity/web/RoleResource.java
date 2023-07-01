@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.inmotionchat.core.models.Permission.CREATE_ROLE;
-import static com.inmotionchat.core.models.Permission.READ_ROLE;
+import static com.inmotionchat.core.models.Permission.*;
 import static com.inmotionchat.core.web.AbstractResource.PATH;
 
 @RestController
@@ -52,7 +51,17 @@ public class RoleResource extends AbstractResource<Role, RoleDTO> {
 
     @Override
     protected Permission[] getCreatePermissions() {
-        return new Permission[] { CREATE_ROLE };
+        return new Permission[] { EDIT_ROLES };
+    }
+
+    @Override
+    protected boolean isUpdateEnabled() {
+        return true;
+    }
+
+    @Override
+    protected Permission[] getUpdatePermissions() {
+        return new Permission[] { EDIT_ROLES };
     }
 
 }

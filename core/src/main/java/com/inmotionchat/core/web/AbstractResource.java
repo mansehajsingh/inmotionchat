@@ -5,10 +5,10 @@ import com.inmotionchat.core.data.postgres.AbstractDomain;
 import com.inmotionchat.core.exceptions.*;
 import com.inmotionchat.core.models.Permission;
 import com.inmotionchat.core.security.IdentityContext;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,18 +42,31 @@ public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
     }
 
     @GetMapping("/{id}")
-    public T get(@PathVariable Long tenantId, @PathVariable Long id) throws NotFoundException, MethodUnsupportedException, PermissionException, UnauthorizedException {
+    public T read(@PathVariable Long tenantId, @PathVariable Long id) throws NotFoundException, MethodUnsupportedException, PermissionException, UnauthorizedException {
         if (!isGetEnabled())
             throw new MethodUnsupportedException();
 
         throwIfMissingPermissions(getGetPermissions());
 
-        T t = this.domainService.retrieveById(id);
-
-        if (!t.getTenant().getId().equals(tenantId))
+        if (!isCorrectTenant(tenantId, null))
             throw new UnauthorizedException("Not authorized to read this resource for this tenant.");
 
-        return t;
+        return this.domainService.retrieveById(id);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long tenantId, @PathVariable Long id, @RequestBody DTO dto) throws MethodUnsupportedException, PermissionException, ServerException, ConflictException, DomainInvalidException, NotFoundException, UnauthorizedException {
+        if (!isUpdateEnabled())
+            throw new MethodUnsupportedException();
+
+        throwIfMissingPermissions(getUpdatePermissions());
+
+        if (!isCorrectTenant(tenantId, dto))
+            throw new UnauthorizedException("Not authorized to update this resource for this tenant.");
+
+        this.domainService.update(id, dto);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     protected boolean isCreateEnabled() {
@@ -61,6 +74,14 @@ public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
     }
 
     protected Permission[] getCreatePermissions() {
+        return new Permission[] {};
+    }
+
+    protected boolean isUpdateEnabled() {
+        return false;
+    }
+
+    protected Permission[] getUpdatePermissions() {
         return new Permission[] {};
     }
 

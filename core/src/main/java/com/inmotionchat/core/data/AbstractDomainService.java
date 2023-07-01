@@ -2,10 +2,7 @@ package com.inmotionchat.core.data;
 
 import com.inmotionchat.core.data.annotation.DomainUpdate;
 import com.inmotionchat.core.data.postgres.AbstractDomain;
-import com.inmotionchat.core.exceptions.ConflictException;
-import com.inmotionchat.core.exceptions.DomainInvalidException;
-import com.inmotionchat.core.exceptions.NotFoundException;
-import com.inmotionchat.core.exceptions.ServerException;
+import com.inmotionchat.core.exceptions.*;
 import com.inmotionchat.core.util.query.SearchCriteria;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import org.slf4j.Logger;
@@ -94,15 +91,18 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
     }
 
     @Override
-    public D update(Long id, DTO prototype) throws DomainInvalidException, NotFoundException, ConflictException, ServerException {
+    public D update(Long id, DTO prototype) throws DomainInvalidException, NotFoundException, ConflictException, ServerException, UnauthorizedException {
         try {
             D retrieved = retrieveById(id);
 
             Method domainUpdater = null;
 
-            for (Method m : this.type.getDeclaredMethods())
-                if (m.isAnnotationPresent(DomainUpdate.class))
+            for (Method m : this.type.getDeclaredMethods()) {
+                if (m.isAnnotationPresent(DomainUpdate.class)) {
                     domainUpdater = m;
+                    break;
+                }
+            }
 
             if (domainUpdater == null)
                 throw new NoSuchMethodException();
