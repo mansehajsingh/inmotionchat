@@ -8,6 +8,8 @@ import com.inmotionchat.core.data.ThrowingTransactionTemplate;
 import com.inmotionchat.core.data.TransactionTemplateFactory;
 import com.inmotionchat.core.data.dto.UserDTO;
 import com.inmotionchat.core.data.dto.VerifyDTO;
+import com.inmotionchat.core.data.events.StreamEventPublisher;
+import com.inmotionchat.core.data.events.VerifyEvent;
 import com.inmotionchat.core.data.postgres.Role;
 import com.inmotionchat.core.data.postgres.Tenant;
 import com.inmotionchat.core.data.postgres.User;
@@ -39,15 +41,19 @@ public class UserServiceImpl implements UserService {
 
     private final RoleService roleService;
 
+    private final StreamEventPublisher eventPublisher;
+
     @Autowired
     public UserServiceImpl(
             PlatformTransactionManager transactionManager,
             SQLUserRepository sqlUserRepository,
-            RoleService roleService
+            RoleService roleService,
+            StreamEventPublisher eventPublisher
     ) {
         this.transactionTemplate = TransactionTemplateFactory.getThrowingTransactionTemplate(transactionManager);
         this.sqlUserRepository = sqlUserRepository;
         this.roleService = roleService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -59,17 +65,23 @@ public class UserServiceImpl implements UserService {
         crq.setPassword(prototype.password());
         crq.setDisplayName(prototype.displayName());
 
-        String uid = null;
+        UserRecord record = null;
 
         try {
-            uid = FirebaseAuth.getInstance().createUser(crq).getUid();
+            record = FirebaseAuth.getInstance().createUser(crq);
         } catch (FirebaseAuthException e) {
             FirebaseErrorCodeTranslator.getInstance().translateAuthErrorCode(e.getAuthErrorCode());
         }
 
-        log.info("Successfully created unverified Firebase user with uid {}.", uid);
+        final VerifyEvent.Details eventDetails = new VerifyEvent.Details(record.getUid(), record.getEmail(), record.getDisplayName());
+        this.transactionTemplate.execute((status) -> { // have to send events within a transaction for @TransactionalEventListener
+            eventPublisher.publish(new VerifyEvent(this, eventDetails));
+            return null;
+        });
 
-        return uid;
+        log.info("Successfully created unverified Firebase user with uid {}.", record.getUid());
+
+        return record.getUid();
     }
 
     protected Map<String, Object> createCustomClaims(User user, Role role) {

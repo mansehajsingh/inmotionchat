@@ -20,7 +20,6 @@ public class StreamEventPublisher {
 
     public void publish(StreamEvent<?> event) {
         this.publisher.publishEvent(event);
-        log.debug("Published event {} from source {}.", event, event.getSource());
     }
 
 }

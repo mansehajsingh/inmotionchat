@@ -1,5 +1,6 @@
 {
   "services": [
-    "com.inmotionchat.identity.IdentityPlatformService"
+    "com.inmotionchat.identity.IdentityPlatformService",
+    "com.inmotionchat.notifications.NotificationsService"
   ]
 }
