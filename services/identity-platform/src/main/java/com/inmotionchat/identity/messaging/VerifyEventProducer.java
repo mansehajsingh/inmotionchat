@@ -2,7 +2,7 @@ package com.inmotionchat.identity.messaging;
 
 import com.inmotionchat.core.data.events.VerifyEvent;
 import com.inmotionchat.core.messaging.Producer;
-import com.inmotionchat.core.messaging.StreamKey;
+import com.inmotionchat.core.messaging.Stream;
 import com.inmotionchat.identity.IdentityPlatformService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ public class VerifyEventProducer extends Producer<VerifyEvent> {
 
     @Autowired
     public VerifyEventProducer(IdentityPlatformService service, RedisTemplate<String, String> redisTemplate) {
-        super(log, service, redisTemplate, StreamKey.VERIFY_USER);
+        super(log, service, redisTemplate, Stream.VERIFY_USER);
     }
 
 }

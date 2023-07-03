@@ -2,7 +2,9 @@ package com.inmotionchat.notifications.messaging;
 
 import com.inmotionchat.core.data.events.VerifyEvent;
 import com.inmotionchat.core.messaging.Consumer;
-import com.inmotionchat.core.messaging.StreamKey;
+import com.inmotionchat.core.messaging.ConsumerGroup;
+import com.inmotionchat.core.messaging.Stream;
+import com.inmotionchat.notifications.NotificationsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +22,17 @@ public class VerifyEventConsumer extends Consumer<VerifyEvent.Details> {
 
     protected final RedisConnectionFactory redisConnectionFactory;
 
+    public static ConsumerGroup consumerGroup = new ConsumerGroup(NotificationsService.class, Stream.VERIFY_USER);
+
     @Autowired
     public VerifyEventConsumer(RedisConnectionFactory redisConnectionFactory, RedisTemplate<String, String> redisTemplate) {
-        super(log, StreamKey.VERIFY_USER, redisTemplate);
+        super(log, consumerGroup, redisTemplate);
         this.redisConnectionFactory = redisConnectionFactory;
     }
 
     @Override
-    public String getConsumerName() {
-        return "Notifications:VerifyEventConsumer";
+    public ConsumerGroup getConsumerGroup() {
+        return consumerGroup;
     }
 
     @Override
@@ -38,12 +42,7 @@ public class VerifyEventConsumer extends Consumer<VerifyEvent.Details> {
 
     @Bean
     public Subscription verifyEventSubscription() {
-        return new SubscriptionBuilder()
-                .setTargetType(VerifyEvent.Details.class)
-                .setRedisConnectionFactory(redisConnectionFactory)
-                .setStreamKey(StreamKey.VERIFY_USER)
-                .setHandler(this)
-                .build();
+        return new SubscriptionBuilder(this, VerifyEvent.Details.class, redisConnectionFactory).build();
     }
 
 }

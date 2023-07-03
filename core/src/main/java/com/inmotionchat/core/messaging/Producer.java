@@ -19,13 +19,13 @@ public abstract class Producer<E extends StreamEvent<?>> {
 
     protected final RedisTemplate<String, String> redisTemplate;
 
-    protected final StreamKey streamKey;
+    protected final Stream stream;
 
-    protected Producer(Logger log, InMotionService service, RedisTemplate<String, String> redisTemplate, StreamKey streamKey) {
+    protected Producer(Logger log, InMotionService service, RedisTemplate<String, String> redisTemplate, Stream stream) {
         this.log = log;
         this.service = service;
         this.redisTemplate = redisTemplate;
-        this.streamKey = streamKey;
+        this.stream = stream;
     }
 
     @TransactionalEventListener
@@ -38,7 +38,7 @@ public abstract class Producer<E extends StreamEvent<?>> {
 
         ObjectRecord<String, ?> record = StreamRecords.newRecord()
                 .ofObject(event.getDetails())
-                .withStreamKey(streamKey.getKey());
+                .withStreamKey(stream.getKey());
 
         RecordId recordId = this.redisTemplate
                 .opsForStream()

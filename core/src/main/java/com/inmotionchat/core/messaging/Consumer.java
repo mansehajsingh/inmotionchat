@@ -18,14 +18,21 @@ public abstract class Consumer<T> implements StreamListener<String, ObjectRecord
 
     protected final Logger log;
 
-    protected Consumer(Logger log, StreamKey streamKey, RedisTemplate<String, String> redisTemplate) {
+    protected Consumer(Logger log, ConsumerGroup consumerGroup, RedisTemplate<String, String> redisTemplate) {
         this.log = log;
         try {
-            redisTemplate.opsForStream().createGroup(streamKey.getKey(), streamKey.getConsumerGroup());
-            log.debug("Created redis consumer group \"{}\" for stream \"{}\".", streamKey.getConsumerGroup(), streamKey.getKey());
+
+            redisTemplate.opsForStream().createGroup(
+                    consumerGroup.getStream().getKey(),
+                    consumerGroup.getGroupName()
+            );
+            log.debug("Created redis consumer group {} for stream {}.", consumerGroup, consumerGroup.getStream());
+
         } catch (InvalidDataAccessApiUsageException e) {
-            log.debug("Tried to create redis consumer group \"{}\" for stream \"{}\", but found that it already exists.",
-                    streamKey.getConsumerGroup(), streamKey.getKey());
+
+            log.debug("Tried to create redis consumer group {} for stream {}, but found that it already exists.",
+                    consumerGroup, consumerGroup.getStream());
+
         }
     }
 
@@ -37,44 +44,29 @@ public abstract class Consumer<T> implements StreamListener<String, ObjectRecord
 
     protected abstract void process(RecordId recordId, T details);
 
-    protected abstract String getConsumerName();
+    protected abstract ConsumerGroup getConsumerGroup();
 
     public class SubscriptionBuilder {
 
         private Duration pollTimeout = Duration.ofSeconds(1);
-        private Class<T> targetType;
+        private Class<T> eventDetailsType;
         private RedisConnectionFactory redisConnectionFactory;
-        private StreamKey streamKey;
-        private String consumerName = getConsumerName();
+        private ConsumerGroup consumerGroup = getConsumerGroup();
         private Consumer<T> subclass;
+
+        public SubscriptionBuilder(Consumer<T> subclass, Class<T> eventDetailsType, RedisConnectionFactory connectionFactory) {
+            this.subclass = subclass;
+            this.eventDetailsType = eventDetailsType;
+            this.redisConnectionFactory = connectionFactory;
+        }
 
         public SubscriptionBuilder setPollTimeout(Duration pollTimeout) {
             this.pollTimeout = pollTimeout;
             return this;
         }
 
-        public SubscriptionBuilder setTargetType(Class<T> clazz) {
-            this.targetType = clazz;
-            return this;
-        }
-
-        public SubscriptionBuilder setRedisConnectionFactory(RedisConnectionFactory redisConnectionFactory) {
-            this.redisConnectionFactory = redisConnectionFactory;
-            return this;
-        }
-
-        public SubscriptionBuilder setStreamKey(StreamKey streamKey) {
-            this.streamKey = streamKey;
-            return this;
-        }
-
-        public SubscriptionBuilder setConsumerName(String consumerName) {
-            this.consumerName = consumerName;
-            return this;
-        }
-
-        public SubscriptionBuilder setHandler(Consumer<T> subclass) {
-            this.subclass = subclass;
+        public SubscriptionBuilder setConsumerGroup(ConsumerGroup consumerGroup) {
+            this.consumerGroup = consumerGroup;
             return this;
         }
 
@@ -83,15 +75,17 @@ public abstract class Consumer<T> implements StreamListener<String, ObjectRecord
                     StreamMessageListenerContainer.StreamMessageListenerContainerOptions
                             .builder()
                             .pollTimeout(this.pollTimeout)
-                            .targetType(this.targetType)
+                            .targetType(this.eventDetailsType)
                             .build();
 
             StreamMessageListenerContainer<String, ObjectRecord<String, T>> listenerContainer = StreamMessageListenerContainer
                     .create(this.redisConnectionFactory, options);
 
             Subscription subscription = listenerContainer.receive(
-                        org.springframework.data.redis.connection.stream.Consumer.from(this.streamKey.getConsumerGroup(), this.consumerName),
-                        StreamOffset.create(this.streamKey.getKey(), ReadOffset.lastConsumed()),
+                        org.springframework.data.redis.connection.stream.Consumer.from(
+                                consumerGroup.getGroupName(), subclass.getClass().getName()
+                        ),
+                        StreamOffset.create(consumerGroup.getStream().getKey(), ReadOffset.lastConsumed()),
                         this.subclass
                     );
 
