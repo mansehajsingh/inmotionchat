@@ -1,5 +1,6 @@
 package com.inmotionchat.core.soa;
 
+import com.google.gson.Gson;
 import com.google.gson.internal.Primitives;
 import com.inmotionchat.core.exceptions.ServiceDeploymentException;
 import org.json.simple.JSONObject;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +33,7 @@ public class ServicePropertyManager {
         this.service = inMotionService;
     }
 
-    public void fillServiceProperties() throws ServiceDeploymentException {
+    public void fillServiceProperties() throws ServiceDeploymentException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
         List<Method> setters = new ArrayList<>();
 
@@ -59,12 +61,12 @@ public class ServicePropertyManager {
                 );
             }
 
-            if (configValueType.isPrimitive()) {
-                configValueType = Primitives.wrap(configValueType);
-            }
+            configValueType = wrapIfPrimitive(configValueType);
+            configValue = cleanupValue(configValue, configValueType);
 
-            if (configValue.getClass().isAssignableFrom(Long.class) && configValueType.isAssignableFrom(Integer.class)) {
-                configValue = ((Long) configValue).intValue();
+            if (configValueType.getPackage().getName().startsWith("com.inmotionchat") && configValue instanceof JSONObject jsonObject) {
+                Gson gson = new Gson();
+                configValue = gson.fromJson(jsonObject.toJSONString(), configValueType);
             }
 
             try {
@@ -75,6 +77,22 @@ public class ServicePropertyManager {
             }
         }
 
+    }
+
+    private Class<?> wrapIfPrimitive(Class<?> configValueType) {
+        if (configValueType.isPrimitive()) {
+            return Primitives.wrap(configValueType);
+        }
+
+        return configValueType;
+    }
+
+    private Object cleanupValue(Object configValue, Class<?> configValueType) {
+        if (configValue.getClass().isAssignableFrom(Long.class) && configValueType.isAssignableFrom(Integer.class)) {
+            return ((Long) configValue).intValue();
+        }
+
+        return configValue;
     }
 
 }
