@@ -8,7 +8,6 @@ import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.identity.firebase.FirebaseErrorCodeTranslator;
-import com.inmotionchat.identity.service.contract.RoleChangeRecord;
 import com.inmotionchat.identity.service.contract.RoleService;
 import com.inmotionchat.identity.service.contract.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.inmotionchat.core.web.AbstractResource.API_V1;
 
@@ -34,13 +30,10 @@ public class AuthenticationResource {
 
     private final TokenProvider tokenProvider;
 
-    private final RoleChangeRecord roleChangeRecord;
-
     private final RoleService roleService;
 
     @Autowired
-    public AuthenticationResource(RoleChangeRecord roleChangeRecord, TokenProvider tokenProvider, RoleService roleService) {
-        this.roleChangeRecord = roleChangeRecord;
+    public AuthenticationResource(TokenProvider tokenProvider, RoleService roleService) {
         this.tokenProvider = tokenProvider;
         this.roleService = roleService;
     }
@@ -66,19 +59,11 @@ public class AuthenticationResource {
         }
 
         Long userId = ((BigDecimal) claims.get("inMotionUserId")).longValue();
-        Long roleId = ((BigDecimal) claims.get("roleId")).longValue();
         Long tenantId = ((BigDecimal) claims.get("tenantId")).longValue();
-        Set<String> permissions = new HashSet<>((List<String>) claims.get("permissions"));
 
-        if (this.roleChangeRecord.roleHasChanged(roleId, userId)) {
-            Role role = this.roleService.retrieveByUserId(userId);
-            String token = this.tokenProvider.issueAccessToken(
-                    userId, role.getId(), role.getTenant().getId(), role.getPermissionsAsStrings());
-
-            return new AccessTokenResponse(token);
-        }
-
-        String token = this.tokenProvider.issueAccessToken(userId, roleId, tenantId, permissions);
+        Role role = this.roleService.retrieveByUserId(userId);
+        String token = this.tokenProvider.issueAccessToken(
+                userId, role.getId(), tenantId, role.getPermissionsAsStrings());
 
         return new AccessTokenResponse(token);
     }

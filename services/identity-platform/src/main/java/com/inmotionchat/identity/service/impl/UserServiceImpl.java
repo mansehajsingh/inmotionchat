@@ -86,8 +86,6 @@ public class UserServiceImpl implements UserService {
 
     protected Map<String, Object> createCustomClaims(User user, Role role) {
         Map<String, Object> customClaims = new HashMap<>();
-        customClaims.put("roleId", role.getId());
-        customClaims.put("permissions", role.getPermissionsAsStrings());
         customClaims.put("tenantId", role.getTenant().getId());
         customClaims.put("inMotionUserId", user.getId());
         return customClaims;
