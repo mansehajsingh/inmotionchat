@@ -14,6 +14,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -41,7 +42,7 @@ public class ServiceStartup {
     }
 
     @PostConstruct
-    public void startServices() throws IOException, ParseException, ServiceDeploymentException {
+    public void startServices() throws IOException, ParseException, ServiceDeploymentException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
         Map<String, InMotionService> servicesByBeanName = this.listableBeanFactory.getBeansOfType(InMotionService.class);
 

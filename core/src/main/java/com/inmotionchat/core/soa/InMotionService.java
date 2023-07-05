@@ -6,6 +6,7 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public abstract class InMotionService {
     public abstract String getServiceConfigFileName();
 
     @PostConstruct
-    protected void construct() throws IOException, ParseException, ServiceDeploymentException {
+    protected void construct() throws IOException, ParseException, ServiceDeploymentException, InvocationTargetException, InstantiationException, IllegalAccessException {
         ServicePropertyManager propertyManager = new ServicePropertyManager(this);
         propertyManager.fillServiceProperties();
         log.info("Filled service properties for service {} from {}.", getServiceName(), getServiceConfigFileName());

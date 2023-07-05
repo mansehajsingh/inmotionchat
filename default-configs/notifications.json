@@ -1,5 +1,9 @@
 {
-  "activeNotifiers": [
-    "EMAIL"
-  ]
+  "activeNotifiers": [],
+  "emailProperties": {
+    "host": "smtp.gmail.com",
+    "port": 587,
+    "username": "inmotionchat@gmail.com",
+    "password": "<USE A GMAIL APP PASSWORD>"
+  }
 }
