@@ -2,6 +2,7 @@ package com.inmotionchat.identity.service.impl;
 
 import com.inmotionchat.core.data.AbstractDomainService;
 import com.inmotionchat.core.data.DomainService;
+import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.dto.RoleDTO;
 import com.inmotionchat.core.data.postgres.Role;
 import com.inmotionchat.core.data.postgres.RoleAssignment;
@@ -42,7 +43,7 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
         Role role = retrieveById(id);
 
         if (role.getRoleType() != RoleType.CUSTOM) {
-            throw new UnauthorizedException("Cannot update a role created on tenant initialization.");
+            throw new ConflictException(LogicalConstraints.Role.IMMUTABLE_ROLE, "Cannot update this role because it is immutable.");
         }
 
         Role updated = role.update(prototype);
@@ -51,6 +52,19 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
         updated.validateForUpdate();
 
         return this.sqlRoleRepository.update(updated);
+    }
+
+    @Override
+    public Role delete(Long id) throws NotFoundException, ConflictException {
+        Role role = retrieveById(id);
+
+        if (role.getRoleType() != RoleType.CUSTOM) {
+            throw new ConflictException(LogicalConstraints.Role.IMMUTABLE_ROLE, "Cannot delete this role because it is immutable.");
+        }
+
+        this.sqlRoleRepository.deleteById(id);
+
+        return role;
     }
 
     @Override

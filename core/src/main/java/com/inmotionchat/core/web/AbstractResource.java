@@ -110,6 +110,21 @@ public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long tenantId, @PathVariable Long id) throws MethodUnsupportedException, PermissionException, UnauthorizedException, ConflictException, NotFoundException {
+        if (!isDeleteEnabled())
+            throw new MethodUnsupportedException();
+
+        throwIfMissingPermissions(getDeletePermissions());
+
+        if (!isCorrectTenant(tenantId, null))
+            throw new UnauthorizedException("Not authorized to delete this resource for this tenant.");
+
+        this.domainService.delete(id);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
     protected boolean isCreateEnabled() {
         return false;
     }

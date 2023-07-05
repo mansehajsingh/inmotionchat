@@ -8,6 +8,10 @@ public class LogicalConstraints {
         public static final String ALREADY_VERIFIED = "ALREADY_VERIFIED";
     }
 
+    public class Role {
+        public static final String IMMUTABLE_ROLE = "IMMUTABLE_ROLE";
+    }
+
     public class RoleAssignment {
         public static final String ONE_ROLE_ASSIGNMENT_PER_USER = "ONE_ROLE_ASSIGNMENT_PER_USER";
     }

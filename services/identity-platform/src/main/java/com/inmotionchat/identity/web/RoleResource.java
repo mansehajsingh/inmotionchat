@@ -16,13 +16,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.inmotionchat.core.models.Permission.EDIT_ROLES;
-import static com.inmotionchat.core.models.Permission.READ_ROLE;
+import static com.inmotionchat.core.models.Permission.*;
 import static com.inmotionchat.core.web.AbstractResource.PATH;
 
 @RestController
 @RequestMapping(PATH + "/roles")
 public class RoleResource extends AbstractResource<Role, RoleDTO> {
+
+    private static final Permission[] READ_PERMISSIONS = { READ_ROLE };
+    private static final Permission[] CREATE_PERMISSIONS =  { EDIT_ROLES };
+    private static final Permission[] UPDATE_PERMISSIONS = { EDIT_ROLES };
+    private static final Permission[] DELETE_PERMISSIONS = { DELETE_ROLE };
 
     @Autowired
     protected RoleResource(IdentityContext identityContext, RoleService roleService) {
@@ -52,7 +56,7 @@ public class RoleResource extends AbstractResource<Role, RoleDTO> {
 
     @Override
     protected Permission[] getGetPermissions() {
-        return new Permission[] { READ_ROLE };
+        return READ_PERMISSIONS;
     }
 
     @Override
@@ -62,7 +66,7 @@ public class RoleResource extends AbstractResource<Role, RoleDTO> {
 
     @Override
     protected Permission[] getSearchPermissions() {
-        return new Permission[] { READ_ROLE };
+        return READ_PERMISSIONS;
     }
 
     @Override
@@ -72,7 +76,7 @@ public class RoleResource extends AbstractResource<Role, RoleDTO> {
 
     @Override
     protected Permission[] getCreatePermissions() {
-        return new Permission[] { EDIT_ROLES };
+        return CREATE_PERMISSIONS;
     }
 
     @Override
@@ -82,7 +86,17 @@ public class RoleResource extends AbstractResource<Role, RoleDTO> {
 
     @Override
     protected Permission[] getUpdatePermissions() {
-        return new Permission[] { EDIT_ROLES };
+        return UPDATE_PERMISSIONS;
+    }
+
+    @Override
+    protected boolean isDeleteEnabled() {
+        return true;
+    }
+
+    @Override
+    protected Permission[] getDeletePermissions() {
+        return DELETE_PERMISSIONS;
     }
 
 }

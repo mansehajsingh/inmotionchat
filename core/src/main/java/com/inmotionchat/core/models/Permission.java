@@ -3,7 +3,9 @@ package com.inmotionchat.core.models;
 public enum Permission {
 
     READ_ROLE("READ_ROLE"),
-    EDIT_ROLES("EDIT_ROLES")
+    EDIT_ROLES("EDIT_ROLES"),
+
+    DELETE_ROLE("DELETE_ROLE")
 
     ;
 
