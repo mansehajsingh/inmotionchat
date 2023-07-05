@@ -5,6 +5,7 @@ import com.inmotionchat.core.messaging.Consumer;
 import com.inmotionchat.core.messaging.ConsumerGroup;
 import com.inmotionchat.core.messaging.Stream;
 import com.inmotionchat.notifications.NotificationsService;
+import com.inmotionchat.notifications.service.NotifierService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,19 @@ public class VerifyEventConsumer extends Consumer<VerifyEvent.Details> {
 
     public static ConsumerGroup consumerGroup = new ConsumerGroup(NotificationsService.class, Stream.VERIFY_USER);
 
+    private final NotifierService notifierService;
+
+    private final NotificationsService service;
+
     @Autowired
-    public VerifyEventConsumer(RedisConnectionFactory redisConnectionFactory, RedisTemplate<String, String> redisTemplate) {
+    public VerifyEventConsumer(NotificationsService service,
+                               RedisConnectionFactory redisConnectionFactory,
+                               RedisTemplate<String, String> redisTemplate,
+                               NotifierService notifierService) {
         super(log, consumerGroup, redisTemplate);
+        this.service = service;
         this.redisConnectionFactory = redisConnectionFactory;
+        this.notifierService = notifierService;
     }
 
     @Override
@@ -37,12 +47,16 @@ public class VerifyEventConsumer extends Consumer<VerifyEvent.Details> {
 
     @Override
     protected void process(RecordId recordId, VerifyEvent.Details details) {
-        // TODO: Submit to email executor service
+        this.notifierService.sendNotifications(details);
     }
 
     @Bean
     public Subscription verifyEventSubscription() {
-        return new SubscriptionBuilder(this, VerifyEvent.Details.class, redisConnectionFactory).build();
+        if (service.isRunning()) {
+            return new SubscriptionBuilder(this, VerifyEvent.Details.class, redisConnectionFactory).build();
+        } else {
+            return null;
+        }
     }
 
 }
