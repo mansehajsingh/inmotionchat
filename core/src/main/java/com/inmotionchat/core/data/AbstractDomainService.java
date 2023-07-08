@@ -14,7 +14,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.inmotionchat.core.util.query.Operation.EQUALS;
 
 public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> implements DomainService<D, DTO> {
 
@@ -40,7 +44,6 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
         this.log = log;
         this.repository = repository;
         this.searchCriteriaMapper = searchCriteriaMapper
-                .key("tenant", Long.class)
                 .key("createdBy", Long.class)
                 .key("lastModifiedBy", Long.class);
     }
@@ -75,7 +78,10 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
 
     @Override
     public Page<? extends D> search(Long tenantId, Pageable pageable, SearchCriteria<?> ...criteria) {
-        return this.repository.filter(pageable, criteria);
+        List<SearchCriteria<?>> searchCriteriaList = Arrays.stream(criteria).collect(Collectors.toList());
+        searchCriteriaList.add(new SearchCriteria<>("tenant", EQUALS, tenantId));
+        SearchCriteria<?>[] searchCriteriaWithTenantId = searchCriteriaList.toArray(new SearchCriteria[0]);
+        return this.repository.filter(pageable, searchCriteriaWithTenantId);
     }
 
     @Override
