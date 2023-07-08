@@ -1,4 +1,4 @@
-package com.inmotionchat.identity.web;
+package com.inmotionchat.core.exceptions;
 
 import com.inmotionchat.core.exceptions.InMotionException;
 
