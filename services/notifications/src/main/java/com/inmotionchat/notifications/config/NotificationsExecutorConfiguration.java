@@ -13,8 +13,8 @@ public class NotificationsExecutorConfiguration {
     @Qualifier(NotificationsTaskExecutorQualifier)
     public TaskExecutor notificationExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(5);
+        executor.setCorePoolSize(1);
+        executor.setMaxPoolSize(3);
         executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.initialize();
         return executor;
