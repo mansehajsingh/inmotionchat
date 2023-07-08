@@ -40,6 +40,7 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
         this.log = log;
         this.repository = repository;
         this.searchCriteriaMapper = searchCriteriaMapper
+                .key("tenant", Long.class)
                 .key("createdBy", Long.class)
                 .key("lastModifiedBy", Long.class);
     }
