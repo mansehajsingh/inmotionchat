@@ -1,3 +1,5 @@
 package com.inmotionchat.core.data.dto;
 
-public record TenantDTO(String name, UserDTO rootUser) {}
+import java.util.Set;
+
+public record TenantDTO(String name, UserDTO rootUser, Set<String> resolutionDomains) {}

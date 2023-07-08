@@ -6,12 +6,11 @@ import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.util.validation.AbstractRule;
 import com.inmotionchat.core.util.validation.StringRule;
 import com.inmotionchat.core.util.validation.Violation;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "tenants", schema = Schema.IdentityPlatform)
@@ -23,6 +22,10 @@ public class Tenant {
 
     private String name;
 
+    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "resolution_domains", schema = Schema.IdentityPlatform)
+    private Set<String> resolutionDomains;
+
     public Tenant() {}
 
     public Tenant(Long id) {
@@ -31,10 +34,21 @@ public class Tenant {
 
     public Tenant(String name) {
         this.name = name;
+        this.resolutionDomains = new HashSet<>();
+    }
+
+    public Tenant(String name, Set<String> resolutionDomains) {
+        this.resolutionDomains = resolutionDomains;
     }
 
     public Tenant(TenantDTO proto) {
         this.name = proto.name();
+
+        if (proto.resolutionDomains() == null) {
+            this.resolutionDomains = new HashSet<>();
+        } else {
+            this.resolutionDomains = proto.resolutionDomains();
+        }
     }
 
     public Long getId() {
@@ -53,10 +67,22 @@ public class Tenant {
         this.name = name;
     }
 
+    public Set<String> getResolutionDomains() {
+        return this.resolutionDomains;
+    }
+
+    public void setResolutionDomains(Set<String> resolutionDomains) {
+        this.resolutionDomains = resolutionDomains;
+    }
+
     public void validate() throws DomainInvalidException {
         AbstractRule<String> nameRule = StringRule.forField("name").isNotNull().isNotEmpty();
 
         List<Violation> violations = nameRule.collectViolations(this.name);
+
+        if (this.resolutionDomains == null) {
+            violations.add(new Violation("resolutionDomains", resolutionDomains, "Resolution domains cannot be null."));
+        }
 
         if (!violations.isEmpty())
             throw new DomainInvalidException(violations);

@@ -6,12 +6,13 @@ import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.web.IdResponse;
+import com.inmotionchat.core.web.PageResponse;
 import com.inmotionchat.identity.service.contract.TenantService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 import static com.inmotionchat.core.web.AbstractResource.API_V1;
 
@@ -30,6 +31,18 @@ public class TenantResource {
     public IdResponse create(@RequestBody TenantDTO tenantDTO) throws DomainInvalidException, ConflictException, NotFoundException {
         Tenant createdTenant = this.tenantService.create(tenantDTO);
         return new IdResponse(createdTenant.getId());
+    }
+
+    @GetMapping
+    public PageResponse<Tenant> search(@RequestParam Map<String, Object> queryParams) throws BadRequestException {
+        if (!queryParams.containsKey("domain")) {
+            throw new BadRequestException("Please narrow the search by including a domain.");
+        }
+
+        String domain = queryParams.get("domain").toString();
+
+        List<Tenant> tenants = this.tenantService.searchByDomain(domain);
+        return new PageResponse<>(tenants.size(), 1, tenants);
     }
 
 }

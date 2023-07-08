@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class TenantServiceImpl implements TenantService {
@@ -82,6 +83,11 @@ public class TenantServiceImpl implements TenantService {
 
             return createdTenant;
         });
+    }
+
+    @Override
+    public List<Tenant> searchByDomain(String domain) {
+        return this.sqlTenantRepository.findAllByResolutionDomains(domain);
     }
 
 }

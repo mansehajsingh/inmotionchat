@@ -4,6 +4,11 @@ import com.inmotionchat.core.data.postgres.Tenant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface SQLTenantRepository extends JpaRepository<Tenant, Long> {
+
+    List<Tenant> findAllByResolutionDomains(String resolutionDomains);
+
 }
