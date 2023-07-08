@@ -14,6 +14,7 @@
         <module>../core</module>
         <module>../services/identity-platform</module>
         <module>../services/notifications</module>
+        <module>../services/inboxes</module>
     </modules>
 
     <properties>
