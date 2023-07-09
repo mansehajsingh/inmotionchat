@@ -21,7 +21,14 @@ public abstract class Producer<E extends StreamEvent<?>> {
 
     protected final Stream stream;
 
-    protected Producer(Logger log, InMotionService service, RedisTemplate<String, String> redisTemplate, Stream stream) {
+    protected final Class<E> eventType;
+
+    protected Producer(Class<E> eventType,
+                       Logger log,
+                       InMotionService service,
+                       RedisTemplate<String, String> redisTemplate,
+                       Stream stream) {
+        this.eventType = eventType;
         this.log = log;
         this.service = service;
         this.redisTemplate = redisTemplate;
@@ -30,9 +37,12 @@ public abstract class Producer<E extends StreamEvent<?>> {
 
     @TransactionalEventListener
     public void handleEvent(E event) {
-        if (!service.isRunning() || !isFromService(event.getSource().getClass(), service.getClass())) {
+        if (!eventType.isInstance(event) || !service.isRunning() || !isFromService(event.getSource().getClass(), service.getClass())) {
             // if the service isn't running or the event was not sent from the producer's service,
             // don't publish the event from here
+
+            // we need to check for eventType.isInstance(event) due to the event listener picking up ALL stream events
+            // because of type erasure at runtime
             return;
         }
 

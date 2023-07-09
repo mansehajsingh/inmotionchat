@@ -39,10 +39,15 @@ public abstract class Consumer<T> implements StreamListener<String, ObjectRecord
     @Override
     public void onMessage(ObjectRecord<String, T> message) {
         log.debug("Consumed event with id: {}, details: {}", message.getId(), message.getValue());
-        process(message.getId(), message.getValue());
+
+        try {
+            process(message.getId(), message.getValue());
+        } catch (Exception e) {
+            log.error("Tried to process event but got exception: {}", e.toString());
+        }
     }
 
-    protected abstract void process(RecordId recordId, T details);
+    protected abstract void process(RecordId recordId, T details) throws Exception;
 
     protected abstract ConsumerGroup getConsumerGroup();
 

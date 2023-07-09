@@ -27,10 +27,10 @@ public class Inbox extends AbstractDomain<Inbox> {
         this.open = false;
     }
 
-    public Inbox(InboxDTO proto) {
+    public Inbox(Long tenantId, InboxDTO proto) {
         this.user = new User();
         this.user.setId(proto.userId());
-        this.tenant = new Tenant(proto.tenantId());
+        this.tenant = new Tenant(tenantId);
         this.open = false;
     }
 

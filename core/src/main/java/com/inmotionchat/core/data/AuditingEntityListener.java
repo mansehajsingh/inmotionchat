@@ -13,6 +13,9 @@ public class AuditingEntityListener {
     protected void beforePersist(Object o) {
         AbstractDomain<?> domain = (AbstractDomain<?>) o;
 
+        if (SecurityContextHolder.getContext().getAuthentication() == null)
+            return;
+
         Object principal = SecurityContextHolder
                 .getContext().getAuthentication().getPrincipal();
 
@@ -38,6 +41,9 @@ public class AuditingEntityListener {
     @PreUpdate
     protected void beforeUpdate(Object o) {
         AbstractDomain<?> domain = (AbstractDomain<?>) o;
+
+        if (SecurityContextHolder.getContext().getAuthentication() == null)
+            return;
 
         AuthenticationDetails details = (AuthenticationDetails) SecurityContextHolder
                 .getContext().getAuthentication().getPrincipal();

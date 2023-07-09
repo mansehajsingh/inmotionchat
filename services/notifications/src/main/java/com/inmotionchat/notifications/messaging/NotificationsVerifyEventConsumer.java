@@ -9,6 +9,7 @@ import com.inmotionchat.notifications.service.NotifierService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.stream.RecordId;
@@ -17,9 +18,9 @@ import org.springframework.data.redis.stream.Subscription;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VerifyEventConsumer extends Consumer<VerifyEvent.Details> {
+public class NotificationsVerifyEventConsumer extends Consumer<VerifyEvent.Details> {
 
-    protected final static Logger log = LoggerFactory.getLogger(VerifyEventConsumer.class);
+    protected final static Logger log = LoggerFactory.getLogger(NotificationsVerifyEventConsumer.class);
 
     protected final RedisConnectionFactory redisConnectionFactory;
 
@@ -30,10 +31,10 @@ public class VerifyEventConsumer extends Consumer<VerifyEvent.Details> {
     private final NotificationsService service;
 
     @Autowired
-    public VerifyEventConsumer(NotificationsService service,
-                               RedisConnectionFactory redisConnectionFactory,
-                               RedisTemplate<String, String> redisTemplate,
-                               NotifierService notifierService) {
+    public NotificationsVerifyEventConsumer(NotificationsService service,
+                                            RedisConnectionFactory redisConnectionFactory,
+                                            RedisTemplate<String, String> redisTemplate,
+                                            NotifierService notifierService) {
         super(log, consumerGroup, redisTemplate);
         this.service = service;
         this.redisConnectionFactory = redisConnectionFactory;
@@ -51,7 +52,8 @@ public class VerifyEventConsumer extends Consumer<VerifyEvent.Details> {
     }
 
     @Bean
-    public Subscription verifyEventSubscription() {
+    @Qualifier("NotificationsServiceVerifyEventSubscription")
+    public Subscription notificationsServiceVerifyEventSubscription() {
         if (service.isRunning()) {
             return new SubscriptionBuilder(this, VerifyEvent.Details.class, redisConnectionFactory).build();
         } else {

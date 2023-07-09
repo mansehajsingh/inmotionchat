@@ -4,6 +4,8 @@ public class Stream {
 
     public static final Stream VERIFY_USER = new Stream("VERIFY_USER");
 
+    public static final Stream PERSIST_USER = new Stream("PERSIST_USER");
+
     private final String name;
 
     private Stream(String name) {

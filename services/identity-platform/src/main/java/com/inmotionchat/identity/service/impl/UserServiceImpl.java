@@ -8,6 +8,7 @@ import com.inmotionchat.core.data.ThrowingTransactionTemplate;
 import com.inmotionchat.core.data.TransactionTemplateFactory;
 import com.inmotionchat.core.data.dto.UserDTO;
 import com.inmotionchat.core.data.dto.VerifyDTO;
+import com.inmotionchat.core.data.events.PersistUserEvent;
 import com.inmotionchat.core.data.events.StreamEventPublisher;
 import com.inmotionchat.core.data.events.VerifyEvent;
 import com.inmotionchat.core.data.postgres.Role;
@@ -125,6 +126,11 @@ public class UserServiceImpl implements UserService {
             } catch (FirebaseAuthException e) {
                 FirebaseErrorCodeTranslator.getInstance().translateAuthErrorCode(e.getAuthErrorCode());
             }
+
+            PersistUserEvent.Details details = new PersistUserEvent.Details(
+                    createdUser.getId(), tenant.getId(), createdUser.getUid(), createdUser.getEmail(), createdUser.getDisplayName()
+            );
+            this.eventPublisher.publish(new PersistUserEvent(this, details));
 
             log.info("Successfully verified firebase user with uid {} and created SQL double: {}.", uid, createdUser);
 

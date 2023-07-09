@@ -11,13 +11,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VerifyEventProducer extends Producer<VerifyEvent> {
+public class IdpVerifyEventProducer extends Producer<VerifyEvent> {
 
-    private final static Logger log = LoggerFactory.getLogger(VerifyEventProducer.class);
+    private final static Logger log = LoggerFactory.getLogger(IdpVerifyEventProducer.class);
 
     @Autowired
-    public VerifyEventProducer(IdentityPlatformService service, RedisTemplate<String, String> redisTemplate) {
-        super(log, service, redisTemplate, Stream.VERIFY_USER);
+    public IdpVerifyEventProducer(IdentityPlatformService service, RedisTemplate<String, String> redisTemplate) {
+        super(VerifyEvent.class, log, service, redisTemplate, Stream.VERIFY_USER);
     }
 
 }
