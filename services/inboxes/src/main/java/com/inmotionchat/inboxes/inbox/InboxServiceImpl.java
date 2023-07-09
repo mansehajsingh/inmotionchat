@@ -2,7 +2,7 @@ package com.inmotionchat.inboxes.inbox;
 
 import com.inmotionchat.core.data.AbstractDomainService;
 import com.inmotionchat.core.data.dto.InboxDTO;
-import com.inmotionchat.core.data.postgres.Inbox;
+import com.inmotionchat.core.data.postgres.inbox.Inbox;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

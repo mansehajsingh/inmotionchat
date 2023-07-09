@@ -1,11 +1,14 @@
-package com.inmotionchat.core.data.postgres;
+package com.inmotionchat.core.data.postgres.inbox;
 
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.dto.InboxDTO;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import com.inmotionchat.core.data.postgres.AbstractDomain;
+import com.inmotionchat.core.data.postgres.Tenant;
+import com.inmotionchat.core.data.postgres.User;
+import jakarta.persistence.*;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "inboxes", schema = Schema.InboxManagement)
@@ -18,6 +21,9 @@ public class Inbox extends AbstractDomain<Inbox> {
     private User user;
 
     private boolean open;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    private Set<InboxGroupAssignment> assignments;
 
     public Inbox() {}
 
@@ -53,6 +59,10 @@ public class Inbox extends AbstractDomain<Inbox> {
 
     public void setOpen(boolean open) {
         this.open = open;
+    }
+
+    public Set<Inbox> getInboxes() {
+        return this.assignments.stream().map(InboxGroupAssignment::getInbox).collect(Collectors.toSet());
     }
 
 }
