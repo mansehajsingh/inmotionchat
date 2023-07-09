@@ -1,6 +1,9 @@
 package com.inmotionchat.core.data.postgres.inbox;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inmotionchat.core.data.Schema;
+import com.inmotionchat.core.data.annotation.DomainUpdate;
+import com.inmotionchat.core.data.dto.InboxGroupDTO;
 import com.inmotionchat.core.data.postgres.AbstractDomain;
 import com.inmotionchat.core.data.postgres.Tenant;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
@@ -30,7 +33,27 @@ public class InboxGroup extends AbstractDomain<InboxGroup> {
         this.name = name;
     }
 
+    public InboxGroup(Long tenantId, InboxGroupDTO proto) {
+        this.tenant = new Tenant(tenantId);
+        this.name = proto.name();
+    }
+
+    @DomainUpdate
+    public InboxGroup update(InboxGroupDTO proto) {
+        this.name = proto.name();
+        return this;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
+    @JsonIgnore
     public Tenant getTenant() {
         return tenant;
     }
