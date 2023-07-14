@@ -54,7 +54,7 @@ public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
         if (!isCorrectTenant(tenantId, null))
             throw new UnauthorizedException("Not authorized to read this resource for this tenant.");
 
-        return this.domainService.retrieveById(id);
+        return this.domainService.retrieveById(tenantId, id);
     }
 
     protected Pageable getPageable(MultiValueMap<String, Object> queryParams) {
@@ -105,7 +105,7 @@ public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
         if (!isCorrectTenant(tenantId, dto))
             throw new UnauthorizedException("Not authorized to update this resource for this tenant.");
 
-        this.domainService.update(id, dto);
+        this.domainService.update(tenantId, id, dto);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -120,7 +120,7 @@ public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
         if (!isCorrectTenant(tenantId, null))
             throw new UnauthorizedException("Not authorized to delete this resource for this tenant.");
 
-        this.domainService.delete(id);
+        this.domainService.delete(tenantId, id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

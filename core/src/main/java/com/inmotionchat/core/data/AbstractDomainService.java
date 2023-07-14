@@ -66,8 +66,8 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
     }
 
     @Override
-    public D retrieveById(Long id) throws NotFoundException {
-        return this.repository.findById(id).orElseThrow(
+    public D retrieveById(Long tenantId, Long id) throws NotFoundException {
+        return this.repository.findByIdAndTenantId(id, tenantId).orElseThrow(
                 () -> new NotFoundException("No " + this.type.getSimpleName() + " with id " + id + " could be found."));
     }
 
@@ -100,9 +100,9 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
     }
 
     @Override
-    public D update(Long id, DTO prototype) throws DomainInvalidException, NotFoundException, ConflictException, ServerException, UnauthorizedException {
+    public D update(Long tenantId, Long id, DTO prototype) throws DomainInvalidException, NotFoundException, ConflictException, ServerException, UnauthorizedException {
         try {
-            D retrieved = retrieveById(id);
+            D retrieved = retrieveById(tenantId, id);
 
             Method domainUpdater = null;
 
@@ -129,8 +129,8 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
     }
 
     @Override
-    public D delete(Long id) throws NotFoundException, ConflictException {
-        D retrieved = retrieveById(id);
+    public D delete(Long tenantId, Long id) throws NotFoundException, ConflictException {
+        D retrieved = retrieveById(tenantId, id);
         this.repository.deleteById(id);
         return retrieved;
     }

@@ -39,8 +39,8 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
     }
 
     @Override
-    public Role update(Long id, RoleDTO prototype) throws DomainInvalidException, NotFoundException, ConflictException, ServerException, UnauthorizedException {
-        Role role = retrieveById(id);
+    public Role update(Long tenantId, Long id, RoleDTO prototype) throws DomainInvalidException, NotFoundException, ConflictException, ServerException, UnauthorizedException {
+        Role role = retrieveById(tenantId, id);
 
         if (role.getRoleType() != RoleType.CUSTOM) {
             throw new ConflictException(LogicalConstraints.Role.IMMUTABLE_ROLE, "Cannot update this role because it is immutable.");
@@ -55,8 +55,8 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
     }
 
     @Override
-    public Role delete(Long id) throws NotFoundException, ConflictException {
-        Role role = retrieveById(id);
+    public Role delete(Long tenantId, Long id) throws NotFoundException, ConflictException {
+        Role role = retrieveById(tenantId, id);
 
         if (role.getRoleType() != RoleType.CUSTOM) {
             throw new ConflictException(LogicalConstraints.Role.IMMUTABLE_ROLE, "Cannot delete this role because it is immutable.");

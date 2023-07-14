@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static com.inmotionchat.core.util.query.Operation.EQUALS;
+
 @NoRepositoryBean
 public interface SQLRepository<T extends AbstractDomain<T>> extends JpaRepository<T, Long>, JpaSpecificationExecutor<T> {
 
@@ -43,6 +45,13 @@ public interface SQLRepository<T extends AbstractDomain<T>> extends JpaRepositor
         };
     }
 
+    default Optional<T> findByIdAndTenantId(Long id, Long tenantId) {
+        return filterOne(
+                new SearchCriteria<>("id", EQUALS, id),
+                new SearchCriteria<>("tenant", EQUALS, tenantId)
+        );
+    }
+
     default Boolean exists(SearchCriteria<?> ...criteria) {
         return exists(generateSpec(criteria));
     }
@@ -63,7 +72,7 @@ public interface SQLRepository<T extends AbstractDomain<T>> extends JpaRepositor
 
     default Page<T> filter(Long tenantId, Pageable pageable, SearchCriteria<?> ...criteria) {
         List<SearchCriteria<?>> criteriaDupe = new ArrayList<>(Arrays.stream(criteria).toList());
-        criteriaDupe.add(new SearchCriteria<>("tenant", Operation.EQUALS, tenantId));
+        criteriaDupe.add(new SearchCriteria<>("tenant", EQUALS, tenantId));
         return filter(pageable, criteriaDupe.toArray(SearchCriteria[]::new));
     }
 

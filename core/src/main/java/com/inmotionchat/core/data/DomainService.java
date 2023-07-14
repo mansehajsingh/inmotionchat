@@ -8,7 +8,7 @@ import org.springframework.util.MultiValueMap;
 
 public interface DomainService<T, DTO> {
 
-    T retrieveById(Long id) throws NotFoundException;
+    T retrieveById(Long tenantId, Long id) throws NotFoundException;
 
     Page<? extends T> search(Long tenantId, Pageable pageable, MultiValueMap<String, Object> parameters);
 
@@ -16,8 +16,8 @@ public interface DomainService<T, DTO> {
 
     T create(Long tenantId, DTO prototype) throws DomainInvalidException, ConflictException, NotFoundException, ServerException;
 
-    T update(Long id, DTO prototype) throws DomainInvalidException, NotFoundException, ConflictException, ServerException, UnauthorizedException;
+    T update(Long tenantId, Long id, DTO prototype) throws DomainInvalidException, NotFoundException, ConflictException, ServerException, UnauthorizedException;
 
-    T delete(Long id) throws NotFoundException, ConflictException;
+    T delete(Long tenantId, Long id) throws NotFoundException, ConflictException;
 
 }
