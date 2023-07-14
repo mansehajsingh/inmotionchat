@@ -10,14 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-@Component
-public class IdpPersistUserEventProducer extends Producer<PersistUserEvent> {
+@Component(value = PersistUserEventProducer.NAME)
+public class PersistUserEventProducer extends Producer<PersistUserEvent> {
 
-    protected final static Logger log = LoggerFactory.getLogger(IdpPersistUserEventProducer.class);
+    public static final String NAME = "IdentityPlatformServicePersistUserEventProducer";
+
+    protected final static Logger log = LoggerFactory.getLogger(PersistUserEventProducer.class);
 
     @Autowired
-    protected IdpPersistUserEventProducer(IdentityPlatformService identityPlatformService,
-                                          RedisTemplate<String, String> redisTemplate) {
+    protected PersistUserEventProducer(IdentityPlatformService identityPlatformService,
+                                       RedisTemplate<String, String> redisTemplate) {
         super(PersistUserEvent.class, log, identityPlatformService, redisTemplate, Stream.PERSIST_USER);
     }
 

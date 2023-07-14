@@ -1,19 +1,62 @@
 package com.inmotionchat.core.data.events;
 
-public class PersistUserEvent extends StreamEvent<PersistUserEvent.Details> {
+import com.inmotionchat.core.data.postgres.User;
 
-    private final Details details;
+public class PersistUserEvent extends StreamEvent {
 
-    public PersistUserEvent(Object source, Details details) {
+    private Long userId;
+
+    private Long tenantId;
+
+    private String uid;
+
+    private String email;
+
+    private String displayName;
+
+    protected PersistUserEvent() {
+        super();
+    }
+
+    public PersistUserEvent(Object source, User user) {
         super(source);
-        this.details = details;
+        this.userId = user.getId();
+        this.tenantId = user.getTenant().getId();
+        this.uid = user.getUid();
+        this.email = user.getEmail();
+        this.displayName = user.getDisplayName();
+    }
+
+    public Long userId() {
+        return this.userId;
+    }
+
+    public Long tenantId() {
+        return this.tenantId;
+    }
+
+    public String uid() {
+        return this.uid;
+    }
+
+    public String email() {
+        return this.email;
+    }
+
+    public String displayName() {
+        return this.displayName;
     }
 
     @Override
-    public Details getDetails() {
-        return details;
+    public String toString() {
+        return "PersistUserEvent[" +
+                "userId=" + userId +
+                ", tenantId=" + tenantId +
+                ", uid='" + uid + '\'' +
+                ", email='" + email + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", originatingClassName='" + originatingClassName + '\'' +
+                ']';
     }
-
-    public record Details(Long userId, Long tenantId, String uid, String email, String displayName) {}
 
 }

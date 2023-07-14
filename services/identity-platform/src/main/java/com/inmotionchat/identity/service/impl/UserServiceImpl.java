@@ -10,7 +10,7 @@ import com.inmotionchat.core.data.dto.UserDTO;
 import com.inmotionchat.core.data.dto.VerifyDTO;
 import com.inmotionchat.core.data.events.PersistUserEvent;
 import com.inmotionchat.core.data.events.StreamEventPublisher;
-import com.inmotionchat.core.data.events.VerifyEvent;
+import com.inmotionchat.core.data.events.UnverifiedUserEvent;
 import com.inmotionchat.core.data.postgres.Role;
 import com.inmotionchat.core.data.postgres.Tenant;
 import com.inmotionchat.core.data.postgres.User;
@@ -74,9 +74,9 @@ public class UserServiceImpl implements UserService {
             FirebaseErrorCodeTranslator.getInstance().translateAuthErrorCode(e.getAuthErrorCode());
         }
 
-        final VerifyEvent.Details eventDetails = new VerifyEvent.Details(record.getUid(), record.getEmail(), record.getDisplayName());
+        final UserRecord lambdaPassableRecord = record;
         this.transactionTemplate.execute((status) -> { // have to send events within a transaction for @TransactionalEventListener
-            eventPublisher.publish(new VerifyEvent(this, eventDetails));
+            eventPublisher.publish(new UnverifiedUserEvent(this, lambdaPassableRecord));
             return null;
         });
 
@@ -127,10 +127,7 @@ public class UserServiceImpl implements UserService {
                 FirebaseErrorCodeTranslator.getInstance().translateAuthErrorCode(e.getAuthErrorCode());
             }
 
-            PersistUserEvent.Details details = new PersistUserEvent.Details(
-                    createdUser.getId(), tenant.getId(), createdUser.getUid(), createdUser.getEmail(), createdUser.getDisplayName()
-            );
-            this.eventPublisher.publish(new PersistUserEvent(this, details));
+            this.eventPublisher.publish(new PersistUserEvent(this, createdUser));
 
             log.info("Successfully verified firebase user with uid {} and created SQL double: {}.", uid, createdUser);
 

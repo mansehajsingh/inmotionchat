@@ -18,10 +18,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.stream.Subscription;
 import org.springframework.stereotype.Component;
 
-@Component
-public class InboxesPersistUserEventConsumer extends Consumer<PersistUserEvent.Details> {
+@Component(value = PersistUserEventConsumer.NAME)
+public class PersistUserEventConsumer extends Consumer<PersistUserEvent> {
 
-    protected final static Logger log = LoggerFactory.getLogger(InboxesPersistUserEventConsumer.class);
+    public static final String NAME = "InboxesServicePersistUserEventConsumer";
+
+    protected final static Logger log = LoggerFactory.getLogger(PersistUserEventConsumer.class);
 
     protected final RedisConnectionFactory redisConnectionFactory;
 
@@ -32,10 +34,10 @@ public class InboxesPersistUserEventConsumer extends Consumer<PersistUserEvent.D
     private final InboxService inboxService;
 
     @Autowired
-    public InboxesPersistUserEventConsumer(InboxesService inboxesService,
-                                           RedisConnectionFactory redisConnectionFactory,
-                                           RedisTemplate<String, String> redisTemplate,
-                                           InboxService inboxService) {
+    public PersistUserEventConsumer(InboxesService inboxesService,
+                                    RedisConnectionFactory redisConnectionFactory,
+                                    RedisTemplate<String, String> redisTemplate,
+                                    InboxService inboxService) {
         super(log, consumerGroup, redisTemplate);
         this.inboxesService = inboxesService;
         this.redisConnectionFactory = redisConnectionFactory;
@@ -43,7 +45,7 @@ public class InboxesPersistUserEventConsumer extends Consumer<PersistUserEvent.D
     }
 
     @Override
-    protected void process(RecordId recordId, PersistUserEvent.Details details) throws Exception {
+    protected void process(RecordId recordId, PersistUserEvent details) throws Exception {
         InboxDTO inboxDTO = new InboxDTO(details.userId());
         this.inboxService.create(details.tenantId(), inboxDTO);
     }
@@ -53,11 +55,10 @@ public class InboxesPersistUserEventConsumer extends Consumer<PersistUserEvent.D
         return consumerGroup;
     }
 
-    @Bean
-    @Qualifier("InboxesServicePersistUserEventSubscription")
-    public Subscription inboxesServicePersistUserEventSubscription() {
+    @Bean(name = NAME + "Subscription")
+    public Subscription subscription() {
         if (inboxesService.isRunning()) {
-            return new SubscriptionBuilder(this, PersistUserEvent.Details.class, redisConnectionFactory).build();
+            return new SubscriptionBuilder(this, PersistUserEvent.class, redisConnectionFactory).build();
         } else {
             return null;
         }

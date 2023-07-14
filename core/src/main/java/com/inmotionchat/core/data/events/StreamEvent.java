@@ -1,16 +1,28 @@
 package com.inmotionchat.core.data.events;
 
-import org.springframework.context.ApplicationEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public abstract class StreamEvent<T> extends ApplicationEvent {
+public abstract class StreamEvent {
+
+    private static final Logger log = LoggerFactory.getLogger(StreamEvent.class);
+
+    protected String originatingClassName;
 
     protected StreamEvent(Object source) {
-        super(source);
+        this.originatingClassName = source.getClass().getName();
     }
 
-    /**
-     * Returns the actual data pushed to the stream.
-     */
-    public abstract T getDetails();
+    protected StreamEvent() {}
+
+    public Class<?> getSource() {
+        try {
+            return Class.forName(this.originatingClassName);
+        } catch (ClassNotFoundException e) {
+            log.error("Could not find class for name {}.", originatingClassName);
+        }
+
+        return null;
+    }
 
 }

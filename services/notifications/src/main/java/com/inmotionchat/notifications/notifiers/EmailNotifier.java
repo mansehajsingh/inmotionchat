@@ -1,6 +1,6 @@
 package com.inmotionchat.notifications.notifiers;
 
-import com.inmotionchat.core.data.events.VerifyEvent;
+import com.inmotionchat.core.data.events.UnverifiedUserEvent;
 import com.inmotionchat.notifications.NotificationsService;
 import com.inmotionchat.notifications.model.Email;
 import com.inmotionchat.notifications.model.NotifierType;
@@ -55,7 +55,7 @@ public class EmailNotifier implements Notifier {
 
         Map<String, Object> properties = new HashMap<>();
 
-        if (details instanceof VerifyEvent.Details userVerify) {
+        if (details instanceof UnverifiedUserEvent userVerify) {
 
             properties.put("uid", userVerify.uid());
             properties.put("displayName", userVerify.displayName());

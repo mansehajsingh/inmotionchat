@@ -11,7 +11,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 import static com.inmotionchat.core.util.misc.ServiceResolution.isFromService;
 
-public abstract class Producer<E extends StreamEvent<?>> {
+public abstract class Producer<E extends StreamEvent> {
 
     protected final Logger log;
 
@@ -35,9 +35,8 @@ public abstract class Producer<E extends StreamEvent<?>> {
         this.stream = stream;
     }
 
-    @TransactionalEventListener
-    public void handleEvent(E event) {
-        if (!eventType.isInstance(event) || !service.isRunning() || !isFromService(event.getSource().getClass(), service.getClass())) {
+    public void handleEvent(StreamEvent event) {
+        if (!eventType.isInstance(event) || !service.isRunning() || !isFromService(event.getSource(), service.getClass())) {
             // if the service isn't running or the event was not sent from the producer's service,
             // don't publish the event from here
 
@@ -47,14 +46,14 @@ public abstract class Producer<E extends StreamEvent<?>> {
         }
 
         ObjectRecord<String, ?> record = StreamRecords.newRecord()
-                .ofObject(event.getDetails())
+                .ofObject(event)
                 .withStreamKey(stream.getKey());
 
         RecordId recordId = this.redisTemplate
                 .opsForStream()
                 .add(record);
 
-        log.debug("Produced event with id: {}, details: {}.", recordId, event.getDetails());
+        log.debug("Produced event with id: {}, details: {}.", recordId, event);
     }
 
 }

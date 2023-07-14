@@ -51,6 +51,8 @@ public abstract class Consumer<T> implements StreamListener<String, ObjectRecord
 
     protected abstract ConsumerGroup getConsumerGroup();
 
+    public abstract Subscription subscription();
+
     public class SubscriptionBuilder {
 
         private Duration pollTimeout = Duration.ofSeconds(1);

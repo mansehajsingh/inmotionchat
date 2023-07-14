@@ -2,7 +2,7 @@ package com.inmotionchat.core.messaging;
 
 public class Stream {
 
-    public static final Stream VERIFY_USER = new Stream("VERIFY_USER");
+    public static final Stream UNVERIFIED_USER = new Stream("UNVERIFIED_USER");
 
     public static final Stream PERSIST_USER = new Stream("PERSIST_USER");
 
