@@ -1,4 +1,4 @@
-package com.inmotionchat.core.data.postgres;
+package com.inmotionchat.core.data.postgres.identity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inmotionchat.core.data.LogicalConstraints;

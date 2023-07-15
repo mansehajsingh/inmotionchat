@@ -2,7 +2,7 @@ package com.inmotionchat.identity.service.contract;
 
 import com.inmotionchat.core.data.dto.UserDTO;
 import com.inmotionchat.core.data.dto.VerifyDTO;
-import com.inmotionchat.core.data.postgres.User;
+import com.inmotionchat.core.data.postgres.identity.User;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;

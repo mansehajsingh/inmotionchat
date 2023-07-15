@@ -5,7 +5,7 @@ import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.annotation.DomainUpdate;
 import com.inmotionchat.core.data.dto.InboxGroupDTO;
 import com.inmotionchat.core.data.postgres.AbstractDomain;
-import com.inmotionchat.core.data.postgres.Tenant;
+import com.inmotionchat.core.data.postgres.identity.Tenant;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.util.validation.AbstractRule;
 import com.inmotionchat.core.util.validation.StringRule;

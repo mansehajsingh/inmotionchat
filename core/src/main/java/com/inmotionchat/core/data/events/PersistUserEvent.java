@@ -1,6 +1,6 @@
 package com.inmotionchat.core.data.events;
 
-import com.inmotionchat.core.data.postgres.User;
+import com.inmotionchat.core.data.postgres.identity.User;
 
 public class PersistUserEvent extends StreamEvent {
 

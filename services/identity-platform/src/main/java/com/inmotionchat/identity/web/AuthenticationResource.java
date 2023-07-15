@@ -3,7 +3,7 @@ package com.inmotionchat.identity.web;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
-import com.inmotionchat.core.data.postgres.Role;
+import com.inmotionchat.core.data.postgres.identity.Role;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.exceptions.UnauthorizedException;

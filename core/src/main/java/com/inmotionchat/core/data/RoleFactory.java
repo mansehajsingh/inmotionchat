@@ -1,7 +1,7 @@
 package com.inmotionchat.core.data;
 
 import com.inmotionchat.core.data.dto.RoleDTO;
-import com.inmotionchat.core.data.postgres.Tenant;
+import com.inmotionchat.core.data.postgres.identity.Tenant;
 import com.inmotionchat.core.models.Permission;
 import com.inmotionchat.core.models.RoleType;
 

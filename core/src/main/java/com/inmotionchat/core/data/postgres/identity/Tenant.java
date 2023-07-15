@@ -1,4 +1,4 @@
-package com.inmotionchat.core.data.postgres;
+package com.inmotionchat.core.data.postgres.identity;
 
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.dto.TenantDTO;

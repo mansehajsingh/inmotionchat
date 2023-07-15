@@ -3,6 +3,8 @@ package com.inmotionchat.core.data.postgres;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.inmotionchat.core.data.AuditingEntityListener;
+import com.inmotionchat.core.data.postgres.identity.Tenant;
+import com.inmotionchat.core.data.postgres.identity.User;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.models.Metadata;
 import jakarta.persistence.*;

@@ -1,7 +1,7 @@
 package com.inmotionchat.core.data;
 
 import com.inmotionchat.core.data.postgres.AbstractDomain;
-import com.inmotionchat.core.data.postgres.User;
+import com.inmotionchat.core.data.postgres.identity.User;
 import com.inmotionchat.core.security.AuthenticationDetails;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;

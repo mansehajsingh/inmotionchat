@@ -1,10 +1,11 @@
-package com.inmotionchat.core.data.postgres;
+package com.inmotionchat.core.data.postgres.identity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.annotation.DomainUpdate;
 import com.inmotionchat.core.data.dto.RoleDTO;
+import com.inmotionchat.core.data.postgres.AbstractDomain;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.models.Permission;
 import com.inmotionchat.core.models.RoleType;

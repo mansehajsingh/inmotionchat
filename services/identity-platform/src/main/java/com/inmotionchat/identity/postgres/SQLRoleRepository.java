@@ -1,7 +1,7 @@
 package com.inmotionchat.identity.postgres;
 
 import com.inmotionchat.core.data.SQLRepository;
-import com.inmotionchat.core.data.postgres.Role;
+import com.inmotionchat.core.data.postgres.identity.Role;
 import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.util.query.SearchCriteria;
 

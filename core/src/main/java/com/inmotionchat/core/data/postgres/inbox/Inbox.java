@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.dto.InboxDTO;
 import com.inmotionchat.core.data.postgres.AbstractDomain;
-import com.inmotionchat.core.data.postgres.Tenant;
-import com.inmotionchat.core.data.postgres.User;
+import com.inmotionchat.core.data.postgres.identity.Tenant;
+import com.inmotionchat.core.data.postgres.identity.User;
 import jakarta.persistence.*;
 
 import java.util.Set;

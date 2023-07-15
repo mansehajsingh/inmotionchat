@@ -1,8 +1,7 @@
 package com.inmotionchat.identity.postgres;
 
-import com.inmotionchat.core.data.LogicalConstraints;
-import com.inmotionchat.core.data.postgres.Role;
-import com.inmotionchat.core.data.postgres.RoleAssignment;
+import com.inmotionchat.core.data.postgres.identity.Role;
+import com.inmotionchat.core.data.postgres.identity.RoleAssignment;
 import com.inmotionchat.core.exceptions.ConflictException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
