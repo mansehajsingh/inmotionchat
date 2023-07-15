@@ -1,5 +1,6 @@
 package com.inmotionchat.core.data.postgres.workflow;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.dto.WorkflowDTO;
 import com.inmotionchat.core.data.postgres.AbstractArchivableDomain;
@@ -45,6 +46,7 @@ public class Workflow extends AbstractArchivableDomain<Workflow> {
     }
 
     @Override
+    @JsonIgnore
     public Tenant getTenant() {
         return this.tenant;
     }

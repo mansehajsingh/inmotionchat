@@ -8,6 +8,9 @@ public enum Permission {
 
     EDIT_INBOX_GROUPS("EDIT_INBOX_GROUPS"),
 
+    READ_WORKFLOWS("READ_WORKFLOWS"),
+    EDIT_WORKFLOWS("EDIT_WORKFLOWS")
+
     ;
 
     private final String value;
