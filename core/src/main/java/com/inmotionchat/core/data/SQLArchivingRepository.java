@@ -24,6 +24,19 @@ public interface SQLArchivingRepository<T extends AbstractArchivableDomain<T>> e
         return newCriteria;
     }
 
+    @Override
+    default Optional<T> findByIdAndTenantId(Long id, Long tenantId) {
+        return findByIdAndTenantId(id, tenantId, ArchivalStatus.NOT_ARCHIVED);
+    }
+
+    default Optional<T> findByIdAndTenantId(Long id, Long tenantId, ArchivalStatus archivalStatus) {
+        return filterOne(
+                archivalStatus,
+                new SearchCriteria<>("id", EQUALS, id),
+                new SearchCriteria<>("tenant", EQUALS, tenantId)
+        );
+    }
+
     default Optional<T> findById(Long id, ArchivalStatus archivalStatus) {
         return filterOne(archivalStatus, new SearchCriteria<>("id", EQUALS, id));
     }

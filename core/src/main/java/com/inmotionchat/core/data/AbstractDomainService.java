@@ -22,15 +22,15 @@ import static com.inmotionchat.core.util.query.Operation.EQUALS;
 
 public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> implements DomainService<D, DTO> {
 
-    private final SQLRepository<D> repository;
+    protected final SQLRepository<D> repository;
 
-    private final Logger log;
+    protected final Logger log;
 
-    private final Class<D> type;
+    protected final Class<D> type;
 
-    private final Class<DTO> dtoType;
+    protected final Class<DTO> dtoType;
 
-    private final SearchCriteriaMapper searchCriteriaMapper;
+    protected final SearchCriteriaMapper searchCriteriaMapper;
 
     protected AbstractDomainService(
             Class<D> type,
