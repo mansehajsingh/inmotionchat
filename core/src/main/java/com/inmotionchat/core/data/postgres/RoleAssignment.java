@@ -11,7 +11,7 @@ import jakarta.persistence.*;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = LogicalConstraints.RoleAssignment.ONE_ROLE_ASSIGNMENT_PER_USER,
-                        columnNames = {"user_id", "tenant_id"}
+                        columnNames = {"user_id"}
                 )
         }
 )

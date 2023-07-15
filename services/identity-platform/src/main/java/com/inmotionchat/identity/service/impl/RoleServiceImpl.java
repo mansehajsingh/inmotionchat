@@ -18,6 +18,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implements DomainService<Role, RoleDTO>, RoleService {
 
@@ -68,13 +71,34 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
     }
 
     @Override
-    public void assignRole(User user, Role role) {
-        RoleAssignment assignment = new RoleAssignment(user, role);
-        this.sqlRoleAssignmentRepository.save(assignment);
+    public void assignRole(User user, Role role) throws ConflictException, UnauthorizedException {
+        Optional<RoleAssignment> optionalRoleAssignment =
+                this.sqlRoleAssignmentRepository.findRoleAssignmentByUserId(user.getId());
+
+        if (!role.getTenant().getId().equals(user.getTenant().getId()))
+            throw new UnauthorizedException("Cannot assign a role from a different tenant to this user.");
+
+        RoleAssignment assignment;
+
+        if (optionalRoleAssignment.isEmpty()) {
+            assignment = new RoleAssignment(user, role);
+        } else {
+            if (role.getRoleType() == RoleType.ROOT)
+                throw new UnauthorizedException("Cannot assign root role.");
+
+            assignment = optionalRoleAssignment.get();
+
+            if (assignment.getRole().getRoleType() == RoleType.ROOT)
+                throw new UnauthorizedException("Cannot reassign a user from a root role.");
+
+            assignment.setRole(role);
+        }
+
+        this.sqlRoleAssignmentRepository.store(assignment);
     }
 
     @Override
-    public Role assignInitialRole(User user) throws NotFoundException {
+    public Role assignInitialRole(User user) throws NotFoundException, ConflictException, UnauthorizedException {
         Role rootRole = this.sqlRoleRepository.findRootRole(user.getTenant().getId());
 
         boolean hasRootAssignment = this.sqlRoleAssignmentRepository.countSQLRoleAssignmentByRole(rootRole) > 0;
@@ -96,6 +120,12 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
                 () -> new NotFoundException("Could not locate a role for the provided user id."));
 
         return assignment.getRole();
+    }
+
+    @Override
+    public List<User> retrieveByRole(Long tenantId, Long roleId) throws NotFoundException {
+        Role role = retrieveById(tenantId, roleId);
+        return this.sqlRoleAssignmentRepository.findAllByRoleId(role.getId()).stream().map(RoleAssignment::getUser).toList();
     }
 
 }

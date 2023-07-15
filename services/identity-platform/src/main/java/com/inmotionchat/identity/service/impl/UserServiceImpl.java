@@ -14,10 +14,7 @@ import com.inmotionchat.core.data.events.UnverifiedUserEvent;
 import com.inmotionchat.core.data.postgres.Role;
 import com.inmotionchat.core.data.postgres.Tenant;
 import com.inmotionchat.core.data.postgres.User;
-import com.inmotionchat.core.exceptions.ConflictException;
-import com.inmotionchat.core.exceptions.DomainInvalidException;
-import com.inmotionchat.core.exceptions.NotFoundException;
-import com.inmotionchat.core.exceptions.ServerException;
+import com.inmotionchat.core.exceptions.*;
 import com.inmotionchat.identity.firebase.FirebaseErrorCodeTranslator;
 import com.inmotionchat.identity.postgres.SQLUserRepository;
 import com.inmotionchat.identity.service.contract.RoleService;
@@ -133,6 +130,17 @@ public class UserServiceImpl implements UserService {
 
             return null;
         });
+    }
+
+    @Override
+    public User retrieveById(Long tenantId, Long id) throws NotFoundException {
+        User user = this.sqlUserRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Could not find a user with this id."));
+
+        if (!user.getTenant().getId().equals(tenantId))
+            throw new NotFoundException("Could not find a user with this id.");
+
+        return user;
     }
 
 }
