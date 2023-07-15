@@ -3,7 +3,6 @@ package com.inmotionchat.core.data;
 import com.inmotionchat.core.data.postgres.AbstractDomain;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.util.query.JPASearchCriteriaParser;
-import com.inmotionchat.core.util.query.Operation;
 import com.inmotionchat.core.util.query.SearchCriteria;
 import jakarta.persistence.criteria.Predicate;
 import org.hibernate.exception.ConstraintViolationException;

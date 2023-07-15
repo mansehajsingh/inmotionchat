@@ -4,7 +4,7 @@ import com.inmotionchat.core.data.Schema;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "inbox_group_assignment", schema = Schema.InboxManagement)
+@Table(name = "inbox_group_assignments", schema = Schema.InboxManagement)
 public class InboxGroupAssignment {
 
     @Id

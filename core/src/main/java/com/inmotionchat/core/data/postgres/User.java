@@ -1,5 +1,6 @@
 package com.inmotionchat.core.data.postgres;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.dto.UserDTO;
@@ -64,6 +65,7 @@ public class User {
         return this.uid;
     }
 
+    @JsonIgnore
     public Tenant getTenant() {
         return this.tenant;
     }

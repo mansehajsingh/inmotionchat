@@ -1,5 +1,6 @@
 package com.inmotionchat.core.data.postgres.inbox;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.dto.InboxDTO;
 import com.inmotionchat.core.data.postgres.AbstractDomain;
@@ -49,6 +50,7 @@ public class Inbox extends AbstractDomain<Inbox> {
     }
 
     @Override
+    @JsonIgnore
     public Tenant getTenant() {
         return this.tenant;
     }
@@ -61,6 +63,7 @@ public class Inbox extends AbstractDomain<Inbox> {
         this.open = open;
     }
 
+    @JsonIgnore
     public Set<Inbox> getInboxes() {
         return this.assignments.stream().map(InboxGroupAssignment::getInbox).collect(Collectors.toSet());
     }

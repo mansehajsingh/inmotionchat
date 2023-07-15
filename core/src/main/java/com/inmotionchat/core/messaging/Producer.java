@@ -7,7 +7,6 @@ import org.springframework.data.redis.connection.stream.ObjectRecord;
 import org.springframework.data.redis.connection.stream.RecordId;
 import org.springframework.data.redis.connection.stream.StreamRecords;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 import static com.inmotionchat.core.util.misc.ServiceResolution.isFromService;
 
