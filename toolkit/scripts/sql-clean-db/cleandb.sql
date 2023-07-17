@@ -5,5 +5,6 @@ DELETE FROM identityplatform.roles;
 DELETE FROM inboxmanagement.inbox_group_assignments;
 DELETE FROM inboxmanagement.inbox_groups;
 DELETE FROM inboxmanagement.inboxes;
+DELETE FROM workflowmanagement.workflows;
 DELETE FROM identityplatform.users;
 DELETE FROM identityplatform.tenants;
