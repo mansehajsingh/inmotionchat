@@ -1,10 +1,9 @@
 package com.inmotionchat.startup.configuration;
 
-import com.inmotionchat.identity.security.AccessTokenFilter;
-import com.inmotionchat.identity.security.Endpoint;
-import com.inmotionchat.identity.security.InMotionSecurityProperties;
-import com.inmotionchat.identity.security.SpringSecurityRoles;
-import com.inmotionchat.identity.service.contract.TokenProvider;
+import com.inmotionchat.core.security.AccessTokenFilter;
+import com.inmotionchat.core.security.Endpoint;
+import com.inmotionchat.core.security.InMotionSecurityProperties;
+import com.inmotionchat.core.security.SpringSecurityRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,16 +24,12 @@ import java.security.SecureRandom;
 @Configuration
 public class SecurityConfiguration {
 
-    private final TokenProvider tokenProvider;
+    private AccessTokenFilter accessTokenFilter;
 
     @Autowired
-    public SecurityConfiguration(TokenProvider tokenProvider) {
-        this.tokenProvider = tokenProvider;
-    }
-
-    @Bean
-    public AccessTokenFilter accessTokenFilter(TokenProvider tokenProvider) {
-        return new AccessTokenFilter(tokenProvider);
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") // Module loaded at runtime from core regardless of config
+    public SecurityConfiguration(AccessTokenFilter accessTokenFilter) {
+        this.accessTokenFilter = accessTokenFilter;
     }
 
     @Bean
@@ -42,7 +37,6 @@ public class SecurityConfiguration {
             final AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -64,7 +58,7 @@ public class SecurityConfiguration {
 
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(accessTokenFilter(this.tokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(accessTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

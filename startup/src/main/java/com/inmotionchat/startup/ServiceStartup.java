@@ -1,10 +1,8 @@
 package com.inmotionchat.startup;
 
-import com.inmotionchat.core.exceptions.ServiceDeploymentException;
 import com.inmotionchat.core.soa.InMotionService;
 import com.inmotionchat.core.soa.ServicePropertyManager;
 import jakarta.annotation.PostConstruct;
-import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -13,18 +11,16 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
+import static com.inmotionchat.startup.InMotionConfiguration.getInstance;
 
 @Component
 public class ServiceStartup {
 
     private Logger log = LoggerFactory.getLogger(ServiceStartup.class);
-
-    private InMotionConfiguration configuration;
 
     private ListableBeanFactory listableBeanFactory;
 
@@ -32,18 +28,15 @@ public class ServiceStartup {
 
     @Autowired
     public ServiceStartup(
-            InMotionConfiguration inMotionConfiguration,
             ListableBeanFactory listableBeanFactory,
             ConfigurableApplicationContext applicationContext
     ) {
-        this.configuration = inMotionConfiguration;
         this.listableBeanFactory = listableBeanFactory;
         this.applicationContext = applicationContext;
     }
 
     @PostConstruct
-    public void startServices() throws IOException, ParseException, ServiceDeploymentException, InvocationTargetException, InstantiationException, IllegalAccessException {
-
+    public void startServices() throws Exception {
         Map<String, InMotionService> servicesByBeanName = this.listableBeanFactory.getBeansOfType(InMotionService.class);
 
         Map<String, InMotionService> servicesByClassName = new HashMap<>();
@@ -55,7 +48,7 @@ public class ServiceStartup {
             );
         }
 
-        for (String serviceName : this.configuration.getServicesToAwaken()) {
+        for (String serviceName : getInstance().getServicesToAwaken()) {
 
             if (!servicesByClassName.containsKey(serviceName)) {
                 throw new NoSuchElementException("No service with class name " + serviceName + " exists.");

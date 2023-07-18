@@ -1,4 +1,4 @@
-package com.inmotionchat.identity.security;
+package com.inmotionchat.core.security;
 
 import org.springframework.http.HttpMethod;
 
@@ -8,6 +8,8 @@ import java.util.List;
 import static com.inmotionchat.core.web.AbstractResource.API_V1;
 
 public class InMotionSecurityProperties {
+
+    public static final String JWT_SECRET_KEY_PROP_NAME = "inmotion.jwtSecretKey";
 
     public static List<Endpoint> doNotAuthenticate() {
         return new ArrayList<>() {{

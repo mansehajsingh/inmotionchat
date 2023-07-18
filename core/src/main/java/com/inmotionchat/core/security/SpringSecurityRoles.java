@@ -1,4 +1,4 @@
-package com.inmotionchat.identity.security;
+package com.inmotionchat.core.security;
 
 public class SpringSecurityRoles {
 

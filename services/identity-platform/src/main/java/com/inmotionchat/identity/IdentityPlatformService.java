@@ -4,7 +4,10 @@ import com.inmotionchat.core.soa.InMotionService;
 import com.inmotionchat.core.soa.ServiceProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import static com.inmotionchat.core.security.InMotionSecurityProperties.JWT_SECRET_KEY_PROP_NAME;
 
 @Component
 public class IdentityPlatformService extends InMotionService {
@@ -13,6 +16,7 @@ public class IdentityPlatformService extends InMotionService {
 
     private int accessTokenExpirationInMinutes = 1;
 
+    @Value("${" + JWT_SECRET_KEY_PROP_NAME + "}")
     private String jwtSecretKey;
 
     public IdentityPlatformService() {
@@ -35,11 +39,6 @@ public class IdentityPlatformService extends InMotionService {
 
     public int getAccessTokenExpirationInMinutes() {
         return this.accessTokenExpirationInMinutes;
-    }
-
-    @ServiceProperty(name = "jwtSecretKey", required = true)
-    public void setJwtSecretKey(String jwtSecretKey) {
-        this.jwtSecretKey = jwtSecretKey;
     }
 
     public String getJwtSecretKey() {

@@ -2,7 +2,8 @@ package com.inmotionchat.identity.service.impl;
 
 import com.inmotionchat.identity.IdentityPlatformService;
 import com.inmotionchat.identity.service.contract.TokenProvider;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,11 +44,6 @@ public class JwtTokenProvider implements TokenProvider {
                 .signWith(this.signingKey)
                 .setExpiration(Date.from(Instant.now().plus(this.accessTokenExpirationDuration)))
                 .compact();
-    }
-
-    @Override
-    public Jws<Claims> validateAndDecodeToken(String token) throws JwtException {
-        return this.parser.parseClaimsJws(token);
     }
 
 }

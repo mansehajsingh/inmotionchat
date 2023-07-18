@@ -1,21 +1,28 @@
 package com.inmotionchat.startup;
 
-import jakarta.annotation.PostConstruct;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.stereotype.Component;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-@Component
 public class InMotionConfiguration {
 
-    private List<String> servicesToAwaken;
+    private static InMotionConfiguration instance;
+
+    private final List<String> servicesToAwaken;
+
+    public static InMotionConfiguration getInstance() throws Exception {
+        if (instance != null) {
+            return instance;
+        }
+        instance = new InMotionConfiguration();
+        return instance;
+    }
 
     private static String[] extractServiceNames(JSONObject parsedConfigurations) {
         JSONArray jsonArray = (JSONArray) parsedConfigurations.get("services");
@@ -24,8 +31,7 @@ public class InMotionConfiguration {
         return Arrays.copyOf(servicesAsObjects, servicesAsObjects.length, String[].class);
     }
 
-    @PostConstruct
-    private void init() throws IOException, ParseException {
+    private InMotionConfiguration() throws IOException, ParseException {
         String configDirectoryPath = System.getProperty("conf");
         JSONParser parser = new JSONParser();
         JSONObject parsedConfigurations = (JSONObject) parser.parse(new FileReader(configDirectoryPath + "\\inmotion.json"));

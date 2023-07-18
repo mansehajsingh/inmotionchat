@@ -1,35 +1,38 @@
-package com.inmotionchat.identity.security;
+package com.inmotionchat.core.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.inmotionchat.core.security.AuthenticationDetails;
 import com.inmotionchat.core.web.AuthenticationError;
 import com.inmotionchat.core.web.MessageResponse;
-import com.inmotionchat.identity.service.contract.TokenProvider;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.*;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+@Component
 public class AccessTokenFilter extends OncePerRequestFilter {
 
-    private final TokenProvider tokenProvider;
+    private JwtParser parser;
 
-    public AccessTokenFilter(TokenProvider tokenProvider) {
-        this.tokenProvider = tokenProvider;
+    @Autowired
+    public AccessTokenFilter(@Value("${" + InMotionSecurityProperties.JWT_SECRET_KEY_PROP_NAME + "}") final String jwtSecretKey) {
+        this.parser = Jwts.parserBuilder().setSigningKey(jwtSecretKey.getBytes(StandardCharsets.UTF_8)).build();
     }
 
     protected void prepareResponse(HttpServletResponse response, String message) {
@@ -38,6 +41,10 @@ public class AccessTokenFilter extends OncePerRequestFilter {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter().write(json);
         } catch (Exception e) {}
+    }
+
+    protected Jws<Claims> validateAndDecodeToken(String token) throws JwtException {
+        return this.parser.parseClaimsJws(token);
     }
 
     @Override
@@ -59,7 +66,7 @@ public class AccessTokenFilter extends OncePerRequestFilter {
         Claims claims;
 
         try {
-            claims = this.tokenProvider.validateAndDecodeToken(token).getBody();
+            claims = validateAndDecodeToken(token).getBody();
         } catch (JwtException e) {
             prepareResponse(response, AuthenticationError.INVALID_TOKEN);
             return;
