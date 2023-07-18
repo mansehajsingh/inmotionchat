@@ -1,6 +1,9 @@
 package com.inmotionchat.core.data.postgres.workflow;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inmotionchat.core.data.Schema;
+import com.inmotionchat.core.data.dto.NodeDTO;
+import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.models.NodeType;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -17,6 +20,7 @@ public class Node {
     protected Long id;
 
     @ManyToOne
+    @JsonIgnore
     protected Workflow workflow;
 
     protected String type;
@@ -30,6 +34,10 @@ public class Node {
         this.workflow = workflow;
         this.type = nodeType.name();
         this.data = data;
+    }
+
+    public Node(Workflow workflow, NodeDTO nodeDTO) {
+        this(workflow, nodeDTO.type(), nodeDTO.data());
     }
 
     public Long getId() {
@@ -62,6 +70,10 @@ public class Node {
 
     public void setData(Map<String, Object> data) {
         this.data = data;
+    }
+
+    public void validate() throws DomainInvalidException {
+        // TODO: Add type dependent validation
     }
 
 }
