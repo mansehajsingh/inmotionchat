@@ -10,7 +10,7 @@
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
-    <artifactId>workflows</artifactId>
+    <artifactId>journeys</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

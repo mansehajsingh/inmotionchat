@@ -1,7 +1,7 @@
-package com.inmotionchat.workflows.workflow;
+package com.inmotionchat.journeys.journey;
 
-import com.inmotionchat.core.data.dto.WorkflowDTO;
-import com.inmotionchat.core.data.postgres.workflow.Workflow;
+import com.inmotionchat.core.data.dto.JourneyDTO;
+import com.inmotionchat.core.data.postgres.journey.Journey;
 import com.inmotionchat.core.models.Permission;
 import com.inmotionchat.core.security.IdentityContext;
 import com.inmotionchat.core.web.AbstractResource;
@@ -9,20 +9,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.inmotionchat.core.models.Permission.EDIT_WORKFLOWS;
-import static com.inmotionchat.core.models.Permission.READ_WORKFLOWS;
+import static com.inmotionchat.core.models.Permission.EDIT_JOURNEYS;
+import static com.inmotionchat.core.models.Permission.READ_JOURNEYS;
 import static com.inmotionchat.core.web.AbstractResource.PATH;
 
 @RestController
-@RequestMapping(PATH + "/workflows")
-public class WorkflowResource extends AbstractResource<Workflow, WorkflowDTO> {
+@RequestMapping(PATH + "/journeys")
+public class JourneyResource extends AbstractResource<Journey, JourneyDTO> {
 
-    protected static final Permission[] READ_PERMISSIONS = { READ_WORKFLOWS };
-    protected static final Permission[] CREATE_PERMISSIONS = { EDIT_WORKFLOWS };
+    protected static final Permission[] READ_PERMISSIONS = { READ_JOURNEYS };
+    protected static final Permission[] CREATE_PERMISSIONS = { EDIT_JOURNEYS };
 
     @Autowired
-    public WorkflowResource(IdentityContext identityContext, WorkflowService workflowService) {
-        super(identityContext, workflowService);
+    public JourneyResource(IdentityContext identityContext, JourneyService journeyService) {
+        super(identityContext, journeyService);
     }
 
     @Override

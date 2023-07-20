@@ -3,6 +3,6 @@
     "com.inmotionchat.identity.IdentityPlatformService",
     "com.inmotionchat.notifications.NotificationsService",
     "com.inmotionchat.inboxes.InboxesService",
-    "com.inmotionchat.workflows.WorkflowsService"
+    "com.inmotionchat.journeys.JourneysService"
   ]
 }

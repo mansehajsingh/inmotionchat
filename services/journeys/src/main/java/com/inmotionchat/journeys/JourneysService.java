@@ -1,4 +1,4 @@
-package com.inmotionchat.workflows;
+package com.inmotionchat.journeys;
 
 import com.inmotionchat.core.soa.InMotionService;
 import com.inmotionchat.core.soa.ServiceProperty;
@@ -7,24 +7,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class WorkflowsService extends InMotionService {
+public class JourneysService extends InMotionService {
 
     private String geoIpDatabaseLocation;
 
-    protected final static Logger log = LoggerFactory.getLogger(WorkflowsService.class);
+    protected final static Logger log = LoggerFactory.getLogger(JourneysService.class);
 
-    public WorkflowsService() {
+    public JourneysService() {
         super(log);
     }
 
     @Override
     public String getServiceName() {
-        return "WorkflowsService";
+        return "JourneysService";
     }
 
     @Override
     public String getServiceConfigFileName() {
-        return "workflows.json";
+        return "journeys.json";
     }
 
     @ServiceProperty(name = "geoIpDatabaseLocation", required = true)

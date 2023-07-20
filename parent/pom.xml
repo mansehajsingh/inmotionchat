@@ -15,7 +15,7 @@
         <module>../services/identity-platform</module>
         <module>../services/notifications</module>
         <module>../services/inboxes</module>
-        <module>../services/workflows</module>
+        <module>../services/journeys</module>
     </modules>
 
     <properties>

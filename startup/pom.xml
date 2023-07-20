@@ -83,7 +83,7 @@
 
         <dependency>
             <groupId>com.inmotionchat</groupId>
-            <artifactId>workflows</artifactId>
+            <artifactId>journeys</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 

@@ -6,6 +6,6 @@ public class Schema {
 
     public static final String InboxManagement = "inboxmanagement";
 
-    public static final String WorkflowManagement = "workflowmanagement";
+    public static final String JourneyManagement = "journeymanagement";
 
 }

@@ -23,7 +23,7 @@ public class Inbox extends AbstractDomain<Inbox> {
 
     private boolean open;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "inbox")
     private Set<InboxGroupAssignment> assignments;
 
     public Inbox() {}

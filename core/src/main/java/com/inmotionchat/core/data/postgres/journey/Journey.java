@@ -1,8 +1,8 @@
-package com.inmotionchat.core.data.postgres.workflow;
+package com.inmotionchat.core.data.postgres.journey;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inmotionchat.core.data.Schema;
-import com.inmotionchat.core.data.dto.WorkflowDTO;
+import com.inmotionchat.core.data.dto.JourneyDTO;
 import com.inmotionchat.core.data.postgres.AbstractArchivableDomain;
 import com.inmotionchat.core.data.postgres.identity.Tenant;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
@@ -17,22 +17,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "workflows", schema = Schema.WorkflowManagement)
-public class Workflow extends AbstractArchivableDomain<Workflow> {
+@Table(name = "journeys", schema = Schema.JourneyManagement)
+public class Journey extends AbstractArchivableDomain<Journey> {
 
     private String name;
 
     @ManyToOne
     private Tenant tenant;
 
-    public Workflow() {}
+    public Journey() {}
 
-    public Workflow(String name, Tenant tenant) {
+    public Journey(String name, Tenant tenant) {
         this.name = name;
         this.tenant = tenant;
     }
 
-    public Workflow(Long tenantId, WorkflowDTO proto) {
+    public Journey(Long tenantId, JourneyDTO proto) {
         this.tenant = new Tenant(tenantId);
         this.name = proto.name();
     }
