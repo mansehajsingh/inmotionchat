@@ -166,21 +166,11 @@ public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
     }
 
     protected void throwIfMissingPermissions(Permission[] permissions) throws PermissionException {
-        List<String> missingPermissions = new ArrayList<>();
-
-        for (Permission p : permissions) {
-            if (!this.identityContext.getRequester().hasPermission(p)) {
-                missingPermissions.add(p.value());
-            }
-        }
-
-        if (!missingPermissions.isEmpty()) {
-            throw new PermissionException(missingPermissions);
-        }
+        WebUtils.throwIfMissingPermissions(identityContext, permissions);
     }
 
     protected boolean isCorrectTenant(Long tenantId, DTO dto) {
-        return this.identityContext.getRequester().getTenantId().equals(tenantId);
+        return WebUtils.isCorrectTenant(identityContext, tenantId);
     }
 
 }

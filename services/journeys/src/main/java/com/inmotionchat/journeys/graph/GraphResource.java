@@ -9,6 +9,7 @@ import com.inmotionchat.core.exceptions.PermissionException;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.models.Permission;
 import com.inmotionchat.core.security.IdentityContext;
+import com.inmotionchat.core.web.WebUtils;
 import com.inmotionchat.journeys.journey.JourneyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,33 +44,15 @@ public class GraphResource {
 
     @GetMapping
     public GraphDTO get(@PathVariable Long tenantId, @PathVariable Long journeyId) throws UnauthorizedException, NotFoundException, PermissionException {
-        if (!isCorrectTenant(tenantId))
+        if (!WebUtils.isCorrectTenant(identityContext, tenantId))
             throw new UnauthorizedException("Not authorized to fetch a graph for this tenant.");
 
-        throwIfMissingPermissions(READ_PERMISSIONS);
+        WebUtils.throwIfMissingPermissions(identityContext, READ_PERMISSIONS);
 
         Journey journey = this.journeyService.retrieveById(tenantId, journeyId);
         List<Node> nodes = this.graphService.retrieveByJourney(journey);
 
         return new GraphDTO(nodes.stream().map(NodeDTO::new).toList());
-    }
-
-    protected boolean isCorrectTenant(Long tenantId) {
-        return this.identityContext.getRequester().getTenantId().equals(tenantId);
-    }
-
-    protected void throwIfMissingPermissions(Permission[] permissions) throws PermissionException {
-        List<String> missingPermissions = new ArrayList<>();
-
-        for (Permission p : permissions) {
-            if (!this.identityContext.getRequester().hasPermission(p)) {
-                missingPermissions.add(p.value());
-            }
-        }
-
-        if (!missingPermissions.isEmpty()) {
-            throw new PermissionException(missingPermissions);
-        }
     }
 
 }
