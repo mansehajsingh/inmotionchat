@@ -38,6 +38,7 @@ public class Tenant {
     }
 
     public Tenant(String name, Set<String> resolutionDomains) {
+        this.name = name;
         this.resolutionDomains = resolutionDomains;
     }
 
