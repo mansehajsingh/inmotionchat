@@ -29,7 +29,7 @@ public class IdentityPlatformService extends InMotionService {
 
     @Override
     public String getServiceConfigFileName() {
-        return "identity-platform.json";
+        return "identity-platform.toml";
     }
 
     @ServiceProperty(name = "accessTokenExpirationInMinutes")

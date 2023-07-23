@@ -1,8 +1,6 @@
-{
-  "services": [
+services = [
     "com.inmotionchat.identity.IdentityPlatformService",
     "com.inmotionchat.notifications.NotificationsService",
     "com.inmotionchat.inboxes.InboxesService",
-    "com.inmotionchat.journeys.JourneysService"
-  ]
-}
+    "com.inmotionchat.journeys.JourneysService",
+]

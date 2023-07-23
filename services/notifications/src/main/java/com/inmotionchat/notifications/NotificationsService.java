@@ -33,7 +33,7 @@ public class NotificationsService extends InMotionService {
 
     @Override
     public String getServiceConfigFileName() {
-        return "notifications.json";
+        return "notifications.toml";
     }
 
     @ServiceProperty(name = "activeNotifiers")
@@ -45,7 +45,7 @@ public class NotificationsService extends InMotionService {
         return this.activeNotifierTypes;
     }
 
-    @ServiceProperty(name = "emailProperties", required = true)
+    @ServiceProperty(name = "email", required = true)
     public void setEmailProperties(EmailProperties emailProperties) {
         this.emailProperties = emailProperties;
     }

@@ -24,7 +24,7 @@ public class JourneysService extends InMotionService {
 
     @Override
     public String getServiceConfigFileName() {
-        return "journeys.json";
+        return "journeys.toml";
     }
 
     @ServiceProperty(name = "geoIpDatabaseLocation", required = true)

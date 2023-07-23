@@ -1,39 +1,34 @@
 package com.inmotionchat.core.soa;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.internal.Primitives;
-import com.inmotionchat.core.exceptions.ServiceDeploymentException;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import com.moandjiezana.toml.Toml;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ServicePropertyManager {
 
     private final Logger log = LoggerFactory.getLogger(ServicePropertyManager.class);
 
-    private final JSONObject parsedConfigs;
+    private final Toml toml;
 
     private final InMotionService service;
 
     public ServicePropertyManager(InMotionService inMotionService) throws IOException, ParseException {
         String configDirectoryPath = System.getProperty("conf");
-        JSONParser parser = new JSONParser();
-        this.parsedConfigs = (JSONObject) parser.parse(
-                new FileReader(configDirectoryPath + "\\" + inMotionService.getServiceConfigFileName())
-        );
+        this.toml = new Toml().read(new File(configDirectoryPath + "\\" + inMotionService.getServiceConfigFileName()));
         this.service = inMotionService;
     }
 
-    public void fillServiceProperties() throws ServiceDeploymentException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public void fillServiceProperties() {
 
         List<Method> setters = new ArrayList<>();
 
@@ -42,57 +37,54 @@ public class ServicePropertyManager {
                 setters.add(method);
         }
 
+        ObjectMapper mapper = new ObjectMapper();
+
+        Map<String, Object> properties = (Map<String, Object>) toml.toMap().get("properties");
+
         for (Method setter : setters) {
-            Class<?> configValueType = setter.getParameterTypes()[0];
+            Class<?> type = setter.getParameterTypes()[0];
+
+            if (type.isPrimitive()) {
+                type = Primitives.wrap(type);
+            }
+
             ServiceProperty property = setter.getAnnotation(ServiceProperty.class);
-            Object configValue = "";
 
-            configValue = parsedConfigs.get(property.name());
-
-            if (configValue == null && property.required()) {
-                throw new ServiceDeploymentException(
-                        "Configuration property "
-                                + property.name()
-                                + " of service "
-                                + this.service.getServiceName()
-                                + " could not be resolved. Check "
-                                + this.service.getServiceConfigFileName()
-                                + " to ensure the property is present."
-                );
+            if (property.required() && !properties.containsKey(property.name())) {
+                log.error("@ServiceProperty {} for service {} was not found but is required.",
+                        property.name(), service.getServiceName());
+            } else if (!properties.containsKey(property.name())) {
+                continue;
             }
 
-            configValueType = wrapIfPrimitive(configValueType);
-            configValue = cleanupValue(configValue, configValueType);
+            Object value = properties.get(property.name());
 
-            if (configValueType.getPackage().getName().startsWith("com.inmotionchat") && configValue instanceof JSONObject jsonObject) {
-                Gson gson = new Gson();
-                configValue = gson.fromJson(jsonObject.toJSONString(), configValueType);
+            // if a sub property set is found
+            if (value != null && Map.class.isAssignableFrom(value.getClass())) {
+                value = mapper.convertValue(value, type);
             }
 
-            try {
-                setter.invoke(this.service, configValueType.cast(configValue));
-            } catch(Exception e) {
-                log.warn("@ServiceProperty {} failed to be configured for service {}. Reason: ",
-                        property.name(), service.getServiceName(), e);
+            // if the setter param type is a number, toml parser will only parse non-decimal numbers to Long, so we must handle this case
+            if (value != null && Number.class.isAssignableFrom(type)) {
+
+                if (type.isAssignableFrom(Integer.class)) {
+                    value = Long.class.cast(value).intValue();
+                }
+
             }
+
+            doSet(setter, property, type, value);
         }
 
     }
 
-    private Class<?> wrapIfPrimitive(Class<?> configValueType) {
-        if (configValueType.isPrimitive()) {
-            return Primitives.wrap(configValueType);
+    private void doSet(Method setter, ServiceProperty property, Class<?> type, Object value) {
+        try {
+            setter.invoke(this.service, type.cast(value));
+        } catch(Exception e) {
+            log.warn("@ServiceProperty {} failed to be configured for service {}. Reason: ",
+                    property.name(), service.getServiceName(), e);
         }
-
-        return configValueType;
-    }
-
-    private Object cleanupValue(Object configValue, Class<?> configValueType) {
-        if (configValue.getClass().isAssignableFrom(Long.class) && configValueType.isAssignableFrom(Integer.class)) {
-            return ((Long) configValue).intValue();
-        }
-
-        return configValue;
     }
 
 }

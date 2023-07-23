@@ -21,7 +21,7 @@ public class InboxesService extends InMotionService {
 
     @Override
     public String getServiceConfigFileName() {
-        return "inboxes.json";
+        return "inboxes.toml";
     }
 
 }
