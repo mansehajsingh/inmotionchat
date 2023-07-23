@@ -1,10 +1,13 @@
-DELETE FROM identityplatform.permissions;
-DELETE FROM identityplatform.resolution_domains;
-DELETE FROM identityplatform.role_assignments;
-DELETE FROM identityplatform.roles;
-DELETE FROM inboxmanagement.inbox_group_assignments;
-DELETE FROM inboxmanagement.inbox_groups;
-DELETE FROM inboxmanagement.inboxes;
-DELETE FROM journeymanagement.journeys;
-DELETE FROM identityplatform.users;
-DELETE FROM identityplatform.tenants;
+TRUNCATE    identityplatform.permissions,
+            identityplatform.resolution_domains,
+            identityplatform.role_assignments,
+            identityplatform.roles,
+            inboxmanagement.inbox_group_assignments,
+            inboxmanagement.inbox_groups,
+            inboxmanagement.inboxes,
+            journeymanagement.edges,
+            journeymanagement.nodes,
+            journeymanagement.journeys,
+            identityplatform.users,
+            identityplatform.tenants
+RESTART IDENTITY;

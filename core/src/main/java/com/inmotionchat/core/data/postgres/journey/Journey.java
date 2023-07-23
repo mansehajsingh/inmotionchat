@@ -5,13 +5,12 @@ import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.dto.JourneyDTO;
 import com.inmotionchat.core.data.postgres.AbstractArchivableDomain;
 import com.inmotionchat.core.data.postgres.identity.Tenant;
+import com.inmotionchat.core.data.postgres.journey.templates.node.StartNodeTemplate;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.util.validation.AbstractRule;
 import com.inmotionchat.core.util.validation.StringRule;
 import com.inmotionchat.core.util.validation.Violation;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +24,10 @@ public class Journey extends AbstractArchivableDomain<Journey> {
     @ManyToOne
     private Tenant tenant;
 
+    @OneToMany(mappedBy = "journey", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JsonIgnore
+    private List<Node> nodes;
+
     public Journey() {}
 
     public Journey(String name, Tenant tenant) {
@@ -35,6 +38,12 @@ public class Journey extends AbstractArchivableDomain<Journey> {
     public Journey(Long tenantId, JourneyDTO proto) {
         this.tenant = new Tenant(tenantId);
         this.name = proto.name();
+
+        if (this.isNew()) {
+            this.nodes = new ArrayList<>();
+            Node startNode = new Node(this, NodeType.START, new StartNodeTemplate(), new ArrayList<>());
+            this.nodes.add(startNode);
+        }
     }
 
     public String getName() {
@@ -49,6 +58,14 @@ public class Journey extends AbstractArchivableDomain<Journey> {
     @JsonIgnore
     public Tenant getTenant() {
         return this.tenant;
+    }
+
+    public List<Node> getNodes() {
+        return this.nodes;
+    }
+
+    public void setNodes(List<Node> nodes) {
+        this.nodes = nodes;
     }
 
     @Override
