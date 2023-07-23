@@ -26,8 +26,23 @@ services:
       - redis_data:/data
     command: 'redis-server --loglevel warning --requirepass ${REDIS_PASS} --save 20 1'
 
+  firebase:
+    container_name: firebase
+    image: mansehajsingh/inmotion-firebase-emulators:latest
+    restart: always
+    build:
+      dockerfile: './firebase/Dockerfile'
+    ports:
+      - '9099:9099'
+      - '4000:4000'
+    volumes:
+      - fb_data:/var/firebase/data
+      - './firebase/firebase.json:/var/firebase/firebase.json'
+
 volumes:
   pg_data:
     driver: local
   redis_data:
+    driver: local
+  fb_data:
     driver: local
