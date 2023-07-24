@@ -1,6 +1,5 @@
 package com.inmotionchat.identity.service.impl;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import com.inmotionchat.core.data.LogicalConstraints;
@@ -20,6 +19,7 @@ import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.exceptions.ServerException;
 import com.inmotionchat.identity.firebase.FirebaseErrorCodeTranslator;
 import com.inmotionchat.identity.postgres.SQLUserRepository;
+import com.inmotionchat.identity.service.contract.FirebaseWrapper;
 import com.inmotionchat.identity.service.contract.RoleService;
 import com.inmotionchat.identity.service.contract.UserService;
 import org.slf4j.Logger;
@@ -44,17 +44,21 @@ public class UserServiceImpl implements UserService {
 
     private final StreamEventPublisher eventPublisher;
 
+    private final FirebaseWrapper firebaseWrapper;
+
     @Autowired
     public UserServiceImpl(
             PlatformTransactionManager transactionManager,
             SQLUserRepository sqlUserRepository,
             RoleService roleService,
-            StreamEventPublisher eventPublisher
+            StreamEventPublisher eventPublisher,
+            FirebaseWrapper firebaseWrapper
     ) {
         this.transactionTemplate = TransactionTemplateFactory.getThrowingTransactionTemplate(transactionManager);
         this.sqlUserRepository = sqlUserRepository;
         this.roleService = roleService;
         this.eventPublisher = eventPublisher;
+        this.firebaseWrapper = firebaseWrapper;
     }
 
     @Override
@@ -69,7 +73,7 @@ public class UserServiceImpl implements UserService {
         UserRecord record = null;
 
         try {
-            record = FirebaseAuth.getInstance().createUser(crq);
+            record = firebaseWrapper.create(crq);
         } catch (FirebaseAuthException e) {
             FirebaseErrorCodeTranslator.getInstance().translateAuthErrorCode(e.getAuthErrorCode());
         }
@@ -101,7 +105,7 @@ public class UserServiceImpl implements UserService {
             UserRecord record = null;
 
             try {
-                record = FirebaseAuth.getInstance().getUser(uid);
+                record = firebaseWrapper.getUser(uid);
             } catch (FirebaseAuthException e) {
                 FirebaseErrorCodeTranslator.getInstance().translateAuthErrorCode(e.getAuthErrorCode());
                 throw new ServerException();
@@ -122,7 +126,7 @@ public class UserServiceImpl implements UserService {
             urq.setCustomClaims(customClaims);
 
             try {
-                FirebaseAuth.getInstance().updateUser(urq);
+                firebaseWrapper.update(urq);
             } catch (FirebaseAuthException e) {
                 FirebaseErrorCodeTranslator.getInstance().translateAuthErrorCode(e.getAuthErrorCode());
             }
