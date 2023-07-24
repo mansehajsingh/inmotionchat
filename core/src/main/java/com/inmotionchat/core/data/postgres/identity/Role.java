@@ -30,9 +30,9 @@ public class Role extends AbstractDomain<Role> {
     @CollectionTable(name = "permissions", schema = Schema.IdentityPlatform)
     private Set<String> permissions;
 
-    private boolean restricted;
+    protected boolean restricted;
 
-    private boolean root;
+    protected boolean root;
 
     public Role() {}
 
