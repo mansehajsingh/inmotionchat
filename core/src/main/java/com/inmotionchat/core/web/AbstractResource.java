@@ -13,9 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
 
     public static final String API_V1 = "/api/v1";
