@@ -26,16 +26,20 @@ public class InboxGroup extends AbstractDomain<InboxGroup> {
 
     private String name;
 
+    private boolean open;
+
     public InboxGroup() {}
 
     public InboxGroup(Tenant tenant, String name) {
         this.tenant = tenant;
         this.name = name;
+        this.open = false;
     }
 
     public InboxGroup(Long tenantId, InboxGroupDTO proto) {
         this.tenant = new Tenant(tenantId);
         this.name = proto.name();
+        this.open = false;
     }
 
     @DomainUpdate
@@ -50,6 +54,14 @@ public class InboxGroup extends AbstractDomain<InboxGroup> {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isOpen() {
+        return this.open;
+    }
+
+    public void setOpen(boolean open) {
+        this.open = open;
     }
 
     @Override
