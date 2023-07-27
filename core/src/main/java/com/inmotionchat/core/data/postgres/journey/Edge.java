@@ -42,6 +42,11 @@ public class Edge {
         this.template = mapper.convertValue(template, Map.class);
     }
 
+    public Edge(Journey journey, Node source, Node destination, Map<String, Object> template) {
+        this(journey, source, destination, (EdgeTemplate) null);
+        this.template = template;
+    }
+
     public Long getId() {
         return this.id;
     }
@@ -74,8 +79,8 @@ public class Edge {
         this.destination = destination;
     }
 
-    public EdgeTemplate getTemplate() {
-        return mapper.convertValue(template, EdgeTemplate.class);
+    public <T extends EdgeTemplate > T getTemplate(Class<T> clazz) {
+        return mapper.convertValue(template, clazz);
     }
 
     public Map<String, Object> getTemplateAsMap() {

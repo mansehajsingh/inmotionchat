@@ -4,21 +4,19 @@ import com.inmotionchat.core.data.dto.GraphDTO;
 import com.inmotionchat.core.data.dto.NodeDTO;
 import com.inmotionchat.core.data.postgres.journey.Journey;
 import com.inmotionchat.core.data.postgres.journey.Node;
-import com.inmotionchat.core.exceptions.NotFoundException;
-import com.inmotionchat.core.exceptions.PermissionException;
-import com.inmotionchat.core.exceptions.UnauthorizedException;
+import com.inmotionchat.core.exceptions.*;
 import com.inmotionchat.core.models.Permission;
 import com.inmotionchat.core.security.IdentityContext;
 import com.inmotionchat.core.web.WebUtils;
 import com.inmotionchat.journeys.journey.JourneyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.inmotionchat.core.models.Permission.EDIT_JOURNEYS;
 import static com.inmotionchat.core.models.Permission.READ_JOURNEYS;
 import static com.inmotionchat.core.web.AbstractResource.PATH;
 
@@ -30,15 +28,14 @@ public class GraphResource {
 
     private final JourneyService journeyService;
 
-    private final GraphService graphService;
-
     protected final Permission[] READ_PERMISSIONS = { READ_JOURNEYS };
 
+    protected final Permission[] EDIT_PERMISSIONS = { EDIT_JOURNEYS };
+
     @Autowired
-    public GraphResource(IdentityContext identityContext, JourneyService journeyService, GraphService graphService) {
+    public GraphResource(IdentityContext identityContext, JourneyService journeyService) {
         this.identityContext = identityContext;
         this.journeyService = journeyService;
-        this.graphService = graphService;
     }
 
     @GetMapping
@@ -48,10 +45,20 @@ public class GraphResource {
 
         WebUtils.throwIfMissingPermissions(identityContext, READ_PERMISSIONS);
 
-        Journey journey = this.journeyService.retrieveById(tenantId, journeyId);
-        List<Node> nodes = this.graphService.retrieveByJourney(journey);
+        List<Node> nodes = this.journeyService.retrieveNodes(tenantId, journeyId);
 
         return new GraphDTO(nodes.stream().map(NodeDTO::new).toList());
+    }
+
+    @PutMapping
+    public ResponseEntity<?> update(@PathVariable Long tenantId, @PathVariable Long journeyId, @RequestBody GraphDTO graphDTO) throws PermissionException, UnauthorizedException, ConflictException, DomainInvalidException, NotFoundException {
+        if (!WebUtils.isCorrectTenant(identityContext, tenantId))
+            throw new UnauthorizedException("Not authorized to update a graph for this tenant.");
+
+        WebUtils.throwIfMissingPermissions(identityContext, EDIT_PERMISSIONS);
+
+        this.journeyService.updateGraph(tenantId, journeyId, graphDTO);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

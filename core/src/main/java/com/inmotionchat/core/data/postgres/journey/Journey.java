@@ -5,6 +5,7 @@ import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.dto.JourneyDTO;
 import com.inmotionchat.core.data.postgres.AbstractArchivableDomain;
 import com.inmotionchat.core.data.postgres.identity.Tenant;
+import com.inmotionchat.core.data.postgres.journey.templates.node.PromptTemplate;
 import com.inmotionchat.core.data.postgres.journey.templates.node.StartNodeTemplate;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.util.validation.AbstractRule;
@@ -24,7 +25,7 @@ public class Journey extends AbstractArchivableDomain<Journey> {
     @ManyToOne
     private Tenant tenant;
 
-    @OneToMany(mappedBy = "journey", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "journey", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE})
     @JsonIgnore
     private List<Node> nodes;
 
@@ -76,6 +77,58 @@ public class Journey extends AbstractArchivableDomain<Journey> {
 
         if (!violations.isEmpty())
             throw new DomainInvalidException(violations);
+    }
+
+    @Override
+    public void validateForUpdate() throws DomainInvalidException {
+        this.validate();
+
+        if (this.nodes != null) {
+            List<Violation> violations = new ArrayList<>();
+
+            boolean hasOneStartNode = false;
+
+            for (Node node : this.nodes) {
+
+                if (node.getType() == NodeType.START) {
+                    if (!hasOneStartNode) {
+                        hasOneStartNode = true;
+                    } else {
+                        // if we approach a second start node
+                        violations.add(new Violation("nodes", null, "There can only be one start node."));
+                    }
+
+                    if (node.getEdges().size() != 1) {
+                        // start nodes can have only one outgoing edge
+                        violations.add(new Violation("nodes", null, "Start node can only have 1 outgoing edge"));
+                    }
+                } else if (node.getType() == NodeType.PROMPT) {
+                    if (node.getEdges().size() < 2) {
+                        violations.add(new Violation("nodes", null, "Prompt nodes must have at least 2 outputs."));
+                    }
+                }
+
+                for (Edge edge : node.getEdges()) {
+                    if (edge.getDestination().getType() == NodeType.START) {
+                        // no edge may have a start node as a destination
+                        violations.add(new Violation("nodes", null, "Cannot have start node as a destination node."));
+                    }
+
+                    if (edge.getDestination().equals(edge.getSource())) {
+                        violations.add(new Violation("nodes", null, "Cannot have a destination node equal to source node."));
+                    }
+                }
+
+            }
+
+            if (!hasOneStartNode) {
+                violations.add(new Violation("nodes", null, "No start node was found."));
+            }
+
+            if (!violations.isEmpty())
+                throw new DomainInvalidException(violations);
+
+        }
     }
 
 }

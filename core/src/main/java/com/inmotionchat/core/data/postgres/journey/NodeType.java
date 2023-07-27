@@ -1,14 +1,17 @@
 package com.inmotionchat.core.data.postgres.journey;
 
+import com.inmotionchat.core.data.postgres.journey.templates.node.PromptTemplate;
 import com.inmotionchat.core.data.postgres.journey.templates.node.StartNodeTemplate;
 
 public enum NodeType {
 
-    START(StartNodeTemplate.class)
+    START(StartNodeTemplate.class),
+
+    PROMPT(PromptTemplate.class)
 
     ;
 
-    private Class<? extends NodeTemplate> templateType;
+    private final Class<? extends NodeTemplate> templateType;
 
     NodeType(Class<? extends NodeTemplate> templateType) {
         this.templateType = templateType;

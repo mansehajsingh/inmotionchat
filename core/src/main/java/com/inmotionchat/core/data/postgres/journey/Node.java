@@ -30,7 +30,7 @@ public class Node {
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> template;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "source")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "source", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private List<Edge> edges;
 
     public Node() {}
@@ -40,6 +40,11 @@ public class Node {
         this.nodeType = nodeType.name();
         this.template = mapper.convertValue(template, Map.class);
         this.edges = edges;
+    }
+
+    public Node(Journey journey, NodeType nodeType, Map<String, Object> template, List<Edge> edges) {
+        this(journey, nodeType, (NodeTemplate) null, edges);
+        this.template = template;
     }
 
     public Long getId() {
