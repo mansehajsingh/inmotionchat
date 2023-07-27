@@ -30,7 +30,7 @@ public class Node {
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> template;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "source", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "source", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     private List<Edge> edges;
 
     public Node() {}
