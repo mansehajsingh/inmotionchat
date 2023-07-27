@@ -6,10 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+
 @Component
 public class JourneysService extends InMotionService {
 
-    private String geoIpDatabaseLocation;
+    private File geoIpDatabase;
 
     protected final static Logger log = LoggerFactory.getLogger(JourneysService.class);
 
@@ -28,12 +30,12 @@ public class JourneysService extends InMotionService {
     }
 
     @ServiceProperty(name = "geoIpDatabaseLocation", required = true)
-    public void setGeoIpDatabaseLocation(String geoIpDatabaseLocation) {
-        this.geoIpDatabaseLocation = geoIpDatabaseLocation;
+    public void setGeoIpDatabase(String geoIpDatabaseLocation) {
+        this.geoIpDatabase = new File(geoIpDatabaseLocation);
     }
 
-    public String getGeoIpDatabaseLocation() {
-        return this.geoIpDatabaseLocation;
+    public File getGeoIpDatabase() {
+        return this.geoIpDatabase;
     }
 
 }
