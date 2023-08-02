@@ -7,6 +7,7 @@ TRUNCATE    identityplatform.permissions,
             inboxmanagement.inboxes,
             journeymanagement.edges,
             journeymanagement.nodes,
+            journeymanagement.inbox_group_endpoints,
             journeymanagement.journeys,
             identityplatform.users,
             identityplatform.tenants

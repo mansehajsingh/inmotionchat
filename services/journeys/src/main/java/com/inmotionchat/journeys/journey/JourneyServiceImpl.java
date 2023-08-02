@@ -7,13 +7,12 @@ import com.inmotionchat.core.data.dto.EdgeDTO;
 import com.inmotionchat.core.data.dto.GraphDTO;
 import com.inmotionchat.core.data.dto.JourneyDTO;
 import com.inmotionchat.core.data.dto.NodeDTO;
-import com.inmotionchat.core.data.postgres.journey.Edge;
-import com.inmotionchat.core.data.postgres.journey.Journey;
-import com.inmotionchat.core.data.postgres.journey.Node;
+import com.inmotionchat.core.data.postgres.journey.*;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
+import com.inmotionchat.journeys.graph.SQLInboxGroupEndpointRepository;
 import com.inmotionchat.journeys.graph.SQLNodeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,13 +35,17 @@ public class JourneyServiceImpl extends AbstractArchivingDomainService<Journey, 
 
     protected final ThrowingTransactionTemplate transactionTemplate;
 
+    protected final SQLInboxGroupEndpointRepository sqlInboxGroupEndpointRepository;
+
     @Autowired
     protected JourneyServiceImpl(SQLJourneyRepository repository,
                                  SQLNodeRepository sqlNodeRepository,
-                                 PlatformTransactionManager transactionManager) {
+                                 PlatformTransactionManager transactionManager,
+                                 SQLInboxGroupEndpointRepository sqlInboxGroupEndpointRepository) {
         super(Journey.class, JourneyDTO.class, log, repository, mapper);
         this.sqlNodeRepository = sqlNodeRepository;
         this.transactionTemplate = TransactionTemplateFactory.getThrowingTransactionTemplate(transactionManager);
+        this.sqlInboxGroupEndpointRepository = sqlInboxGroupEndpointRepository;
     }
 
     @Override
@@ -56,7 +59,6 @@ public class JourneyServiceImpl extends AbstractArchivingDomainService<Journey, 
         // Preparing journey object
         Journey journey = retrieveById(tenantId, journeyId);
 
-        // init nodes without edges
         List<Node> nodes = new ArrayList<>();
         for (NodeDTO nodeDTO : graphDTO.nodes()) {
             Node node = new Node(journey, nodeDTO.type(), nodeDTO.template(), new ArrayList<>());
@@ -93,7 +95,15 @@ public class JourneyServiceImpl extends AbstractArchivingDomainService<Journey, 
             List<Node> oldNodes = this.sqlNodeRepository.findAllByJourney(journey);
             this.sqlNodeRepository.deleteAll(oldNodes);
 
-            return this.repository.update(journey);
+            Journey createdJourney = this.repository.update(journey);
+
+            List<InboxGroupEndpoint> inboxGroupEndpoints = new ArrayList<>();
+            for (Node node : createdJourney.getNodes()) {
+                if (node.getType() == NodeType.INBOX_GROUP) inboxGroupEndpoints.add(new InboxGroupEndpoint(node));
+            }
+            this.sqlInboxGroupEndpointRepository.saveAllAndFlush(inboxGroupEndpoints);
+
+            return createdJourney;
         });
 
         return nodes;
