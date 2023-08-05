@@ -92,18 +92,15 @@ public class JourneyServiceImpl extends AbstractArchivingDomainService<Journey, 
         journey.validateForUpdate();
 
         this.transactionTemplate.execute(status -> {
-            List<Node> oldNodes = this.sqlNodeRepository.findAllByJourney(journey);
-            this.sqlNodeRepository.deleteAll(oldNodes);
-
-            Journey createdJourney = this.repository.update(journey);
+            Journey updatedJourney = this.repository.update(journey);
 
             List<InboxGroupEndpoint> inboxGroupEndpoints = new ArrayList<>();
-            for (Node node : createdJourney.getNodes()) {
+            for (Node node : updatedJourney.getNodes()) {
                 if (node.getType() == NodeType.INBOX_GROUP) inboxGroupEndpoints.add(new InboxGroupEndpoint(node));
             }
             this.sqlInboxGroupEndpointRepository.saveAllAndFlush(inboxGroupEndpoints);
 
-            return createdJourney;
+            return updatedJourney;
         });
 
         return nodes;

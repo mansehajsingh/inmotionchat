@@ -27,7 +27,7 @@ public class Journey extends AbstractArchivableDomain<Journey> {
     @ManyToOne
     private Tenant tenant;
 
-    @OneToMany(mappedBy = "journey", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "journey", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     @JsonIgnore
     private List<Node> nodes;
 

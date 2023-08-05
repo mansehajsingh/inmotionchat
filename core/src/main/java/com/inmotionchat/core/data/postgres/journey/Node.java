@@ -33,6 +33,9 @@ public class Node {
 
     private String nodeType;
 
+    @OneToOne(mappedBy = "node", cascade = CascadeType.ALL, orphanRemoval = true)
+    private InboxGroupEndpoint inboxGroupEndpoint;
+
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> template;
 
