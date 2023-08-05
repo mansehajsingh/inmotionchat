@@ -10,9 +10,7 @@ import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.util.validation.AbstractRule;
 import com.inmotionchat.core.util.validation.StringRule;
 import com.inmotionchat.core.util.validation.Violation;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,23 +26,36 @@ public class InboxGroup extends AbstractDomain<InboxGroup> {
 
     private boolean open;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "inboxGroup", cascade = { CascadeType.ALL }, orphanRemoval = true)
+    private List<Downtime> downtimeWindows;
+
     public InboxGroup() {}
 
     public InboxGroup(Tenant tenant, String name) {
         this.tenant = tenant;
         this.name = name;
+        this.downtimeWindows = new ArrayList<>();
         this.open = false;
     }
 
     public InboxGroup(Long tenantId, InboxGroupDTO proto) {
         this.tenant = new Tenant(tenantId);
         this.name = proto.name();
+        if (proto.downtimeWindows() != null) {
+            this.downtimeWindows = proto.downtimeWindows().stream().map(d -> new Downtime(this, d)).toList();
+        } else {
+            this.downtimeWindows = new ArrayList<>();
+        }
         this.open = false;
     }
 
     @DomainUpdate
     public InboxGroup update(InboxGroupDTO proto) {
         this.name = proto.name();
+        if (proto.downtimeWindows() != null) {
+            // if not provided, then don't change them
+            this.downtimeWindows = proto.downtimeWindows().stream().map(d -> new Downtime(this, d)).toList();
+        }
         return this;
     }
 
@@ -64,6 +75,14 @@ public class InboxGroup extends AbstractDomain<InboxGroup> {
         this.open = open;
     }
 
+    public List<Downtime> getDowntimeWindows() {
+        return this.downtimeWindows;
+    }
+
+    public void setDowntimeWindows(List<Downtime> downtimeWindows) {
+        this.downtimeWindows = downtimeWindows;
+    }
+
     @Override
     @JsonIgnore
     public Tenant getTenant() {
@@ -78,6 +97,20 @@ public class InboxGroup extends AbstractDomain<InboxGroup> {
 
         if (!violations.isEmpty())
             throw new DomainInvalidException(violations);
+
+        for (int i = 0; i < downtimeWindows.size(); i++) {
+            Downtime downtime = downtimeWindows.get(i);
+            downtime.validate();
+
+            for (int j = i + 1; j < downtimeWindows.size(); j++) {
+                Downtime other = downtimeWindows.get(j);
+
+                if (downtime.overlaps(other)) {
+                    throw new DomainInvalidException(
+                            new Violation("downtimeWindows", downtimeWindows, "Cannot have overlapping downtime windows."));
+                }
+            }
+        }
     }
 
 }
