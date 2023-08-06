@@ -5,6 +5,7 @@ import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.dto.UserDTO;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
+import com.inmotionchat.core.util.misc.RegExpPatterns;
 import com.inmotionchat.core.util.validation.AbstractRule;
 import com.inmotionchat.core.util.validation.StringRule;
 import com.inmotionchat.core.util.validation.Violation;
@@ -24,9 +25,6 @@ import java.util.regex.Pattern;
         }
 )
 public class User {
-
-    private static final Pattern emailPattern
-            = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
     // 1 upper case character, 1 lowercase character, 1 number, 1 symbol
     private static final Pattern passwordPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])((?=.*[-+_!@#$%^&*.,?])|(?=.*_))");
@@ -90,7 +88,7 @@ public class User {
         AbstractRule<String> emailRule = StringRule.forField("email")
                 .isNotNull()
                 .isNotEmpty()
-                .matches(emailPattern, "Email was not provided in a valid format.");
+                .matches(RegExpPatterns.EMAIL, "Email was not provided in a valid format.");
 
         AbstractRule<String> displayNameRule = StringRule.forField("displayName")
                 .isNotNull()
