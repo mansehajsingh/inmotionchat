@@ -51,7 +51,7 @@ public class SearchCriteriaMapper {
         else if (value.startsWith("*"))
             return Pair.of(value.substring(1), Operation.ENDS_WITH);
         else if (value.endsWith("*"))
-            return Pair.of(value.substring(value.length() - 1), Operation.STARTS_WITH);
+            return Pair.of(value.substring(0, value.length() - 1), Operation.STARTS_WITH);
 
         return Pair.of(value, Operation.EQUALS);
     }
