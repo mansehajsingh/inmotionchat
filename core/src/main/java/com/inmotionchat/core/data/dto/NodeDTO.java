@@ -3,7 +3,6 @@ package com.inmotionchat.core.data.dto;
 import com.inmotionchat.core.data.postgres.journey.Node;
 import com.inmotionchat.core.data.postgres.journey.NodeType;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

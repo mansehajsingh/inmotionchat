@@ -2,7 +2,6 @@ package com.inmotionchat.core.exceptions;
 
 import com.inmotionchat.core.util.validation.Violation;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 

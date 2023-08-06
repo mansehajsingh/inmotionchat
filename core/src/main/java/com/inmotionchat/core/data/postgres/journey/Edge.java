@@ -3,7 +3,6 @@ package com.inmotionchat.core.data.postgres.journey;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.inmotionchat.core.data.Schema;
-import com.inmotionchat.core.data.postgres.journey.templates.node.GeolocationTemplate;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;

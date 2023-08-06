@@ -1,7 +1,6 @@
 package com.inmotionchat.journeys.chatbox;
 
 import com.inmotionchat.core.data.AbstractArchivingDomainService;
-import com.inmotionchat.core.data.SQLArchivingRepository;
 import com.inmotionchat.core.data.dto.ChatboxDTO;
 import com.inmotionchat.core.data.postgres.journey.Chatbox;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;

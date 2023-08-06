@@ -2,7 +2,6 @@ package com.inmotionchat.journeys.graph;
 
 import com.inmotionchat.core.data.dto.GraphDTO;
 import com.inmotionchat.core.data.dto.NodeDTO;
-import com.inmotionchat.core.data.postgres.journey.Journey;
 import com.inmotionchat.core.data.postgres.journey.Node;
 import com.inmotionchat.core.exceptions.*;
 import com.inmotionchat.core.models.Permission;
