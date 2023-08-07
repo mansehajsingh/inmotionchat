@@ -13,7 +13,7 @@ public class UnverifiedUserEvent extends StreamEvent {
     protected UnverifiedUserEvent() {}
 
     public UnverifiedUserEvent(Object source, UserRecord record) {
-        super(source);
+        super(source, null, null);
         this.uid = record.getUid();
         this.email = record.getEmail();
         this.displayName = record.getDisplayName();

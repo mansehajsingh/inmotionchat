@@ -5,6 +5,7 @@ import com.inmotionchat.core.data.AbstractDomainService;
 import com.inmotionchat.core.data.dto.InboxDTO;
 import com.inmotionchat.core.data.postgres.inbox.Inbox;
 import com.inmotionchat.core.security.IdentityContext;
+import com.inmotionchat.core.security.Requester;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +22,14 @@ public class InboxServiceImpl extends AbstractDomainService<Inbox, InboxDTO> imp
 
     @Autowired
     protected InboxServiceImpl(PlatformTransactionManager transactionManager,
-                               IdentityContext identityContext,
                                AuditManager auditManager,
                                SQLInboxRepository sqlInboxRepository) {
-        super(Inbox.class, InboxDTO.class, log, transactionManager, identityContext, sqlInboxRepository, auditManager, mapper);
+        super(Inbox.class, InboxDTO.class, log, transactionManager, null, sqlInboxRepository, auditManager, mapper);
+    }
+
+    @Override
+    public void setIdentityContext(IdentityContext identityContext) {
+        this.identityContext = identityContext;
     }
 
 }

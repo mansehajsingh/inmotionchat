@@ -43,7 +43,7 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
 
     protected final AuditManager auditManager;
 
-    protected final IdentityContext identityContext;
+    protected IdentityContext identityContext;
 
     protected AbstractDomainService(
             Class<D> type,
