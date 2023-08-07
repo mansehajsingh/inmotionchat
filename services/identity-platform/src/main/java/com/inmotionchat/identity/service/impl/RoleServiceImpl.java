@@ -8,7 +8,6 @@ import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.dto.RoleDTO;
 import com.inmotionchat.core.data.postgres.identity.Role;
 import com.inmotionchat.core.data.postgres.identity.RoleAssignment;
-import com.inmotionchat.core.data.postgres.identity.Tenant;
 import com.inmotionchat.core.data.postgres.identity.User;
 import com.inmotionchat.core.exceptions.*;
 import com.inmotionchat.core.models.RoleType;

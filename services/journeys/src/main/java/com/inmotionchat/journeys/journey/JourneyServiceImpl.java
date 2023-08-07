@@ -9,8 +9,6 @@ import com.inmotionchat.core.data.dto.EdgeDTO;
 import com.inmotionchat.core.data.dto.GraphDTO;
 import com.inmotionchat.core.data.dto.JourneyDTO;
 import com.inmotionchat.core.data.dto.NodeDTO;
-import com.inmotionchat.core.data.postgres.identity.Tenant;
-import com.inmotionchat.core.data.postgres.identity.User;
 import com.inmotionchat.core.data.postgres.journey.*;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;

@@ -4,8 +4,6 @@ import com.inmotionchat.core.audit.AuditLog;
 import com.inmotionchat.core.audit.AuditManager;
 import com.inmotionchat.core.data.annotation.DomainUpdate;
 import com.inmotionchat.core.data.postgres.AbstractDomain;
-import com.inmotionchat.core.data.postgres.identity.Tenant;
-import com.inmotionchat.core.data.postgres.identity.User;
 import com.inmotionchat.core.exceptions.*;
 import com.inmotionchat.core.security.IdentityContext;
 import com.inmotionchat.core.util.query.SearchCriteria;
