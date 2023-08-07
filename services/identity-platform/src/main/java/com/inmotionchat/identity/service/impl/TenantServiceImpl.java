@@ -1,5 +1,7 @@
 package com.inmotionchat.identity.service.impl;
 
+import com.inmotionchat.core.audit.AuditLog;
+import com.inmotionchat.core.audit.AuditManager;
 import com.inmotionchat.core.data.RoleFactory;
 import com.inmotionchat.core.data.ThrowingTransactionTemplate;
 import com.inmotionchat.core.data.TransactionTemplateFactory;
@@ -23,6 +25,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TenantServiceImpl implements TenantService {
@@ -37,17 +40,21 @@ public class TenantServiceImpl implements TenantService {
 
     private final RoleService roleService;
 
+    private final AuditManager auditManager;
+
     @Autowired
     public TenantServiceImpl(
             SQLTenantRepository sqlTenantRepository,
             UserService userService,
             PlatformTransactionManager transactionManager,
-            RoleService roleService
+            RoleService roleService,
+            AuditManager auditManager
     ) {
         this.sqlTenantRepository = sqlTenantRepository;
         this.userService = userService;
         this.transactionTemplate = TransactionTemplateFactory.getThrowingTransactionTemplate(transactionManager);
         this.roleService = roleService;
+        this.auditManager = auditManager;
     }
 
     @Override
@@ -63,6 +70,13 @@ public class TenantServiceImpl implements TenantService {
 
         return this.transactionTemplate.execute((status) -> {
             Tenant createdTenant = this.sqlTenantRepository.saveAndFlush(tenant);
+
+            this.auditManager.save(new AuditLog("create_" + Tenant.class.getSimpleName().toLowerCase(), createdTenant, null,
+                    Map.ofEntries(
+                            Map.entry("name", prototype.name()),
+                            Map.entry("resolutionDomains", prototype.resolutionDomains())
+                    )
+            ));
 
             RoleDTO rootRoleDTO = RoleFactory.createRootRoleDTO(tenant);
             RoleDTO restrictedRoleDTO = new RoleDTO("Restricted", RoleType.RESTRICTED, new HashSet<>());

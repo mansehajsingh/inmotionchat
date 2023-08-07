@@ -14,7 +14,7 @@ import java.util.List;
 
 public interface InboxGroupService extends DomainService<InboxGroup, InboxGroupDTO> {
 
-    List<InboxGroupAssignment> assignInboxes(Long tenantId, Long inboxGroupId, InboxGroupAssignmentsDTO dto) throws NotFoundException, ConflictException;
+    List<InboxGroupAssignment> assignInboxes(Long tenantId, Long inboxGroupId, InboxGroupAssignmentsDTO dto) throws NotFoundException, ConflictException, DomainInvalidException;
 
     List<Inbox> retrieveInboxes(Long tenantId, Long inboxGroupId) throws NotFoundException;
 

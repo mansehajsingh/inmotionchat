@@ -52,7 +52,7 @@ public class RoleResource extends AbstractResource<Role, RoleDTO> {
 
     @PostMapping("/{id}/users")
     public ResponseEntity<?> assignRole(@PathVariable Long tenantId, @PathVariable Long id, @RequestBody RoleAssignmentDTO dto)
-            throws UnauthorizedException, PermissionException, NotFoundException, ConflictException {
+            throws UnauthorizedException, PermissionException, NotFoundException, ConflictException, DomainInvalidException {
 
         if (!isCorrectTenant(tenantId, null))
             throw new UnauthorizedException("Not authorized to assign roles for this tenant.");

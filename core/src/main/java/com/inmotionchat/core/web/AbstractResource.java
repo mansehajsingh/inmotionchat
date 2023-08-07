@@ -108,7 +108,7 @@ public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long tenantId, @PathVariable Long id) throws MethodUnsupportedException, PermissionException, UnauthorizedException, ConflictException, NotFoundException {
+    public ResponseEntity<?> delete(@PathVariable Long tenantId, @PathVariable Long id) throws MethodUnsupportedException, PermissionException, UnauthorizedException, ConflictException, NotFoundException, DomainInvalidException {
         if (!isDeleteEnabled())
             throw new MethodUnsupportedException();
 

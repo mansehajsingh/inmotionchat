@@ -5,6 +5,8 @@ import com.inmotionchat.core.data.events.PersistUserEvent;
 import com.inmotionchat.core.messaging.Consumer;
 import com.inmotionchat.core.messaging.ConsumerGroup;
 import com.inmotionchat.core.messaging.Stream;
+import com.inmotionchat.core.security.IdentityContext;
+import com.inmotionchat.core.security.Requester;
 import com.inmotionchat.inboxes.InboxesService;
 import com.inmotionchat.inboxes.inbox.InboxService;
 import org.slf4j.Logger;
@@ -16,6 +18,8 @@ import org.springframework.data.redis.connection.stream.RecordId;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.stream.Subscription;
 import org.springframework.stereotype.Component;
+
+import java.util.HashSet;
 
 @Component(value = PersistUserEventConsumer.NAME)
 public class PersistUserEventConsumer extends Consumer<PersistUserEvent> {
@@ -46,6 +50,13 @@ public class PersistUserEventConsumer extends Consumer<PersistUserEvent> {
     @Override
     protected void process(RecordId recordId, PersistUserEvent details) throws Exception {
         InboxDTO inboxDTO = new InboxDTO(details.userId());
+        this.inboxService.setIdentityContext(new IdentityContext() {
+            @Override
+            public Requester getRequester() {
+                return new Requester(details.userId(), null, details.getTenantId(), new HashSet<>());
+            }
+        });
+
         this.inboxService.create(details.tenantId(), inboxDTO);
     }
 

@@ -5,6 +5,7 @@ import com.inmotionchat.core.data.dto.RoleDTO;
 import com.inmotionchat.core.data.postgres.identity.Role;
 import com.inmotionchat.core.data.postgres.identity.User;
 import com.inmotionchat.core.exceptions.ConflictException;
+import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
 
@@ -12,9 +13,9 @@ import java.util.List;
 
 public interface RoleService extends DomainService<Role, RoleDTO> {
 
-    void assignRole(User user, Role Role) throws ConflictException, UnauthorizedException;
+    void assignRole(User user, Role Role) throws ConflictException, UnauthorizedException, DomainInvalidException, NotFoundException;
 
-    Role assignInitialRole(User user) throws NotFoundException, ConflictException, UnauthorizedException;
+    Role assignInitialRole(User user) throws NotFoundException, ConflictException, UnauthorizedException, DomainInvalidException;
 
     Role retrieveByUserId(Long userId) throws NotFoundException;
 

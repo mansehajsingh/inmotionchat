@@ -6,8 +6,6 @@ public class PersistUserEvent extends StreamEvent {
 
     private Long userId;
 
-    private Long tenantId;
-
     private String uid;
 
     private String email;
@@ -19,9 +17,8 @@ public class PersistUserEvent extends StreamEvent {
     }
 
     public PersistUserEvent(Object source, User user) {
-        super(source);
+        super(source, user.getTenant().getId(), user.getId());
         this.userId = user.getId();
-        this.tenantId = user.getTenant().getId();
         this.uid = user.getUid();
         this.email = user.getEmail();
         this.displayName = user.getDisplayName();

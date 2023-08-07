@@ -8,4 +8,6 @@ public class Schema {
 
     public static final String JourneyManagement = "journeymanagement";
 
+    public static final String AuditLogging = "audit";
+
 }

@@ -9,8 +9,14 @@ public abstract class StreamEvent {
 
     protected String originatingClassName;
 
-    protected StreamEvent(Object source) {
+    protected Long tenantId;
+
+    protected Long loggedBy;
+
+    protected StreamEvent(Object source, Long tenantId, Long loggedBy) {
         this.originatingClassName = source.getClass().getName();
+        this.tenantId = tenantId;
+        this.loggedBy = loggedBy;
     }
 
     protected StreamEvent() {}
@@ -23,6 +29,14 @@ public abstract class StreamEvent {
         }
 
         return null;
+    }
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public Long getLoggedByUserId() {
+        return loggedBy;
     }
 
 }
