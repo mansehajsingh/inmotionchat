@@ -1,14 +1,18 @@
 package com.inmotionchat.identity.service.impl;
 
+import com.inmotionchat.core.audit.AuditLog;
+import com.inmotionchat.core.audit.AuditManager;
 import com.inmotionchat.core.data.AbstractDomainService;
 import com.inmotionchat.core.data.DomainService;
 import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.dto.RoleDTO;
 import com.inmotionchat.core.data.postgres.identity.Role;
 import com.inmotionchat.core.data.postgres.identity.RoleAssignment;
+import com.inmotionchat.core.data.postgres.identity.Tenant;
 import com.inmotionchat.core.data.postgres.identity.User;
 import com.inmotionchat.core.exceptions.*;
 import com.inmotionchat.core.models.RoleType;
+import com.inmotionchat.core.security.IdentityContext;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import com.inmotionchat.identity.postgres.SQLRoleAssignmentRepository;
 import com.inmotionchat.identity.postgres.SQLRoleRepository;
@@ -17,8 +21,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -35,8 +41,12 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
     private final SQLRoleAssignmentRepository sqlRoleAssignmentRepository;
 
     @Autowired
-    public RoleServiceImpl(SQLRoleRepository sqlRoleRepository, SQLRoleAssignmentRepository sqlRoleAssignmentRepository) {
-        super(Role.class, RoleDTO.class, log, sqlRoleRepository, roleMapper);
+    public RoleServiceImpl(PlatformTransactionManager transactionManager,
+                           IdentityContext identityContext,
+                           AuditManager auditManager,
+                           SQLRoleRepository sqlRoleRepository,
+                           SQLRoleAssignmentRepository sqlRoleAssignmentRepository) {
+        super(Role.class, RoleDTO.class, log, transactionManager, identityContext, sqlRoleRepository, auditManager, roleMapper);
         this.sqlRoleRepository = sqlRoleRepository;
         this.sqlRoleAssignmentRepository = sqlRoleAssignmentRepository;
     }
@@ -54,24 +64,42 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
         updated.validate();
         updated.validateForUpdate();
 
-        return this.sqlRoleRepository.update(updated);
+        return this.transactionTemplate.execute(status -> {
+            Role updatedRole = this.sqlRoleRepository.update(updated);
+            this.auditManager.save(new AuditLog(
+                    "update_" + Role.class.getSimpleName().toLowerCase(),
+                    tenantId,
+                    identityContext.getRequester().userId(),
+                    createAuditData(updatedRole, prototype)
+            ));
+            return updatedRole;
+        });
     }
 
     @Override
-    public Role delete(Long tenantId, Long id) throws NotFoundException, ConflictException {
+    public Role delete(Long tenantId, Long id) throws NotFoundException, ConflictException, DomainInvalidException {
         Role role = retrieveById(tenantId, id);
 
         if (role.getRoleType() != RoleType.CUSTOM) {
             throw new ConflictException(LogicalConstraints.Role.IMMUTABLE_ROLE, "Cannot delete this role because it is immutable.");
         }
 
-        this.sqlRoleRepository.deleteById(id);
+        this.transactionTemplate.execute(status -> {
+            this.auditManager.save(new AuditLog(
+                    "delete_" + Role.class.getSimpleName().toLowerCase(),
+                    tenantId,
+                    identityContext.getRequester().userId(),
+                    role
+            ));
+            this.sqlRoleRepository.deleteById(id);
+            return null;
+        });
 
         return role;
     }
 
     @Override
-    public void assignRole(User user, Role role) throws ConflictException, UnauthorizedException {
+    public void assignRole(User user, Role role) throws ConflictException, UnauthorizedException, DomainInvalidException, NotFoundException {
         Optional<RoleAssignment> optionalRoleAssignment =
                 this.sqlRoleAssignmentRepository.findRoleAssignmentByUserId(user.getId());
 
@@ -94,11 +122,24 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
             assignment.setRole(role);
         }
 
-        this.sqlRoleAssignmentRepository.store(assignment);
+        this.transactionTemplate.execute(status -> {
+            RoleAssignment createdAssignment = this.sqlRoleAssignmentRepository.store(assignment);
+            this.auditManager.save(new AuditLog(
+                    "assign_" + Role.class.getSimpleName().toLowerCase(),
+                    role.getTenant().getId(),
+                    identityContext.getRequester().userId(),
+                    Map.ofEntries(
+                            Map.entry("id", createdAssignment.getId()),
+                            Map.entry("userId", createdAssignment.getUser().getId()),
+                            Map.entry("roleId", createdAssignment.getRole().getId())
+                    )
+            ));
+            return createdAssignment;
+        });
     }
 
     @Override
-    public Role assignInitialRole(User user) throws NotFoundException, ConflictException, UnauthorizedException {
+    public Role assignInitialRole(User user) throws NotFoundException, ConflictException, UnauthorizedException, DomainInvalidException {
         Role rootRole = this.sqlRoleRepository.findRootRole(user.getTenant().getId());
 
         boolean hasRootAssignment = this.sqlRoleAssignmentRepository.countSQLRoleAssignmentByRole(rootRole) > 0;

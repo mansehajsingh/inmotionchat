@@ -73,7 +73,7 @@ public class InboxGroupResource extends AbstractResource<InboxGroup, InboxGroupD
     }
 
     @PostMapping("/{id}/inboxes")
-    public void assignInboxes(@PathVariable Long tenantId, @PathVariable Long id, @RequestBody InboxGroupAssignmentsDTO dto) throws NotFoundException, UnauthorizedException, PermissionException, ConflictException {
+    public void assignInboxes(@PathVariable Long tenantId, @PathVariable Long id, @RequestBody InboxGroupAssignmentsDTO dto) throws NotFoundException, UnauthorizedException, PermissionException, ConflictException, DomainInvalidException {
         if (!isCorrectTenant(tenantId, null))
             throw new UnauthorizedException("Not authorized to create this resource for this tenant.");
 

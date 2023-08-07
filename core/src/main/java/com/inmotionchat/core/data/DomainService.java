@@ -18,6 +18,6 @@ public interface DomainService<T, DTO> {
 
     T update(Long tenantId, Long id, DTO prototype) throws DomainInvalidException, NotFoundException, ConflictException, ServerException, UnauthorizedException;
 
-    T delete(Long tenantId, Long id) throws NotFoundException, ConflictException;
+    T delete(Long tenantId, Long id) throws NotFoundException, ConflictException, DomainInvalidException;
 
 }

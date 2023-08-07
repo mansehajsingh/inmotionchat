@@ -1,5 +1,7 @@
 package com.inmotionchat.journeys.journey;
 
+import com.inmotionchat.core.audit.AuditLog;
+import com.inmotionchat.core.audit.AuditManager;
 import com.inmotionchat.core.data.AbstractArchivingDomainService;
 import com.inmotionchat.core.data.ThrowingTransactionTemplate;
 import com.inmotionchat.core.data.TransactionTemplateFactory;
@@ -7,10 +9,13 @@ import com.inmotionchat.core.data.dto.EdgeDTO;
 import com.inmotionchat.core.data.dto.GraphDTO;
 import com.inmotionchat.core.data.dto.JourneyDTO;
 import com.inmotionchat.core.data.dto.NodeDTO;
+import com.inmotionchat.core.data.postgres.identity.Tenant;
+import com.inmotionchat.core.data.postgres.identity.User;
 import com.inmotionchat.core.data.postgres.journey.*;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
+import com.inmotionchat.core.security.IdentityContext;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import com.inmotionchat.journeys.graph.SQLInboxGroupEndpointRepository;
 import com.inmotionchat.journeys.graph.SQLNodeRepository;
@@ -41,8 +46,10 @@ public class JourneyServiceImpl extends AbstractArchivingDomainService<Journey, 
     protected JourneyServiceImpl(SQLJourneyRepository repository,
                                  SQLNodeRepository sqlNodeRepository,
                                  PlatformTransactionManager transactionManager,
-                                 SQLInboxGroupEndpointRepository sqlInboxGroupEndpointRepository) {
-        super(Journey.class, JourneyDTO.class, log, repository, mapper);
+                                 IdentityContext identityContext,
+                                 SQLInboxGroupEndpointRepository sqlInboxGroupEndpointRepository,
+                                 AuditManager auditManager) {
+        super(Journey.class, JourneyDTO.class, log, transactionManager, identityContext, repository, auditManager, mapper);
         this.sqlNodeRepository = sqlNodeRepository;
         this.transactionTemplate = TransactionTemplateFactory.getThrowingTransactionTemplate(transactionManager);
         this.sqlInboxGroupEndpointRepository = sqlInboxGroupEndpointRepository;
@@ -99,6 +106,13 @@ public class JourneyServiceImpl extends AbstractArchivingDomainService<Journey, 
                 if (node.getType() == NodeType.INBOX_GROUP) inboxGroupEndpoints.add(new InboxGroupEndpoint(node));
             }
             this.sqlInboxGroupEndpointRepository.saveAllAndFlush(inboxGroupEndpoints);
+
+            this.auditManager.save(new AuditLog(
+                    "update_" + Journey.class.getSimpleName().toLowerCase() + "_graph",
+                    tenantId,
+                    identityContext.getRequester().userId(),
+                    graphDTO
+            ));
 
             return updatedJourney;
         });

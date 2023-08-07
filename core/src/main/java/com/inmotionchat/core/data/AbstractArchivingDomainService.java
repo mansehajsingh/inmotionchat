@@ -1,11 +1,14 @@
 package com.inmotionchat.core.data;
 
+import com.inmotionchat.core.audit.AuditManager;
 import com.inmotionchat.core.data.postgres.AbstractArchivableDomain;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.models.ArchivalStatus;
+import com.inmotionchat.core.security.IdentityContext;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import org.slf4j.Logger;
+import org.springframework.transaction.PlatformTransactionManager;
 
 public abstract class AbstractArchivingDomainService<D extends AbstractArchivableDomain<D>, DTO>
         extends AbstractDomainService<D, DTO> implements ArchivingDomainService<D, DTO> {
@@ -15,9 +18,12 @@ public abstract class AbstractArchivingDomainService<D extends AbstractArchivabl
     protected AbstractArchivingDomainService(Class<D> type,
                                              Class<DTO> dtoType,
                                              Logger log,
+                                             PlatformTransactionManager transactionManager,
+                                             IdentityContext identityContext,
                                              SQLArchivingRepository<D> repository,
+                                             AuditManager auditManager,
                                              SearchCriteriaMapper searchCriteriaMapper) {
-        super(type, dtoType, log, repository, searchCriteriaMapper);
+        super(type, dtoType, log, transactionManager, identityContext, repository, auditManager, searchCriteriaMapper);
         this.archivingRepository = repository;
     }
 

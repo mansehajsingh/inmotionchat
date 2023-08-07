@@ -44,6 +44,10 @@ public class User {
 
     public User() {}
 
+    public User(Long id) {
+        this.id = id;
+    }
+
     public User(String uid, Tenant tenant, String email, String displayName) {
         this.uid = uid;
         this.tenant = tenant;

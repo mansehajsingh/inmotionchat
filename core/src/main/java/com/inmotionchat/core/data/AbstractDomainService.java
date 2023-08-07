@@ -1,13 +1,19 @@
 package com.inmotionchat.core.data;
 
+import com.inmotionchat.core.audit.AuditLog;
+import com.inmotionchat.core.audit.AuditManager;
 import com.inmotionchat.core.data.annotation.DomainUpdate;
 import com.inmotionchat.core.data.postgres.AbstractDomain;
+import com.inmotionchat.core.data.postgres.identity.Tenant;
+import com.inmotionchat.core.data.postgres.identity.User;
 import com.inmotionchat.core.exceptions.*;
+import com.inmotionchat.core.security.IdentityContext;
 import com.inmotionchat.core.util.query.SearchCriteria;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.MultiValueMap;
 
 import java.lang.reflect.Constructor;
@@ -16,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.inmotionchat.core.util.query.Operation.EQUALS;
@@ -32,17 +39,29 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
 
     protected final SearchCriteriaMapper searchCriteriaMapper;
 
+    protected final ThrowingTransactionTemplate transactionTemplate;
+
+    protected final AuditManager auditManager;
+
+    protected final IdentityContext identityContext;
+
     protected AbstractDomainService(
             Class<D> type,
             Class<DTO> dtoType,
             Logger log,
+            PlatformTransactionManager transactionManager,
+            IdentityContext identityContext,
             SQLRepository<D> repository,
+            AuditManager auditManager,
             SearchCriteriaMapper searchCriteriaMapper
     ) {
         this.type = type;
         this.dtoType = dtoType;
         this.log = log;
+        this.transactionTemplate = TransactionTemplateFactory.getThrowingTransactionTemplate(transactionManager);
+        this.identityContext = identityContext;
         this.repository = repository;
+        this.auditManager = auditManager;
         this.searchCriteriaMapper = searchCriteriaMapper
                 .key("createdBy", Long.class)
                 .key("lastModifiedBy", Long.class);
@@ -63,6 +82,13 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
         }
 
         return searchCriteria.toArray(new SearchCriteria[0]);
+    }
+
+    protected Object createAuditData(D createdEntity, DTO prototype) {
+        return Map.ofEntries(
+                Map.entry("id", createdEntity.getId()),
+                Map.entry("request", prototype)
+        );
     }
 
     @Override
@@ -92,7 +118,12 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
             entity.validate();
             entity.validateForCreate();
 
-            return this.repository.store(entity);
+            return this.transactionTemplate.execute(status -> {
+                D createdEntity = this.repository.store(entity);
+                this.auditManager.save(new AuditLog("create_" + type.getSimpleName().toLowerCase(),
+                        tenantId, identityContext.getRequester().userId(), createAuditData(createdEntity, prototype)));
+                return createdEntity;
+            });
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             log.error("No constructor for DTO type {} was found in {}.", dtoType.getSimpleName(), type.getSimpleName());
             throw new ServerException();
@@ -120,7 +151,12 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
             updated.validate();
             updated.validateForUpdate();
 
-            return this.type.cast(this.repository.update(updated));
+            return this.transactionTemplate.execute(status -> {
+                D updatedEntity = this.type.cast(this.repository.update(updated));
+                this.auditManager.save(new AuditLog("update_" + type.getSimpleName().toLowerCase(),
+                        tenantId, identityContext.getRequester().userId(), createAuditData(updatedEntity, prototype)));
+                return updatedEntity;
+            });
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             log.error("No method annotated with @" + DomainUpdate.class.getSimpleName() + " with type {} was found in {}.",
                     dtoType.getSimpleName(), type.getSimpleName());
@@ -129,10 +165,18 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
     }
 
     @Override
-    public D delete(Long tenantId, Long id) throws NotFoundException, ConflictException {
+    public D delete(Long tenantId, Long id) throws NotFoundException, ConflictException, DomainInvalidException {
         D retrieved = retrieveById(tenantId, id);
-        this.repository.deleteById(id);
-        return retrieved;
+        return this.transactionTemplate.execute(status -> {
+            this.auditManager.save(new AuditLog(
+                    "delete_" + type.getSimpleName().toLowerCase(),
+                    tenantId,
+                    identityContext.getRequester().userId(),
+                    retrieved
+            ));
+            this.repository.deleteById(id);
+            return retrieved;
+        });
     }
 
 }
