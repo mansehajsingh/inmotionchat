@@ -6,6 +6,9 @@ import com.inmotionchat.core.data.postgres.identity.User;
 import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.util.MultiValueMap;
 
 public interface UserService {
 
@@ -14,5 +17,7 @@ public interface UserService {
     void verifyEmailPasswordUser(String uid, VerifyDTO verifyDTO) throws ConflictException, NotFoundException, DomainInvalidException;
 
     User retrieveById(Long tenantId, Long id) throws NotFoundException;
+
+    Page<User> search(Long tenantId, Pageable pageable, MultiValueMap<String, Object> parameters);
 
 }

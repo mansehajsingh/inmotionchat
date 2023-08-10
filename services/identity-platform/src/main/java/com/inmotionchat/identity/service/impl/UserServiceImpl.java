@@ -17,6 +17,8 @@ import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.exceptions.ServerException;
+import com.inmotionchat.core.util.query.SearchCriteria;
+import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import com.inmotionchat.identity.firebase.FirebaseErrorCodeTranslator;
 import com.inmotionchat.identity.postgres.SQLUserRepository;
 import com.inmotionchat.identity.service.contract.FirebaseWrapper;
@@ -25,16 +27,26 @@ import com.inmotionchat.identity.service.contract.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.util.MultiValueMap;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.inmotionchat.core.data.AbstractDomainService.getSearchCriteriaFromParameters;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+
+    private static SearchCriteriaMapper searchCriteriaMapper = new SearchCriteriaMapper()
+            .key("email", String.class)
+            .key("displayName", String.class)
+            .key("tenant", Long.class);
 
     private final ThrowingTransactionTemplate transactionTemplate;
 
@@ -148,6 +160,13 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException("Could not find a user with this id.");
 
         return user;
+    }
+
+    @Override
+    public Page<User> search(Long tenantId, Pageable pageable, MultiValueMap<String, Object> parameters) {
+        parameters.add("tenant", tenantId);
+        SearchCriteria<?>[] searchCriteria = getSearchCriteriaFromParameters(searchCriteriaMapper, parameters);
+        return this.sqlUserRepository.filter(pageable, searchCriteria);
     }
 
 }
