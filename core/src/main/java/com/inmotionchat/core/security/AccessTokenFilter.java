@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.http.HttpHeaders;
+import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,7 @@ public class AccessTokenFilter extends OncePerRequestFilter {
         try {
             String json = new ObjectMapper().writeValueAsString(new MessageResponse(message));
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType(ContentType.APPLICATION_JSON.getMimeType());
             response.getWriter().write(json);
         } catch (Exception e) {}
     }
@@ -67,6 +69,9 @@ public class AccessTokenFilter extends OncePerRequestFilter {
 
         try {
             claims = validateAndDecodeToken(token).getBody();
+        } catch (ExpiredJwtException e) {
+            prepareResponse(response, AuthenticationError.EXPIRED_TOKEN);
+            return;
         } catch (JwtException e) {
             prepareResponse(response, AuthenticationError.INVALID_TOKEN);
             return;
