@@ -32,7 +32,7 @@ public class SearchCriteriaMapper {
                 Pair<String, Operation> pair = parseOperationAndCleanValue((String) value);
                 return new SearchCriteria<>(key, pair.getSecond(), pair.getFirst());
             } else if (Number.class.isAssignableFrom(type)) {
-                Pair<Number, Operation> pair = Pair.of(Long.parseLong((String) value), Operation.EQUALS);
+                Pair<Number, Operation> pair = Pair.of(Long.parseLong(value.toString()), Operation.EQUALS);
                 return new SearchCriteria<>(key, pair.getSecond(), pair.getFirst());
             }
 

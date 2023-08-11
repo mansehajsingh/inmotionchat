@@ -65,7 +65,7 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
                 .key("lastModifiedBy", Long.class);
     }
 
-    protected SearchCriteria<?>[] getSearchCriteriaFromParameters(
+    public static SearchCriteria<?>[] getSearchCriteriaFromParameters(
             SearchCriteriaMapper mapper, MultiValueMap<String, Object> parameters
     ) {
 

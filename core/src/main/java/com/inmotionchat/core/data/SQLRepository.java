@@ -26,7 +26,7 @@ public interface SQLRepository<T extends AbstractDomain<T>> extends JpaRepositor
 
     void detach(T t);
 
-    default Specification<T> generateSpec(SearchCriteria<?> ...criteria) {
+    static <E> Specification<E> generateSpec(SearchCriteria<?> ...criteria) {
         return (root, criteriaQuery, criteriaBuilder) -> {
             Predicate buildablePredicate = null;
 
