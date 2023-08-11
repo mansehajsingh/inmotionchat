@@ -3,9 +3,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>com.inmotionchat</groupId>
+        <artifactId>parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../parent/pom.xml</relativePath>
+    </parent>
+
     <groupId>com.inmotionchat</groupId>
     <artifactId>startup</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${revision}</version>
     <name>startup</name>
 
     <properties>
@@ -72,37 +79,37 @@
         <dependency>
             <groupId>com.inmotionchat</groupId>
             <artifactId>parent</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
 
         <dependency>
             <groupId>com.inmotionchat</groupId>
             <artifactId>core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
 
         <dependency>
             <groupId>com.inmotionchat</groupId>
             <artifactId>identity</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
 
         <dependency>
             <groupId>com.inmotionchat</groupId>
             <artifactId>notifications</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
 
         <dependency>
             <groupId>com.inmotionchat</groupId>
             <artifactId>inboxes</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
 
         <dependency>
             <groupId>com.inmotionchat</groupId>
             <artifactId>journeys</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
 
         <dependency>

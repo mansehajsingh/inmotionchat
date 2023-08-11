@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.inmotionchat</groupId>
         <artifactId>test</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>test.identity</artifactId>
@@ -22,14 +22,14 @@
         <dependency>
             <groupId>com.inmotionchat</groupId>
             <artifactId>test.commons</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${revision}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.inmotionchat</groupId>
             <artifactId>core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version></version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
