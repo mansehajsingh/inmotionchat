@@ -1,5 +1,6 @@
 package com.inmotionchat.inboxes.inboxgroup;
 
+import com.inmotionchat.core.audit.AuditAction;
 import com.inmotionchat.core.audit.AuditLog;
 import com.inmotionchat.core.audit.AuditManager;
 import com.inmotionchat.core.data.AbstractDomainService;
@@ -41,8 +42,9 @@ public class InboxGroupServiceImpl extends AbstractDomainService<InboxGroup, Inb
                                     InboxService inboxService,
                                     PlatformTransactionManager transactionManager,
                                     AuditManager auditManager,
+                                    InboxGroupAuditActionProvider auditActionProvider,
                                     IdentityContext identityContext) {
-        super(InboxGroup.class, InboxGroupDTO.class, log, transactionManager, identityContext, sqlInboxGroupRepository, auditManager, mapper);
+        super(InboxGroup.class, InboxGroupDTO.class, log, transactionManager, identityContext, sqlInboxGroupRepository, auditManager, auditActionProvider, mapper);
         this.sqlInboxGroupAssignmentRepository = sqlInboxGroupAssignmentRepository;
         this.inboxService = inboxService;
     }
@@ -62,13 +64,11 @@ public class InboxGroupServiceImpl extends AbstractDomainService<InboxGroup, Inb
             List<InboxGroupAssignment> createdAssignments = this.sqlInboxGroupAssignmentRepository.storeAll(groupAssignments);
 
             this.auditManager.save(new AuditLog(
-                    "assign_inboxes",
+                    AuditAction.ASSIGN_INBOXES,
                     tenantId,
                     identityContext.getRequester().userId(),
-                    Map.ofEntries(
-                            Map.entry("inboxGroupId", inboxGroupId),
-                            Map.entry("inboxIds", createdAssignments.stream().map(a -> a.getInbox().getId()))
-                    )
+                    inboxGroup,
+                    Map.of("inboxIds", dto.inboxes().toArray())
             ));
             return createdAssignments;
         });
@@ -88,15 +88,19 @@ public class InboxGroupServiceImpl extends AbstractDomainService<InboxGroup, Inb
     @Override
     public Inbox removeInbox(Long tenantId, Long inboxGroupId, Long inboxId) throws NotFoundException, ConflictException, DomainInvalidException {
         Inbox inbox = this.inboxService.retrieveById(tenantId, inboxId);
+        InboxGroup inboxGroup = retrieveById(tenantId, inboxGroupId);
 
         this.transactionTemplate.execute(status -> {
-            sqlInboxGroupAssignmentRepository.deleteByGroupIdAndInboxId(inboxGroupId, inboxId);
+            InboxGroupAssignment assignment = sqlInboxGroupAssignmentRepository.findByGroupIdAndInboxId(inboxGroupId, inboxId).orElseThrow(
+                    () -> new NotFoundException("This inbox does not exist under this inbox group."));
+            sqlInboxGroupAssignmentRepository.deleteById(assignment.getId());
             this.auditManager.save(new AuditLog(
-                    "remove_" + Inbox.class.getSimpleName().toLowerCase(),
+                    AuditAction.REMOVE_INBOX_ASSIGNMENT,
                     tenantId,
                     identityContext.getRequester().userId(),
+                    inboxGroup,
                     Map.ofEntries(
-                            Map.entry("inboxGroupId", inboxGroupId),
+                            Map.entry("inboxGroupAssignmentId", assignment.getId()),
                             Map.entry("inboxId", inboxId)
                     )
             ));

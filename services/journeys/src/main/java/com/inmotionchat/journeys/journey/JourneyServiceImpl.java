@@ -1,5 +1,6 @@
 package com.inmotionchat.journeys.journey;
 
+import com.inmotionchat.core.audit.AuditAction;
 import com.inmotionchat.core.audit.AuditLog;
 import com.inmotionchat.core.audit.AuditManager;
 import com.inmotionchat.core.data.AbstractArchivingDomainService;
@@ -46,8 +47,9 @@ public class JourneyServiceImpl extends AbstractArchivingDomainService<Journey, 
                                  PlatformTransactionManager transactionManager,
                                  IdentityContext identityContext,
                                  SQLInboxGroupEndpointRepository sqlInboxGroupEndpointRepository,
-                                 AuditManager auditManager) {
-        super(Journey.class, JourneyDTO.class, log, transactionManager, identityContext, repository, auditManager, mapper);
+                                 AuditManager auditManager,
+                                 JourneyAuditActionProvider journeyAuditActionProvider) {
+        super(Journey.class, JourneyDTO.class, log, transactionManager, identityContext, repository, auditManager, journeyAuditActionProvider, mapper);
         this.sqlNodeRepository = sqlNodeRepository;
         this.transactionTemplate = TransactionTemplateFactory.getThrowingTransactionTemplate(transactionManager);
         this.sqlInboxGroupEndpointRepository = sqlInboxGroupEndpointRepository;
@@ -106,9 +108,10 @@ public class JourneyServiceImpl extends AbstractArchivingDomainService<Journey, 
             this.sqlInboxGroupEndpointRepository.saveAllAndFlush(inboxGroupEndpoints);
 
             this.auditManager.save(new AuditLog(
-                    "update_" + Journey.class.getSimpleName().toLowerCase() + "_graph",
+                    AuditAction.UPDATE_JOURNEY_GRAPH,
                     tenantId,
                     identityContext.getRequester().userId(),
+                    journey,
                     graphDTO
             ));
 

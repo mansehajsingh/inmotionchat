@@ -17,7 +17,7 @@ import java.time.ZonedDateTime;
 
 @MappedSuperclass
 @EntityListeners({AuditingEntityListener.class})
-public abstract class AbstractDomain<T extends AbstractDomain<T>> {
+public abstract class AbstractDomain<T extends AbstractDomain<T>> extends AbstractEntity {
 
     @Id
     @GeneratedValue

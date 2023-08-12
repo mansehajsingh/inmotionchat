@@ -1,5 +1,6 @@
 package com.inmotionchat.core.data;
 
+import com.inmotionchat.core.audit.AuditActionProvider;
 import com.inmotionchat.core.audit.AuditLog;
 import com.inmotionchat.core.audit.AuditManager;
 import com.inmotionchat.core.data.annotation.DomainUpdate;
@@ -41,6 +42,8 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
 
     protected final AuditManager auditManager;
 
+    protected final AuditActionProvider auditActionProvider;
+
     protected IdentityContext identityContext;
 
     protected AbstractDomainService(
@@ -51,6 +54,7 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
             IdentityContext identityContext,
             SQLRepository<D> repository,
             AuditManager auditManager,
+            AuditActionProvider auditActionProvider,
             SearchCriteriaMapper searchCriteriaMapper
     ) {
         this.type = type;
@@ -60,6 +64,7 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
         this.identityContext = identityContext;
         this.repository = repository;
         this.auditManager = auditManager;
+        this.auditActionProvider = auditActionProvider;
         this.searchCriteriaMapper = searchCriteriaMapper
                 .key("createdBy", Long.class)
                 .key("lastModifiedBy", Long.class);
@@ -118,8 +123,8 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
 
             return this.transactionTemplate.execute(status -> {
                 D createdEntity = this.repository.store(entity);
-                this.auditManager.save(new AuditLog("create_" + type.getSimpleName().toLowerCase(),
-                        tenantId, identityContext.getRequester().userId(), createAuditData(createdEntity, prototype)));
+                this.auditManager.save(new AuditLog(auditActionProvider.getCreateAction(),
+                        tenantId, identityContext.getRequester().userId(), createdEntity, prototype));
                 return createdEntity;
             });
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -151,8 +156,8 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
 
             return this.transactionTemplate.execute(status -> {
                 D updatedEntity = this.type.cast(this.repository.update(updated));
-                this.auditManager.save(new AuditLog("update_" + type.getSimpleName().toLowerCase(),
-                        tenantId, identityContext.getRequester().userId(), createAuditData(updatedEntity, prototype)));
+                this.auditManager.save(new AuditLog(auditActionProvider.getUpdateAction(),
+                        tenantId, identityContext.getRequester().userId(), updatedEntity, prototype));
                 return updatedEntity;
             });
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
@@ -167,10 +172,11 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
         D retrieved = retrieveById(tenantId, id);
         return this.transactionTemplate.execute(status -> {
             this.auditManager.save(new AuditLog(
-                    "delete_" + type.getSimpleName().toLowerCase(),
+                    auditActionProvider.getDeleteAction(),
                     tenantId,
                     identityContext.getRequester().userId(),
-                    retrieved
+                    retrieved,
+                    Map.of()
             ));
             this.repository.deleteById(id);
             return retrieved;

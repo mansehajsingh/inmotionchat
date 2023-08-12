@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SQLInboxGroupAssignmentRepository extends JpaRepository<InboxGroupAssignment, Long> {
@@ -26,5 +27,7 @@ public interface SQLInboxGroupAssignmentRepository extends JpaRepository<InboxGr
     }
 
     void deleteByGroupIdAndInboxId(Long groupId, Long inboxId);
+
+    Optional<InboxGroupAssignment> findByGroupIdAndInboxId(Long groupId, Long inboxId);
 
 }
