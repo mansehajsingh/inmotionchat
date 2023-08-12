@@ -16,6 +16,7 @@
         <module>../services/notifications</module>
         <module>../services/inboxes</module>
         <module>../services/journeys</module>
+        <module>../services/audit-records</module>
     </modules>
 
     <properties>
