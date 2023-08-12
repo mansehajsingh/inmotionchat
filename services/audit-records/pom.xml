@@ -11,7 +11,7 @@
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
-    <groupId>org.example</groupId>
+    <groupId>com.inmotionchat</groupId>
     <artifactId>audit</artifactId>
     <version>${revision}</version>
 

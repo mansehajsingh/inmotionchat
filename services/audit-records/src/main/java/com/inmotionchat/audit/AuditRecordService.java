@@ -1,10 +1,18 @@
 package com.inmotionchat.audit;
 
 import com.inmotionchat.core.soa.InMotionService;
-import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public class AuditRecordService extends InMotionService {
+
+    private final static Logger log = LoggerFactory.getLogger(AuditRecordService.class);
+
+    public AuditRecordService() {
+        super(log);
+    }
 
     @Override
     public String getServiceName() {
