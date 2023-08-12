@@ -27,7 +27,7 @@ public class AsyncMessageServiceImpl extends AbstractDomainService<AsynchronousM
                                       IdentityContext identityContext,
                                       SQLAsyncMessageRepository repository,
                                       AuditManager auditManager) {
-        super(AsynchronousMessage.class, AsyncMessageDTO.class, log, transactionManager, identityContext, repository, auditManager, mapper);
+        super(AsynchronousMessage.class, AsyncMessageDTO.class, log, transactionManager, identityContext, repository, auditManager, null, mapper);
     }
 
 }

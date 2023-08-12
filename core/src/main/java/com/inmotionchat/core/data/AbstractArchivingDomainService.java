@@ -1,5 +1,6 @@
 package com.inmotionchat.core.data;
 
+import com.inmotionchat.core.audit.AuditActionProvider;
 import com.inmotionchat.core.audit.AuditManager;
 import com.inmotionchat.core.data.postgres.AbstractArchivableDomain;
 import com.inmotionchat.core.exceptions.ConflictException;
@@ -22,8 +23,9 @@ public abstract class AbstractArchivingDomainService<D extends AbstractArchivabl
                                              IdentityContext identityContext,
                                              SQLArchivingRepository<D> repository,
                                              AuditManager auditManager,
+                                             AuditActionProvider auditActionProvider,
                                              SearchCriteriaMapper searchCriteriaMapper) {
-        super(type, dtoType, log, transactionManager, identityContext, repository, auditManager, searchCriteriaMapper);
+        super(type, dtoType, log, transactionManager, identityContext, repository, auditManager, auditActionProvider, searchCriteriaMapper);
         this.archivingRepository = repository;
     }
 

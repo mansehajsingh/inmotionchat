@@ -1,11 +1,12 @@
 package com.inmotionchat.core.data.postgres.inbox;
 
 import com.inmotionchat.core.data.Schema;
+import com.inmotionchat.core.data.postgres.AbstractEntity;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "inbox_group_assignments", schema = Schema.InboxManagement)
-public class InboxGroupAssignment {
+public class InboxGroupAssignment extends AbstractEntity {
 
     @Id
     @GeneratedValue

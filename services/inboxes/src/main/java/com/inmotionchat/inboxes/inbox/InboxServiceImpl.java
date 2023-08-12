@@ -22,8 +22,9 @@ public class InboxServiceImpl extends AbstractDomainService<Inbox, InboxDTO> imp
     @Autowired
     protected InboxServiceImpl(PlatformTransactionManager transactionManager,
                                AuditManager auditManager,
+                               InboxAuditActionProvider auditActionProvider,
                                SQLInboxRepository sqlInboxRepository) {
-        super(Inbox.class, InboxDTO.class, log, transactionManager, null, sqlInboxRepository, auditManager, mapper);
+        super(Inbox.class, InboxDTO.class, log, transactionManager, null, sqlInboxRepository, auditManager, auditActionProvider, mapper);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.inmotionchat.core.data.postgres.identity;
 
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.dto.TenantDTO;
+import com.inmotionchat.core.data.postgres.AbstractEntity;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.util.validation.AbstractRule;
 import com.inmotionchat.core.util.validation.StringRule;
@@ -14,7 +15,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "tenants", schema = Schema.IdentityPlatform)
-public class Tenant {
+public class Tenant extends AbstractEntity {
 
     @Id
     @GeneratedValue

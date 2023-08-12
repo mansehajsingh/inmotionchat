@@ -1,5 +1,6 @@
 package com.inmotionchat.identity.service.impl;
 
+import com.inmotionchat.core.audit.AuditAction;
 import com.inmotionchat.core.audit.AuditLog;
 import com.inmotionchat.core.audit.AuditManager;
 import com.inmotionchat.core.data.AbstractDomainService;
@@ -13,6 +14,7 @@ import com.inmotionchat.core.exceptions.*;
 import com.inmotionchat.core.models.RoleType;
 import com.inmotionchat.core.security.IdentityContext;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
+import com.inmotionchat.identity.audit.RoleAuditActionProvider;
 import com.inmotionchat.identity.postgres.SQLRoleAssignmentRepository;
 import com.inmotionchat.identity.postgres.SQLRoleRepository;
 import com.inmotionchat.identity.service.contract.RoleService;
@@ -43,9 +45,10 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
     public RoleServiceImpl(PlatformTransactionManager transactionManager,
                            IdentityContext identityContext,
                            AuditManager auditManager,
+                           RoleAuditActionProvider roleAuditActionProvider,
                            SQLRoleRepository sqlRoleRepository,
                            SQLRoleAssignmentRepository sqlRoleAssignmentRepository) {
-        super(Role.class, RoleDTO.class, log, transactionManager, identityContext, sqlRoleRepository, auditManager, roleMapper);
+        super(Role.class, RoleDTO.class, log, transactionManager, identityContext, sqlRoleRepository, auditManager, roleAuditActionProvider, roleMapper);
         this.sqlRoleRepository = sqlRoleRepository;
         this.sqlRoleAssignmentRepository = sqlRoleAssignmentRepository;
     }
@@ -65,12 +68,10 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
 
         return this.transactionTemplate.execute(status -> {
             Role updatedRole = this.sqlRoleRepository.update(updated);
-            this.auditManager.save(new AuditLog(
-                    "update_" + Role.class.getSimpleName().toLowerCase(),
-                    tenantId,
-                    identityContext.getRequester().userId(),
-                    createAuditData(updatedRole, prototype)
-            ));
+
+            this.auditManager.save(new AuditLog(AuditAction.UPDATE_ROLE, tenantId,
+                    identityContext.getRequester().userId(), updatedRole, prototype));
+
             return updatedRole;
         });
     }
@@ -84,12 +85,8 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
         }
 
         this.transactionTemplate.execute(status -> {
-            this.auditManager.save(new AuditLog(
-                    "delete_" + Role.class.getSimpleName().toLowerCase(),
-                    tenantId,
-                    identityContext.getRequester().userId(),
-                    role
-            ));
+            this.auditManager.save(new AuditLog(AuditAction.DELETE_ROLE, tenantId,
+                    identityContext.getRequester().userId(), role, Map.of()));
             this.sqlRoleRepository.deleteById(id);
             return null;
         });
@@ -124,13 +121,13 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
         this.transactionTemplate.execute(status -> {
             RoleAssignment createdAssignment = this.sqlRoleAssignmentRepository.store(assignment);
             this.auditManager.save(new AuditLog(
-                    "assign_" + Role.class.getSimpleName().toLowerCase(),
+                    AuditAction.ASSIGN_ROLE,
                     role.getTenant().getId(),
                     identityContext.getRequester().userId(),
+                    role,
                     Map.ofEntries(
-                            Map.entry("id", createdAssignment.getId()),
                             Map.entry("userId", createdAssignment.getUser().getId()),
-                            Map.entry("roleId", createdAssignment.getRole().getId())
+                            Map.entry("roleAssignmentId", createdAssignment.getId())
                     )
             ));
             return createdAssignment;

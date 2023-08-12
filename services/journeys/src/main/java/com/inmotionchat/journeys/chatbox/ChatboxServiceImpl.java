@@ -23,8 +23,9 @@ public class ChatboxServiceImpl extends AbstractArchivingDomainService<Chatbox, 
     public ChatboxServiceImpl(PlatformTransactionManager transactionManager,
                               IdentityContext identityContext,
                               SQLChatboxRepository repository,
-                              AuditManager auditManager) {
-        super(Chatbox.class, ChatboxDTO.class, log, transactionManager, identityContext, repository, auditManager, mapper);
+                              AuditManager auditManager,
+                              ChatboxAuditActionProvider chatboxAuditActionProvider) {
+        super(Chatbox.class, ChatboxDTO.class, log, transactionManager, identityContext, repository, auditManager, chatboxAuditActionProvider, mapper);
     }
 
 }

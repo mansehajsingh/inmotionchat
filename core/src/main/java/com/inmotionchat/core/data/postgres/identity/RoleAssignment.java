@@ -2,6 +2,7 @@ package com.inmotionchat.core.data.postgres.identity;
 
 import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.Schema;
+import com.inmotionchat.core.data.postgres.AbstractEntity;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,7 +16,7 @@ import jakarta.persistence.*;
                 )
         }
 )
-public class RoleAssignment {
+public class RoleAssignment extends AbstractEntity {
 
     @Id
     @GeneratedValue

@@ -2,6 +2,7 @@ package com.inmotionchat.core.audit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inmotionchat.core.data.Schema;
+import com.inmotionchat.core.data.postgres.AbstractEntity;
 import com.inmotionchat.core.data.postgres.identity.Tenant;
 import com.inmotionchat.core.data.postgres.identity.User;
 import jakarta.persistence.*;
@@ -11,6 +12,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 @Entity
 @Table(name = "audit_logs", schema = Schema.AuditLogging)
@@ -21,6 +23,8 @@ public class AuditLog {
     @Id
     @GeneratedValue
     protected Long id;
+
+    protected UUID entityUID;
 
     @CreationTimestamp
     protected ZonedDateTime loggedAt;
@@ -38,15 +42,22 @@ public class AuditLog {
 
     protected AuditLog() {}
 
-    public AuditLog(String name, Tenant tenant, User loggedBy, Object data) {
-        this.name = name;
+    public AuditLog(AuditAction action, Tenant tenant, User loggedBy, AbstractEntity entity, Object data) {
+        this.name = action.name();
         this.tenant = tenant;
         this.loggedBy = loggedBy;
+        this.entityUID = entity.getEntityUID();
         this.data = objectMapper.convertValue(data, Map.class);
     }
 
-    public AuditLog(String name, Long tenantId, Long loggedById, Object data) {
-        this(name, new Tenant(tenantId), loggedById == null ? null : new User(loggedById), data);
+    public AuditLog(AuditAction action, Long tenantId, Long loggedById, AbstractEntity entity, Object data) {
+        this(
+                action,
+                new Tenant(tenantId),
+                loggedById == null ? null : new User(loggedById),
+                entity,
+                data
+        );
     }
 
     public Long getId() {

@@ -1,5 +1,6 @@
 package com.inmotionchat.identity.service.impl;
 
+import com.inmotionchat.core.audit.AuditAction;
 import com.inmotionchat.core.audit.AuditLog;
 import com.inmotionchat.core.audit.AuditManager;
 import com.inmotionchat.core.data.RoleFactory;
@@ -71,7 +72,11 @@ public class TenantServiceImpl implements TenantService {
         return this.transactionTemplate.execute((status) -> {
             Tenant createdTenant = this.sqlTenantRepository.saveAndFlush(tenant);
 
-            this.auditManager.save(new AuditLog("create_" + Tenant.class.getSimpleName().toLowerCase(), createdTenant, null,
+            this.auditManager.save(new AuditLog(
+                    AuditAction.CREATE_TENANT,
+                    createdTenant.getId(),
+                    null,
+                    createdTenant,
                     Map.ofEntries(
                             Map.entry("name", prototype.name()),
                             Map.entry("resolutionDomains", prototype.resolutionDomains())
