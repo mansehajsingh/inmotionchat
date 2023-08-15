@@ -71,7 +71,7 @@ public class SmartQuery<T> {
         }
     }
 
-    protected Specification<T> build() {
+    protected Specification<T> build(Specification<T> additionalSteps) {
         return (root, criteriaQuery, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
 
@@ -100,8 +100,15 @@ public class SmartQuery<T> {
                 throw new IllegalArgumentException(e);
             }
 
+            predicate = criteriaBuilder.and(predicate,
+                    additionalSteps.toPredicate(root, criteriaQuery, criteriaBuilder));
+
             return predicate;
         };
+    }
+
+    protected Specification<T> build() {
+        return build((root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.conjunction());
     }
 
 }
