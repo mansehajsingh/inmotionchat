@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
 
+import java.util.List;
 import java.util.Optional;
 
 @NoRepositoryBean
@@ -15,18 +16,32 @@ public interface SmartJPARepository<T, ID> extends JpaRepository<T, ID>, JpaSpec
 
     Optional<T> findOne(SmartQuery<T> query);
 
+    Optional<T> findOne(SmartQuery<T> query, Status status);
+
     Optional<T> findOne(Long tenantId, SmartQuery<T> query);
+
+    Optional<T> findOne(Long tenantId, SmartQuery<T> query, Status status);
+
+    Optional<T> findById(Long tenantId, ID id);
+
+    Optional<T> findById(Long tenantId, ID id, Status status);
 
     Page<T> findAll(Pageable pageable, SmartQuery<T> query);
 
+    Page<T> findAll(Pageable pageable, SmartQuery<T> query, Status status);
+
     Page<T> findAll(Pageable pageable, Long tenantId, SmartQuery<T> query);
+
+    Page<T> findAll(Pageable pageable, Long tenantId, SmartQuery<T> query, Status status);
 
     Boolean exists(SmartQuery<T> query);
 
-    T store(T entity) throws NotFoundException, ConflictException;
+    Boolean exists(SmartQuery<T> query, Status status);
 
-    T update(T updatedEntity) throws NotFoundException, ConflictException;
+    T istore(T entity) throws NotFoundException, ConflictException;
 
+    List<T> istoreAll(List<T> entities) throws NotFoundException, ConflictException;
 
+    T iupdate(T updatedEntity) throws NotFoundException, ConflictException;
 
 }

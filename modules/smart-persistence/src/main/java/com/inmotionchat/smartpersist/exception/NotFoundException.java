@@ -13,6 +13,11 @@ public class NotFoundException extends SmartQueryException {
         this.constraint = constraint;
     }
 
+    public NotFoundException(String message) {
+        super(message);
+        this.constraint = "";
+    }
+
     public String getConstraint() {
         return constraint;
     }
