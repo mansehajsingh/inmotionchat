@@ -54,7 +54,7 @@ public class SmartQuery<T> {
     }
 
     private List<Predicate> handleGenericEquals(String searchKey, Root<T> root, CriteriaBuilder criteriaBuilder) throws NoSuchFieldException {
-        Field field = type.getDeclaredField(searchKey);
+        Field field = getField(searchKey);
         List<Predicate> predicates = new ArrayList<>();
 
         Class<?> fieldType = field.getType();
