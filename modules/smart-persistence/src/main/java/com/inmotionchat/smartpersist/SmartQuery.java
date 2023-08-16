@@ -7,6 +7,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.MultiValueMap;
 
@@ -19,6 +21,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SmartQuery<T> {
+
+    protected static final Logger log = LoggerFactory.getLogger(SmartQuery.class);
 
     protected Class<T> type;
 
@@ -140,6 +144,11 @@ public class SmartQuery<T> {
             try {
 
                 for (String searchKey : parameters.keySet()) {
+
+                    if (getField(searchKey).isAnnotationPresent(NoSearch.class)) {
+                        log.error("Attempted to build a query on a column {} that is tagged with @NoSearch. Skipping.", searchKey);
+                        continue;
+                    }
 
                     if (searchKey.endsWith("After") || searchKey.endsWith("Before")) {
                         Predicate[] predicates = handleDate(searchKey, root, criteriaBuilder).toArray(new Predicate[0]);
