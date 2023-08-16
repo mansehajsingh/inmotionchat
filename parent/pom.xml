@@ -16,6 +16,8 @@
         <module>../services/notifications</module>
         <module>../services/inboxes</module>
         <module>../services/journeys</module>
+        <module>../services/audit-records</module>
+
         <module>../modules/smart-persistence</module>
     </modules>
 

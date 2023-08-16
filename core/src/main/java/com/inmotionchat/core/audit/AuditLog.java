@@ -1,5 +1,7 @@
 package com.inmotionchat.core.audit;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.postgres.AbstractEntity;
@@ -28,6 +30,7 @@ public class AuditLog {
     protected UUID entityUID;
 
     @CreationTimestamp
+    @JsonIgnore
     protected ZonedDateTime loggedAt;
 
     protected String name;
@@ -37,10 +40,12 @@ public class AuditLog {
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "logged_by"))
+    @JsonIgnore
     protected User loggedBy;
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "tenant"))
+    @JsonIgnore
     protected Tenant tenant;
 
     protected AuditLog() {}
@@ -67,6 +72,10 @@ public class AuditLog {
         return id;
     }
 
+    public UUID getEntityUID() {
+        return this.entityUID;
+    }
+
     public ZonedDateTime getLoggedAt() {
         return loggedAt;
     }
@@ -81,6 +90,21 @@ public class AuditLog {
 
     public Tenant getTenant() {
         return tenant;
+    }
+
+    @JsonProperty("loggedBy")
+    protected Long getLoggedById() {
+        return loggedBy == null ? null : loggedBy.getId();
+    }
+
+    @JsonProperty("data")
+    protected Map<String, Object> getData() {
+        return data;
+    }
+
+    @JsonProperty("loggedAt")
+    protected String getLoggedAtAsString() {
+        return this.loggedAt.toString();
     }
 
 }

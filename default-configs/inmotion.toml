@@ -3,4 +3,5 @@ services = [
     "com.inmotionchat.notifications.NotificationsService",
     "com.inmotionchat.inboxes.InboxesService",
     "com.inmotionchat.journeys.JourneysService",
+    "com.inmotionchat.audit.AuditRecordService"
 ]
