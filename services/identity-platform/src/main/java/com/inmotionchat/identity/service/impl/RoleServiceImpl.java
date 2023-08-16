@@ -10,7 +10,9 @@ import com.inmotionchat.core.data.dto.RoleDTO;
 import com.inmotionchat.core.data.postgres.identity.Role;
 import com.inmotionchat.core.data.postgres.identity.RoleAssignment;
 import com.inmotionchat.core.data.postgres.identity.User;
-import com.inmotionchat.core.exceptions.*;
+import com.inmotionchat.core.exceptions.DomainInvalidException;
+import com.inmotionchat.core.exceptions.ServerException;
+import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.models.RoleType;
 import com.inmotionchat.core.security.IdentityContext;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
@@ -18,6 +20,8 @@ import com.inmotionchat.identity.audit.RoleAuditActionProvider;
 import com.inmotionchat.identity.postgres.SQLRoleAssignmentRepository;
 import com.inmotionchat.identity.postgres.SQLRoleRepository;
 import com.inmotionchat.identity.service.contract.RoleService;
+import com.inmotionchat.smartpersist.exception.ConflictException;
+import com.inmotionchat.smartpersist.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +58,7 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
     }
 
     @Override
-    public Role update(Long tenantId, Long id, RoleDTO prototype) throws DomainInvalidException, NotFoundException, ConflictException, ServerException, UnauthorizedException {
+    public Role update(Long tenantId, Long id, RoleDTO prototype) throws DomainInvalidException, NotFoundException, ServerException, UnauthorizedException, ConflictException {
         Role role = retrieveById(tenantId, id);
 
         if (role.getRoleType() != RoleType.CUSTOM) {
@@ -77,7 +81,7 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
     }
 
     @Override
-    public Role delete(Long tenantId, Long id) throws NotFoundException, ConflictException, DomainInvalidException {
+    public Role delete(Long tenantId, Long id) throws NotFoundException, ConflictException, DomainInvalidException, UnauthorizedException {
         Role role = retrieveById(tenantId, id);
 
         if (role.getRoleType() != RoleType.CUSTOM) {

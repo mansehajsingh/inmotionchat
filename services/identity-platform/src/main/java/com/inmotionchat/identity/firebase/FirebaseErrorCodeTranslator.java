@@ -2,8 +2,8 @@ package com.inmotionchat.identity.firebase;
 
 import com.google.firebase.auth.AuthErrorCode;
 import com.inmotionchat.core.data.LogicalConstraints;
-import com.inmotionchat.core.exceptions.ConflictException;
-import com.inmotionchat.core.exceptions.NotFoundException;
+import com.inmotionchat.smartpersist.exception.ConflictException;
+import com.inmotionchat.smartpersist.exception.NotFoundException;
 
 public class FirebaseErrorCodeTranslator {
 

@@ -9,6 +9,7 @@ import com.inmotionchat.core.util.misc.RegExpPatterns;
 import com.inmotionchat.core.util.validation.AbstractRule;
 import com.inmotionchat.core.util.validation.StringRule;
 import com.inmotionchat.core.util.validation.Violation;
+import com.inmotionchat.smartpersist.ConstraintPrefix;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -20,8 +21,8 @@ import java.util.regex.Pattern;
         name = "users",
         schema = Schema.IdentityPlatform,
         uniqueConstraints = {
-                @UniqueConstraint(name = LogicalConstraints.User.EMAIL_EXISTS, columnNames = "email"),
-                @UniqueConstraint(name = LogicalConstraints.User.UNIQUE_UID, columnNames = "uid")
+                @UniqueConstraint(name = ConstraintPrefix.UNIQUE + LogicalConstraints.User.EMAIL_EXISTS, columnNames = "email"),
+                @UniqueConstraint(name = ConstraintPrefix.UNIQUE + LogicalConstraints.User.UNIQUE_UID, columnNames = "uid")
         }
 )
 public class User {
@@ -36,6 +37,7 @@ public class User {
     private String uid;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "tenant"))
     private Tenant tenant;
 
     private String email;

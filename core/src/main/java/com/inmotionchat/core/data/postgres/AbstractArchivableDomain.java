@@ -1,6 +1,7 @@
 package com.inmotionchat.core.data.postgres;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.inmotionchat.smartpersist.ArchivalColumn;
 import jakarta.persistence.MappedSuperclass;
 
 import java.time.ZonedDateTime;
@@ -9,6 +10,7 @@ import java.time.ZonedDateTime;
 public abstract class AbstractArchivableDomain<T extends AbstractArchivableDomain<T>> extends AbstractDomain<T> {
 
     @JsonIgnore
+    @ArchivalColumn
     protected ZonedDateTime archivedAt;
 
     protected AbstractArchivableDomain() {}

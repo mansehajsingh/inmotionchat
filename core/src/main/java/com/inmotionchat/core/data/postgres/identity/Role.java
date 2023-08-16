@@ -12,6 +12,7 @@ import com.inmotionchat.core.models.RoleType;
 import com.inmotionchat.core.util.validation.AbstractRule;
 import com.inmotionchat.core.util.validation.StringRule;
 import com.inmotionchat.core.util.validation.Violation;
+import com.inmotionchat.smartpersist.ConstraintPrefix;
 import jakarta.persistence.*;
 
 import java.util.*;
@@ -23,6 +24,7 @@ public class Role extends AbstractDomain<Role> {
     private String name;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "tenant"))
     @JsonIgnore
     private Tenant tenant;
 

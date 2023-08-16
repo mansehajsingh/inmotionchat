@@ -7,6 +7,7 @@ import com.inmotionchat.core.data.postgres.journey.templates.edge.InboxGroupFall
 import com.inmotionchat.core.data.postgres.journey.templates.edge.IsoCountryCodeTemplate;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.util.validation.Violation;
+import com.inmotionchat.smartpersist.ConstraintPrefix;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -28,11 +29,13 @@ public class Node {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "journey"))
     private Journey journey;
 
     private String nodeType;
 
     @OneToOne(mappedBy = "node", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "inbox_group_endpoint"))
     private InboxGroupEndpoint inboxGroupEndpoint;
 
     @JdbcTypeCode(SqlTypes.JSON)

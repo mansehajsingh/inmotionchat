@@ -1,6 +1,6 @@
 package com.inmotionchat.startup;
 
-import com.inmotionchat.core.data.SQLRepositoryImpl;
+import com.inmotionchat.smartpersist.SmartJPARepositoryImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -15,7 +15,7 @@ import static com.inmotionchat.core.util.misc.ServiceResolution.artifact;
 @SpringBootApplication
 @ComponentScan(basePackages = "${basePackages}")
 @EntityScan(basePackages = {"com.inmotionchat"})
-@EnableJpaRepositories(basePackages = {"com.inmotionchat"}, repositoryBaseClass = SQLRepositoryImpl.class)
+@EnableJpaRepositories(basePackages = {"com.inmotionchat"}, repositoryBaseClass = SmartJPARepositoryImpl.class)
 @EnableRedisRepositories(basePackages = {"com.inmotionchat"})
 public class InMotion {
 

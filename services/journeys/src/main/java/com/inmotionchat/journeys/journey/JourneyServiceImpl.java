@@ -11,13 +11,14 @@ import com.inmotionchat.core.data.dto.GraphDTO;
 import com.inmotionchat.core.data.dto.JourneyDTO;
 import com.inmotionchat.core.data.dto.NodeDTO;
 import com.inmotionchat.core.data.postgres.journey.*;
-import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
-import com.inmotionchat.core.exceptions.NotFoundException;
+import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.security.IdentityContext;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import com.inmotionchat.journeys.graph.SQLInboxGroupEndpointRepository;
 import com.inmotionchat.journeys.graph.SQLNodeRepository;
+import com.inmotionchat.smartpersist.exception.ConflictException;
+import com.inmotionchat.smartpersist.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,7 @@ public class JourneyServiceImpl extends AbstractArchivingDomainService<Journey, 
     }
 
     @Override
-    public List<Node> updateGraph(Long tenantId, Long journeyId, GraphDTO graphDTO) throws NotFoundException, ConflictException, DomainInvalidException {
+    public List<Node> updateGraph(Long tenantId, Long journeyId, GraphDTO graphDTO) throws NotFoundException, ConflictException, DomainInvalidException, UnauthorizedException {
         // Preparing journey object
         Journey journey = retrieveById(tenantId, journeyId);
 

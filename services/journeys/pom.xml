@@ -26,6 +26,12 @@
             <version>${revision}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.inmotionchat</groupId>
+            <artifactId>smartpersist</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.maxmind.geoip2/geoip2 -->
         <dependency>
             <groupId>com.maxmind.geoip2</groupId>

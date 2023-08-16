@@ -21,6 +21,12 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>com.inmotionchat</groupId>
+            <artifactId>smartpersist</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-crypto -->
         <dependency>
             <groupId>org.springframework.security</groupId>

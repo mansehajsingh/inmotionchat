@@ -5,6 +5,7 @@ import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.postgres.AbstractEntity;
 import com.inmotionchat.core.data.postgres.identity.Tenant;
 import com.inmotionchat.core.data.postgres.identity.User;
+import com.inmotionchat.smartpersist.ConstraintPrefix;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -35,9 +36,11 @@ public class AuditLog {
     protected Map<String, Object> data;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "logged_by"))
     protected User loggedBy;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "tenant"))
     protected Tenant tenant;
 
     protected AuditLog() {}

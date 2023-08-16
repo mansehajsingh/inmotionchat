@@ -3,6 +3,7 @@ package com.inmotionchat.core.data.postgres.identity;
 import com.inmotionchat.core.data.LogicalConstraints;
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.postgres.AbstractEntity;
+import com.inmotionchat.smartpersist.ConstraintPrefix;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,7 +12,7 @@ import jakarta.persistence.*;
         schema = Schema.IdentityPlatform,
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = LogicalConstraints.RoleAssignment.ONE_ROLE_ASSIGNMENT_PER_USER,
+                        name = ConstraintPrefix.UNIQUE + LogicalConstraints.RoleAssignment.ONE_ROLE_ASSIGNMENT_PER_USER,
                         columnNames = {"user_id"}
                 )
         }
@@ -23,12 +24,15 @@ public class RoleAssignment extends AbstractEntity {
     private Long id;
 
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "user"))
     private User user;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "role"))
     private Role role;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "tenant"))
     private Tenant tenant;
 
     public RoleAssignment() {}

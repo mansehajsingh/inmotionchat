@@ -1,6 +1,11 @@
 package com.inmotionchat.core.web;
 
-import com.inmotionchat.core.exceptions.*;
+import com.inmotionchat.core.exceptions.DomainInvalidException;
+import com.inmotionchat.core.exceptions.PermissionException;
+import com.inmotionchat.core.exceptions.ServerException;
+import com.inmotionchat.core.exceptions.UnauthorizedException;
+import com.inmotionchat.smartpersist.exception.ConflictException;
+import com.inmotionchat.smartpersist.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -18,18 +23,23 @@ public class WebExceptionHandler {
     }
 
     @ExceptionHandler(value = NotFoundException.class)
-    public ResponseEntity<MessageResponse> handleNotFoundException(NotFoundException e) throws ClassNotFoundException {
+    public ResponseEntity<?> handleNotFoundException(NotFoundException e) throws ClassNotFoundException {
         Logger log = getClassLogger(e);
-        log.debug(e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+        log.debug("NotFoundException: Constraint: {}, Message: {}", e.getConstraint(), e.getMessage());
+        if (e.getConstraint().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ConstraintResponse(e.getConstraint(), e.getMessage()));
     }
 
     @ExceptionHandler(value = ConflictException.class)
-    public ResponseEntity<ConflictResponse> handleConflictException(ConflictException e) throws ClassNotFoundException {
+    public ResponseEntity<?> handleConflictException(ConflictException e) throws ClassNotFoundException {
         Logger log = getClassLogger(e);
-        log.debug("Constraint: {}, Message: {}", e.getViolatedConstraint(), e.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ConflictResponse(
-                e.getViolatedConstraint(), e.getMessage()));
+        log.debug("ConflictException: Constraint: {}, Message: {}", e.getConstraint(), e.getMessage());
+        if (e.getConstraint().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ConstraintResponse(e.getConstraint(), e.getMessage()));
     }
 
     @ExceptionHandler(value = DomainInvalidException.class)

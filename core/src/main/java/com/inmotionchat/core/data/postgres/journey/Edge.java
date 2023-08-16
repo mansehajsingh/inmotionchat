@@ -3,6 +3,7 @@ package com.inmotionchat.core.data.postgres.journey;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.inmotionchat.core.data.Schema;
+import com.inmotionchat.smartpersist.ConstraintPrefix;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -22,12 +23,15 @@ public class Edge {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "journey"))
     private Journey journey;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "source_node"))
     private Node source;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "destination_node"))
     private Node destination;
 
     @JdbcTypeCode(SqlTypes.JSON)
