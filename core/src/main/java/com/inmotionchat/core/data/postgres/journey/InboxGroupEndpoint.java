@@ -2,6 +2,7 @@ package com.inmotionchat.core.data.postgres.journey;
 
 import com.inmotionchat.core.data.Schema;
 import com.inmotionchat.core.data.postgres.journey.templates.node.InboxGroupTemplate;
+import com.inmotionchat.smartpersist.ConstraintPrefix;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,6 +14,7 @@ public class InboxGroupEndpoint {
     private Long id;
 
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "node"))
     private Node node;
 
     // Cannot foreign key this across schemas

@@ -26,6 +26,12 @@
             <version>${revision}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.inmotionchat</groupId>
+            <artifactId>smartpersist</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
     </dependencies>
 
 </project>

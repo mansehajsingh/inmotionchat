@@ -10,9 +10,8 @@ import com.inmotionchat.core.util.misc.RegExpPatterns;
 import com.inmotionchat.core.util.validation.AbstractRule;
 import com.inmotionchat.core.util.validation.StringRule;
 import com.inmotionchat.core.util.validation.Violation;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import com.inmotionchat.smartpersist.ConstraintPrefix;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +27,12 @@ public class AsynchronousMessage extends AbstractDomain<AsynchronousMessage> {
     private String content;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "inbox_group"))
     @JsonIgnore
     private InboxGroup inboxGroup;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "tenant"))
     @JsonIgnore
     private Tenant tenant;
 

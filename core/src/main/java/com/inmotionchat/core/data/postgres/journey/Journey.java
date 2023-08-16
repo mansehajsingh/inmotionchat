@@ -10,6 +10,7 @@ import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.util.validation.AbstractRule;
 import com.inmotionchat.core.util.validation.StringRule;
 import com.inmotionchat.core.util.validation.Violation;
+import com.inmotionchat.smartpersist.ConstraintPrefix;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class Journey extends AbstractArchivableDomain<Journey> {
     private String name;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "tenant"))
     private Tenant tenant;
 
     @OneToMany(mappedBy = "journey", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)

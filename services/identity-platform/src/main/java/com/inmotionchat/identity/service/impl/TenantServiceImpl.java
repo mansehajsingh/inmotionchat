@@ -10,14 +10,15 @@ import com.inmotionchat.core.data.dto.RoleDTO;
 import com.inmotionchat.core.data.dto.TenantDTO;
 import com.inmotionchat.core.data.dto.UserDTO;
 import com.inmotionchat.core.data.postgres.identity.Tenant;
-import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
-import com.inmotionchat.core.exceptions.NotFoundException;
+import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.models.RoleType;
 import com.inmotionchat.identity.postgres.SQLTenantRepository;
 import com.inmotionchat.identity.service.contract.RoleService;
 import com.inmotionchat.identity.service.contract.TenantService;
 import com.inmotionchat.identity.service.contract.UserService;
+import com.inmotionchat.smartpersist.exception.ConflictException;
+import com.inmotionchat.smartpersist.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,7 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public Tenant create(TenantDTO prototype) throws DomainInvalidException, ConflictException, NotFoundException {
+    public Tenant create(TenantDTO prototype) throws DomainInvalidException, ConflictException, NotFoundException, UnauthorizedException {
         Tenant tenant = new Tenant(prototype);
         tenant.validateForCreate();
 

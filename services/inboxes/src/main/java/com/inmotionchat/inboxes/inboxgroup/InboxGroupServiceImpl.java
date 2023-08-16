@@ -9,13 +9,14 @@ import com.inmotionchat.core.data.dto.InboxGroupDTO;
 import com.inmotionchat.core.data.postgres.inbox.Inbox;
 import com.inmotionchat.core.data.postgres.inbox.InboxGroup;
 import com.inmotionchat.core.data.postgres.inbox.InboxGroupAssignment;
-import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
-import com.inmotionchat.core.exceptions.NotFoundException;
+import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.security.IdentityContext;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import com.inmotionchat.inboxes.inbox.InboxService;
 import com.inmotionchat.inboxes.inboxgroupassignment.SQLInboxGroupAssignmentRepository;
+import com.inmotionchat.smartpersist.exception.ConflictException;
+import com.inmotionchat.smartpersist.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class InboxGroupServiceImpl extends AbstractDomainService<InboxGroup, Inb
     }
 
     @Override
-    public List<InboxGroupAssignment> assignInboxes(Long tenantId, Long inboxGroupId, InboxGroupAssignmentsDTO dto) throws NotFoundException, ConflictException, DomainInvalidException {
+    public List<InboxGroupAssignment> assignInboxes(Long tenantId, Long inboxGroupId, InboxGroupAssignmentsDTO dto) throws NotFoundException, DomainInvalidException, ConflictException, UnauthorizedException {
         InboxGroup inboxGroup = retrieveById(tenantId, inboxGroupId);
 
         List<InboxGroupAssignment> groupAssignments = dto.inboxes().stream().map(id -> {
@@ -86,7 +87,7 @@ public class InboxGroupServiceImpl extends AbstractDomainService<InboxGroup, Inb
     }
 
     @Override
-    public Inbox removeInbox(Long tenantId, Long inboxGroupId, Long inboxId) throws NotFoundException, ConflictException, DomainInvalidException {
+    public Inbox removeInbox(Long tenantId, Long inboxGroupId, Long inboxId) throws NotFoundException, ConflictException, DomainInvalidException, UnauthorizedException {
         Inbox inbox = this.inboxService.retrieveById(tenantId, inboxId);
         InboxGroup inboxGroup = retrieveById(tenantId, inboxGroupId);
 

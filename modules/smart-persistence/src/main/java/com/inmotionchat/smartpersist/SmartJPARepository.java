@@ -38,10 +38,10 @@ public interface SmartJPARepository<T, ID> extends JpaRepository<T, ID>, JpaSpec
 
     Boolean exists(SmartQuery<T> query, Status status);
 
-    T istore(T entity) throws NotFoundException, ConflictException;
+    T store(T entity) throws NotFoundException, ConflictException;
 
-    List<T> istoreAll(List<T> entities) throws NotFoundException, ConflictException;
+    List<T> storeAll(List<T> entities) throws NotFoundException, ConflictException;
 
-    T iupdate(T updatedEntity) throws NotFoundException, ConflictException;
+    T update(T updatedEntity) throws NotFoundException, ConflictException;
 
 }

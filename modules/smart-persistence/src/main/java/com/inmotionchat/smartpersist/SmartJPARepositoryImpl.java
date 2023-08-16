@@ -3,10 +3,10 @@ package com.inmotionchat.smartpersist;
 import com.inmotionchat.smartpersist.exception.ConflictException;
 import com.inmotionchat.smartpersist.exception.NotFoundException;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -65,13 +65,13 @@ public class SmartJPARepositoryImpl<T, ID extends Serializable> extends SimpleJp
                 criteriaBuilder.equal(root.get(archivalColumn.getName()), null);
     }
 
-    private void rethrowDataIntegrityException(DataIntegrityViolationException e) throws NotFoundException, ConflictException {
+    private void rethrowPersistenceException(PersistenceException e) throws NotFoundException, ConflictException {
         if (e.getCause() instanceof ConstraintViolationException constraintViolationException) {
             String constraintName = constraintViolationException.getConstraintName();
 
-            if (constraintName.startsWith(ConstraintPrefix.FKEY)) {
+            if (constraintName.startsWith(ConstraintPrefix.FKEY.toLowerCase())) {
                 throw new NotFoundException(constraintName, "There was a related resource that does not exist.");
-            } else if (constraintName.startsWith(ConstraintPrefix.UNIQUE)) {
+            } else if (constraintName.startsWith(ConstraintPrefix.UNIQUE.toLowerCase())) {
                 throw new ConflictException(constraintName, "A conflict occurred when trying to save this resource.");
             }
         }
@@ -194,34 +194,34 @@ public class SmartJPARepositoryImpl<T, ID extends Serializable> extends SimpleJp
 
     @Override
     @Transactional
-    public T istore(T entity) throws ConflictException, NotFoundException {
+    public T store(T entity) throws ConflictException, NotFoundException {
         try {
             T createdEntity = saveAndFlush(entity);
             detach(createdEntity);
             return createdEntity;
-        } catch (DataIntegrityViolationException e) {
-            rethrowDataIntegrityException(e);
+        } catch (PersistenceException e) {
+            rethrowPersistenceException(e);
             throw new ConflictException();
         }
     }
 
     @Override
     @Transactional
-    public List<T> istoreAll(List<T> entities) throws ConflictException, NotFoundException {
+    public List<T> storeAll(List<T> entities) throws ConflictException, NotFoundException {
         try {
             List<T> createdEntities = saveAllAndFlush(entities);
             detachAll(createdEntities);
             return createdEntities;
-        } catch (DataIntegrityViolationException e) {
-            rethrowDataIntegrityException(e);
+        } catch (PersistenceException e) {
+            rethrowPersistenceException(e);
             throw new ConflictException();
         }
     }
 
     @Override
     @Transactional
-    public T iupdate(T updatedEntity) throws NotFoundException, ConflictException {
-        return istore(updatedEntity);
+    public T update(T updatedEntity) throws NotFoundException, ConflictException {
+        return store(updatedEntity);
     }
 
 }

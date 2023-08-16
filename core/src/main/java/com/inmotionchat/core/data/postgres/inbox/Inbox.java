@@ -6,6 +6,7 @@ import com.inmotionchat.core.data.dto.InboxDTO;
 import com.inmotionchat.core.data.postgres.AbstractDomain;
 import com.inmotionchat.core.data.postgres.identity.Tenant;
 import com.inmotionchat.core.data.postgres.identity.User;
+import com.inmotionchat.smartpersist.ConstraintPrefix;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -16,9 +17,11 @@ import java.util.stream.Collectors;
 public class Inbox extends AbstractDomain<Inbox> {
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "tenant"))
     private Tenant tenant;
 
     @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "user"))
     private User user;
 
     private boolean open;

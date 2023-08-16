@@ -5,9 +5,10 @@ import com.inmotionchat.core.data.dto.GraphDTO;
 import com.inmotionchat.core.data.dto.JourneyDTO;
 import com.inmotionchat.core.data.postgres.journey.Journey;
 import com.inmotionchat.core.data.postgres.journey.Node;
-import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
-import com.inmotionchat.core.exceptions.NotFoundException;
+import com.inmotionchat.core.exceptions.UnauthorizedException;
+import com.inmotionchat.smartpersist.exception.ConflictException;
+import com.inmotionchat.smartpersist.exception.NotFoundException;
 
 import java.util.List;
 
@@ -15,6 +16,6 @@ public interface JourneyService extends ArchivingDomainService<Journey, JourneyD
 
     List<Node> retrieveNodes(Long tenantId, Long journeyId) throws NotFoundException;
 
-    List<Node> updateGraph(Long tenantId, Long journeyId, GraphDTO graphDTO) throws NotFoundException, ConflictException, DomainInvalidException;
+    List<Node> updateGraph(Long tenantId, Long journeyId, GraphDTO graphDTO) throws NotFoundException, ConflictException, DomainInvalidException, UnauthorizedException;
 
 }

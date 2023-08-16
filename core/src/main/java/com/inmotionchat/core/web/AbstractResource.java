@@ -2,9 +2,14 @@ package com.inmotionchat.core.web;
 
 import com.inmotionchat.core.data.DomainService;
 import com.inmotionchat.core.data.postgres.AbstractDomain;
-import com.inmotionchat.core.exceptions.*;
+import com.inmotionchat.core.exceptions.DomainInvalidException;
+import com.inmotionchat.core.exceptions.PermissionException;
+import com.inmotionchat.core.exceptions.ServerException;
+import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.models.Permission;
 import com.inmotionchat.core.security.IdentityContext;
+import com.inmotionchat.smartpersist.exception.ConflictException;
+import com.inmotionchat.smartpersist.exception.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +34,7 @@ public abstract class AbstractResource<T extends AbstractDomain<T>, DTO> {
     }
 
     @PostMapping
-    public IdResponse create(@PathVariable Long tenantId, @RequestBody DTO dto) throws ConflictException, DomainInvalidException, NotFoundException, MethodUnsupportedException, ServerException, PermissionException, UnauthorizedException {
+    public IdResponse create(@PathVariable Long tenantId, @RequestBody DTO dto) throws DomainInvalidException, MethodUnsupportedException, ServerException, PermissionException, UnauthorizedException, ConflictException, NotFoundException {
         if (!isCreateEnabled())
             throw new MethodUnsupportedException();
 
