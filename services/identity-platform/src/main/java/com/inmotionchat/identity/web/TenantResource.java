@@ -3,12 +3,13 @@ package com.inmotionchat.identity.web;
 import com.inmotionchat.core.data.dto.TenantDTO;
 import com.inmotionchat.core.data.postgres.identity.Tenant;
 import com.inmotionchat.core.exceptions.BadRequestException;
-import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
-import com.inmotionchat.core.exceptions.NotFoundException;
+import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.web.IdResponse;
 import com.inmotionchat.core.web.PageResponse;
 import com.inmotionchat.identity.service.contract.TenantService;
+import com.inmotionchat.smartpersist.exception.ConflictException;
+import com.inmotionchat.smartpersist.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,7 @@ public class TenantResource {
     }
 
     @PostMapping
-    public IdResponse create(@RequestBody TenantDTO tenantDTO) throws DomainInvalidException, ConflictException, NotFoundException {
+    public IdResponse create(@RequestBody TenantDTO tenantDTO) throws DomainInvalidException, ConflictException, NotFoundException, UnauthorizedException {
         Tenant createdTenant = this.tenantService.create(tenantDTO);
         return new IdResponse(createdTenant.getId());
     }

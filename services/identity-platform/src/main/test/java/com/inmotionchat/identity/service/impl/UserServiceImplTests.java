@@ -10,14 +10,14 @@ import com.inmotionchat.core.data.events.UnverifiedUserEvent;
 import com.inmotionchat.core.data.postgres.identity.Role;
 import com.inmotionchat.core.data.postgres.identity.Tenant;
 import com.inmotionchat.core.data.postgres.identity.User;
-import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
-import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.identity.postgres.SQLUserRepository;
 import com.inmotionchat.identity.service.contract.FirebaseWrapper;
 import com.inmotionchat.identity.service.contract.RoleService;
 import com.inmotionchat.identity.service.contract.UserService;
+import com.inmotionchat.smartpersist.exception.ConflictException;
+import com.inmotionchat.smartpersist.exception.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -54,7 +54,7 @@ public class UserServiceImplTests {
     }
 
     @Test
-    public void createEmailPasswordUser_Success() throws ConflictException, DomainInvalidException, NotFoundException, FirebaseAuthException {
+    public void createEmailPasswordUser_Success() throws ConflictException, DomainInvalidException, NotFoundException, FirebaseAuthException, UnauthorizedException {
         UserDTO userDTO = new UserDTO(
                 "email@email.com",
                 "@MyAwesomePassword123",
@@ -73,7 +73,7 @@ public class UserServiceImplTests {
     }
 
     @Test
-    public void createEmailPasswordUser_EventPublished() throws FirebaseAuthException, ConflictException, DomainInvalidException, NotFoundException {
+    public void createEmailPasswordUser_EventPublished() throws FirebaseAuthException, ConflictException, DomainInvalidException, NotFoundException, UnauthorizedException {
         UserDTO userDTO = new UserDTO(
                 "email@email.com",
                 "@MyAwesomePassword123",

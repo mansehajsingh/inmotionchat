@@ -5,10 +5,15 @@ import com.inmotionchat.core.audit.AuditLog;
 import com.inmotionchat.core.audit.AuditManager;
 import com.inmotionchat.core.data.annotation.DomainUpdate;
 import com.inmotionchat.core.data.postgres.AbstractDomain;
-import com.inmotionchat.core.exceptions.*;
+import com.inmotionchat.core.exceptions.DomainInvalidException;
+import com.inmotionchat.core.exceptions.ServerException;
+import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.security.IdentityContext;
-import com.inmotionchat.core.util.query.SearchCriteria;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
+import com.inmotionchat.smartpersist.SmartJPARepository;
+import com.inmotionchat.smartpersist.SmartQuery;
+import com.inmotionchat.smartpersist.exception.ConflictException;
+import com.inmotionchat.smartpersist.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,17 +23,11 @@ import org.springframework.util.MultiValueMap;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import static com.inmotionchat.core.util.query.Operation.EQUALS;
 
 public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> implements DomainService<D, DTO> {
 
-    protected final SQLRepository<D> repository;
+    protected final SmartJPARepository<D, Long> repository;
 
     protected final Logger log;
 
@@ -52,7 +51,7 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
             Logger log,
             PlatformTransactionManager transactionManager,
             IdentityContext identityContext,
-            SQLRepository<D> repository,
+            SmartJPARepository<D, Long> repository,
             AuditManager auditManager,
             AuditActionProvider auditActionProvider,
             SearchCriteriaMapper searchCriteriaMapper
@@ -70,23 +69,6 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
                 .key("lastModifiedBy", Long.class);
     }
 
-    public static SearchCriteria<?>[] getSearchCriteriaFromParameters(
-            SearchCriteriaMapper mapper, MultiValueMap<String, Object> parameters
-    ) {
-
-        List<SearchCriteria<?>> searchCriteria = new ArrayList<>();
-
-        for (String key : mapper.keys()) {
-            if (parameters.containsKey(key)) {
-                searchCriteria.add(
-                        mapper.map(key, parameters.getFirst(key))
-                );
-            }
-        }
-
-        return searchCriteria.toArray(new SearchCriteria[0]);
-    }
-
     protected Object createAuditData(D createdEntity, DTO prototype) {
         return Map.ofEntries(
                 Map.entry("id", createdEntity.getId()),
@@ -96,25 +78,17 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
 
     @Override
     public D retrieveById(Long tenantId, Long id) throws NotFoundException {
-        return this.repository.findByIdAndTenantId(id, tenantId).orElseThrow(
+        return this.repository.findById(tenantId, id).orElseThrow(
                 () -> new NotFoundException("No " + this.type.getSimpleName() + " with id " + id + " could be found."));
     }
 
     @Override
     public Page<? extends D> search(Long tenantId, Pageable pageable, MultiValueMap<String, Object> parameters) {
-        return search(tenantId, pageable, getSearchCriteriaFromParameters(this.searchCriteriaMapper, parameters));
+        return this.repository.findAll(pageable, tenantId, new SmartQuery<>(type, parameters));
     }
 
     @Override
-    public Page<? extends D> search(Long tenantId, Pageable pageable, SearchCriteria<?> ...criteria) {
-        List<SearchCriteria<?>> searchCriteriaList = Arrays.stream(criteria).collect(Collectors.toList());
-        searchCriteriaList.add(new SearchCriteria<>("tenant", EQUALS, tenantId));
-        SearchCriteria<?>[] searchCriteriaWithTenantId = searchCriteriaList.toArray(new SearchCriteria[0]);
-        return this.repository.filter(pageable, searchCriteriaWithTenantId);
-    }
-
-    @Override
-    public D create(Long tenantId, DTO prototype) throws DomainInvalidException, ConflictException, NotFoundException, ServerException {
+    public D create(Long tenantId, DTO prototype) throws DomainInvalidException, ConflictException, NotFoundException, ServerException, UnauthorizedException {
         try {
             Constructor<D> ctor = this.type.getConstructor(Long.class, dtoType);
             D entity = ctor.newInstance(tenantId, prototype);
@@ -168,7 +142,7 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
     }
 
     @Override
-    public D delete(Long tenantId, Long id) throws NotFoundException, ConflictException, DomainInvalidException {
+    public D delete(Long tenantId, Long id) throws NotFoundException, ConflictException, DomainInvalidException, UnauthorizedException {
         D retrieved = retrieveById(tenantId, id);
         return this.transactionTemplate.execute(status -> {
             this.auditManager.save(new AuditLog(

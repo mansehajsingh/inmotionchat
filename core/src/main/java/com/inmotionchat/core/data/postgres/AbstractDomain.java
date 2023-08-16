@@ -7,6 +7,7 @@ import com.inmotionchat.core.data.postgres.identity.Tenant;
 import com.inmotionchat.core.data.postgres.identity.User;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.models.Metadata;
+import com.inmotionchat.smartpersist.ConstraintPrefix;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -32,10 +33,12 @@ public abstract class AbstractDomain<T extends AbstractDomain<T>> extends Abstra
     protected ZonedDateTime lastModifiedAt;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "created_by"))
     @JsonIgnore
     protected User createdBy;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "last_modified_by"))
     @JsonIgnore
     protected User lastModifiedBy;
 

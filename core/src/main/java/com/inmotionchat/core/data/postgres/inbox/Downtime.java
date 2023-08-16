@@ -7,6 +7,7 @@ import com.inmotionchat.core.data.postgres.identity.Tenant;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.models.TimeOfDay;
 import com.inmotionchat.core.util.validation.Violation;
+import com.inmotionchat.smartpersist.ConstraintPrefix;
 import jakarta.persistence.*;
 
 @Entity
@@ -18,10 +19,12 @@ public class Downtime {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "tenant"))
     @JsonIgnore
     private Tenant tenant;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "inbox_group"))
     @JsonIgnore
     private InboxGroup inboxGroup;
 

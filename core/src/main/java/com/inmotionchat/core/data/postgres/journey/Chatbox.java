@@ -11,6 +11,7 @@ import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.util.validation.AbstractRule;
 import com.inmotionchat.core.util.validation.StringRule;
 import com.inmotionchat.core.util.validation.Violation;
+import com.inmotionchat.smartpersist.ConstraintPrefix;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -23,10 +24,12 @@ public class Chatbox extends AbstractArchivableDomain<Chatbox> {
     private String name;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "tenant"))
     @JsonIgnore
     private Tenant tenant;
 
     @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = ConstraintPrefix.FKEY + "journey"))
     @JsonIgnore
     private Journey journey;
 

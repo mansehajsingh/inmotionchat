@@ -4,11 +4,15 @@ import com.inmotionchat.core.data.dto.InboxGroupAssignmentsDTO;
 import com.inmotionchat.core.data.dto.InboxGroupDTO;
 import com.inmotionchat.core.data.postgres.inbox.Inbox;
 import com.inmotionchat.core.data.postgres.inbox.InboxGroup;
-import com.inmotionchat.core.exceptions.*;
+import com.inmotionchat.core.exceptions.DomainInvalidException;
+import com.inmotionchat.core.exceptions.PermissionException;
+import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.models.Permission;
 import com.inmotionchat.core.security.IdentityContext;
 import com.inmotionchat.core.web.AbstractResource;
 import com.inmotionchat.core.web.PageResponse;
+import com.inmotionchat.smartpersist.exception.ConflictException;
+import com.inmotionchat.smartpersist.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -73,7 +77,7 @@ public class InboxGroupResource extends AbstractResource<InboxGroup, InboxGroupD
     }
 
     @PostMapping("/{id}/inboxes")
-    public void assignInboxes(@PathVariable Long tenantId, @PathVariable Long id, @RequestBody InboxGroupAssignmentsDTO dto) throws NotFoundException, UnauthorizedException, PermissionException, ConflictException, DomainInvalidException {
+    public void assignInboxes(@PathVariable Long tenantId, @PathVariable Long id, @RequestBody InboxGroupAssignmentsDTO dto) throws NotFoundException, UnauthorizedException, PermissionException, DomainInvalidException, ConflictException {
         if (!isCorrectTenant(tenantId, null))
             throw new UnauthorizedException("Not authorized to create this resource for this tenant.");
 

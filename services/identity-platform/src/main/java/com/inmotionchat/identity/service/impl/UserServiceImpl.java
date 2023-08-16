@@ -13,17 +13,18 @@ import com.inmotionchat.core.data.events.UnverifiedUserEvent;
 import com.inmotionchat.core.data.postgres.identity.Role;
 import com.inmotionchat.core.data.postgres.identity.Tenant;
 import com.inmotionchat.core.data.postgres.identity.User;
-import com.inmotionchat.core.exceptions.ConflictException;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
-import com.inmotionchat.core.exceptions.NotFoundException;
 import com.inmotionchat.core.exceptions.ServerException;
-import com.inmotionchat.core.util.query.SearchCriteria;
+import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import com.inmotionchat.identity.firebase.FirebaseErrorCodeTranslator;
 import com.inmotionchat.identity.postgres.SQLUserRepository;
 import com.inmotionchat.identity.service.contract.FirebaseWrapper;
 import com.inmotionchat.identity.service.contract.RoleService;
 import com.inmotionchat.identity.service.contract.UserService;
+import com.inmotionchat.smartpersist.SmartQuery;
+import com.inmotionchat.smartpersist.exception.ConflictException;
+import com.inmotionchat.smartpersist.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,6 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.inmotionchat.core.data.AbstractDomainService.getSearchCriteriaFromParameters;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -74,7 +73,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String createEmailPasswordUser(UserDTO prototype) throws NotFoundException, DomainInvalidException, ConflictException {
+    public String createEmailPasswordUser(UserDTO prototype) throws NotFoundException, DomainInvalidException, ConflictException, UnauthorizedException {
         User.validate(prototype);
 
         UserRecord.CreateRequest crq = new UserRecord.CreateRequest();
@@ -109,7 +108,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void verifyEmailPasswordUser(String uid, VerifyDTO verifyDTO) throws ConflictException, NotFoundException, DomainInvalidException {
+    public void verifyEmailPasswordUser(String uid, VerifyDTO verifyDTO) throws ConflictException, NotFoundException, DomainInvalidException, UnauthorizedException {
         UserRecord.UpdateRequest urq = new UserRecord.UpdateRequest(uid);
         urq.setEmailVerified(true);
 
@@ -164,9 +163,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<User> search(Long tenantId, Pageable pageable, MultiValueMap<String, Object> parameters) {
-        parameters.add("tenant", tenantId);
-        SearchCriteria<?>[] searchCriteria = getSearchCriteriaFromParameters(searchCriteriaMapper, parameters);
-        return this.sqlUserRepository.filter(pageable, searchCriteria);
+        SmartQuery<User> query = new SmartQuery<>(User.class, parameters);
+        return this.sqlUserRepository.findAll(pageable, tenantId, query);
     }
 
 }

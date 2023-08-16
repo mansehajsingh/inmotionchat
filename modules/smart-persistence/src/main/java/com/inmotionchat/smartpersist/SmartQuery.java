@@ -1,5 +1,7 @@
 package com.inmotionchat.smartpersist;
 
+import com.google.gson.internal.Primitives;
+import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -13,6 +15,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SmartQuery<T> {
@@ -24,6 +27,10 @@ public class SmartQuery<T> {
     public SmartQuery(Class<T> type, MultiValueMap<String, Object> parameters) {
         this.type = type;
         this.parameters = parameters;
+    }
+
+    public void add(String param, Object ...values) {
+        this.parameters.addAll(param, Arrays.stream(values).toList());
     }
 
     private List<Predicate> handleDate(String searchKey, Root<T> root, CriteriaBuilder criteriaBuilder) throws ParseException {
@@ -50,23 +57,48 @@ public class SmartQuery<T> {
         Field field = type.getDeclaredField(searchKey);
         List<Predicate> predicates = new ArrayList<>();
 
+        Class<?> fieldType = field.getType();
+
+        if (fieldType.isPrimitive()) {
+            fieldType = Primitives.wrap(fieldType);
+        }
+
         for (Object objValue : parameters.get(searchKey)) {
-            predicates.add(criteriaBuilder.equal(root.get(searchKey), field.getType().cast(objValue)));
+            predicates.add(criteriaBuilder.equal(root.get(searchKey), fieldType.cast(objValue)));
         }
 
         return predicates;
     }
 
     private boolean isForeignKey(String columnName) throws NoSuchFieldException {
-        Field field = type.getDeclaredField(columnName);
+        Field field = getField(columnName);
         return field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class);
+    }
+
+    private boolean isId(String columnName) throws NoSuchFieldException {
+        Field field = getField(columnName);
+        return field.isAnnotationPresent(Id.class);
+    }
+
+    private Field getField(String field) throws NoSuchFieldException {
+        Class<?> clazz = type;
+
+        do {
+            try {
+                return clazz.getDeclaredField(field);
+            } catch (NoSuchFieldException ignored) {}
+
+            clazz = clazz.getSuperclass();
+        } while (clazz != null);
+
+        throw new NoSuchFieldException();
     }
 
     private boolean hasField(String field) {
         try {
-            type.getDeclaredField(field);
+            getField(field);
             return true;
-        } catch (NoSuchFieldException e) {
+        } catch (NoSuchFieldException ignored) {
             return false;
         }
     }
@@ -84,7 +116,7 @@ public class SmartQuery<T> {
                         predicate = criteriaBuilder.and(predicate, criteriaBuilder.or(predicates));
 
                     } else if (hasField(searchKey)) {
-                        if (isForeignKey(searchKey)) {
+                        if (isId(searchKey) || isForeignKey(searchKey)) {
                             Long fkeyId = Long.parseLong(parameters.getFirst(searchKey).toString());
                             predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get(searchKey), fkeyId));
                         } else {
