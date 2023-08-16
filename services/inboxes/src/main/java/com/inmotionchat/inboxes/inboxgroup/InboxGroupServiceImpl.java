@@ -12,7 +12,6 @@ import com.inmotionchat.core.data.postgres.inbox.InboxGroupAssignment;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.security.IdentityContext;
-import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import com.inmotionchat.inboxes.inbox.InboxService;
 import com.inmotionchat.inboxes.inboxgroupassignment.SQLInboxGroupAssignmentRepository;
 import com.inmotionchat.smartpersist.exception.ConflictException;
@@ -31,8 +30,6 @@ public class InboxGroupServiceImpl extends AbstractDomainService<InboxGroup, Inb
 
     protected static Logger log = LoggerFactory.getLogger(InboxGroupService.class);
 
-    protected final static SearchCriteriaMapper mapper = new SearchCriteriaMapper();
-
     protected final SQLInboxGroupAssignmentRepository sqlInboxGroupAssignmentRepository;
 
     protected final InboxService inboxService;
@@ -45,7 +42,7 @@ public class InboxGroupServiceImpl extends AbstractDomainService<InboxGroup, Inb
                                     AuditManager auditManager,
                                     InboxGroupAuditActionProvider auditActionProvider,
                                     IdentityContext identityContext) {
-        super(InboxGroup.class, InboxGroupDTO.class, log, transactionManager, identityContext, sqlInboxGroupRepository, auditManager, auditActionProvider, mapper);
+        super(InboxGroup.class, InboxGroupDTO.class, log, transactionManager, identityContext, sqlInboxGroupRepository, auditManager, auditActionProvider);
         this.sqlInboxGroupAssignmentRepository = sqlInboxGroupAssignmentRepository;
         this.inboxService = inboxService;
     }

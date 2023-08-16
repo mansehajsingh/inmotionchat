@@ -16,7 +16,6 @@ import com.inmotionchat.core.data.postgres.identity.User;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.ServerException;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
-import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import com.inmotionchat.identity.firebase.FirebaseErrorCodeTranslator;
 import com.inmotionchat.identity.postgres.SQLUserRepository;
 import com.inmotionchat.identity.service.contract.FirebaseWrapper;
@@ -41,11 +40,6 @@ import java.util.Map;
 public class UserServiceImpl implements UserService {
 
     private Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
-
-    private static SearchCriteriaMapper searchCriteriaMapper = new SearchCriteriaMapper()
-            .key("email", String.class)
-            .key("displayName", String.class)
-            .key("tenant", Long.class);
 
     private final ThrowingTransactionTemplate transactionTemplate;
 

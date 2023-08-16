@@ -9,7 +9,6 @@ import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.ServerException;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.security.IdentityContext;
-import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import com.inmotionchat.smartpersist.SmartJPARepository;
 import com.inmotionchat.smartpersist.SmartQuery;
 import com.inmotionchat.smartpersist.exception.ConflictException;
@@ -35,8 +34,6 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
 
     protected final Class<DTO> dtoType;
 
-    protected final SearchCriteriaMapper searchCriteriaMapper;
-
     protected final ThrowingTransactionTemplate transactionTemplate;
 
     protected final AuditManager auditManager;
@@ -53,8 +50,7 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
             IdentityContext identityContext,
             SmartJPARepository<D, Long> repository,
             AuditManager auditManager,
-            AuditActionProvider auditActionProvider,
-            SearchCriteriaMapper searchCriteriaMapper
+            AuditActionProvider auditActionProvider
     ) {
         this.type = type;
         this.dtoType = dtoType;
@@ -64,9 +60,6 @@ public abstract class AbstractDomainService<D extends AbstractDomain<D>, DTO> im
         this.repository = repository;
         this.auditManager = auditManager;
         this.auditActionProvider = auditActionProvider;
-        this.searchCriteriaMapper = searchCriteriaMapper
-                .key("createdBy", Long.class)
-                .key("lastModifiedBy", Long.class);
     }
 
     protected Object createAuditData(D createdEntity, DTO prototype) {
