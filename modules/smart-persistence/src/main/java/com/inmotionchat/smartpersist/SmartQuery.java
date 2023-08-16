@@ -145,16 +145,17 @@ public class SmartQuery<T> {
 
                 for (String searchKey : parameters.keySet()) {
 
-                    if (getField(searchKey).isAnnotationPresent(NoSearch.class)) {
-                        log.error("Attempted to build a query on a column {} that is tagged with @NoSearch. Skipping.", searchKey);
-                        continue;
-                    }
-
                     if (searchKey.endsWith("After") || searchKey.endsWith("Before")) {
                         Predicate[] predicates = handleDate(searchKey, root, criteriaBuilder).toArray(new Predicate[0]);
                         predicate = criteriaBuilder.and(predicate, criteriaBuilder.or(predicates));
 
                     } else if (hasField(searchKey)) {
+
+                        if (getField(searchKey).isAnnotationPresent(NoSearch.class)) {
+                            log.warn("Attempted to build a query on a column {} that is tagged with @NoSearch. Skipping.", searchKey);
+                            continue;
+                        }
+
                         if (isId(searchKey) || isForeignKey(searchKey)) {
                             Long fkeyId = Long.parseLong(parameters.getFirst(searchKey).toString());
                             predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get(searchKey), fkeyId));
