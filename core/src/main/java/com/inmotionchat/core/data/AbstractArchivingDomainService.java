@@ -4,7 +4,6 @@ import com.inmotionchat.core.audit.AuditActionProvider;
 import com.inmotionchat.core.audit.AuditManager;
 import com.inmotionchat.core.data.postgres.AbstractArchivableDomain;
 import com.inmotionchat.core.security.IdentityContext;
-import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import com.inmotionchat.smartpersist.SmartJPARepository;
 import com.inmotionchat.smartpersist.Status;
 import com.inmotionchat.smartpersist.exception.NotFoundException;
@@ -23,9 +22,8 @@ public abstract class AbstractArchivingDomainService<D extends AbstractArchivabl
                                              IdentityContext identityContext,
                                              SmartJPARepository<D, Long> repository,
                                              AuditManager auditManager,
-                                             AuditActionProvider auditActionProvider,
-                                             SearchCriteriaMapper searchCriteriaMapper) {
-        super(type, dtoType, log, transactionManager, identityContext, repository, auditManager, auditActionProvider, searchCriteriaMapper);
+                                             AuditActionProvider auditActionProvider) {
+        super(type, dtoType, log, transactionManager, identityContext, repository, auditManager, auditActionProvider);
         this.archivingRepository = repository;
     }
 

@@ -15,7 +15,6 @@ import com.inmotionchat.core.exceptions.ServerException;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.models.RoleType;
 import com.inmotionchat.core.security.IdentityContext;
-import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import com.inmotionchat.identity.audit.RoleAuditActionProvider;
 import com.inmotionchat.identity.postgres.SQLRoleAssignmentRepository;
 import com.inmotionchat.identity.postgres.SQLRoleRepository;
@@ -37,10 +36,6 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
 
     private static final Logger log = LoggerFactory.getLogger(RoleServiceImpl.class);
 
-    private static final SearchCriteriaMapper roleMapper = new SearchCriteriaMapper()
-            .key("name", String.class)
-            .key("createdBy", Long.class);
-
     private final SQLRoleRepository sqlRoleRepository;
 
     private final SQLRoleAssignmentRepository sqlRoleAssignmentRepository;
@@ -52,7 +47,7 @@ public class RoleServiceImpl extends AbstractDomainService<Role, RoleDTO> implem
                            RoleAuditActionProvider roleAuditActionProvider,
                            SQLRoleRepository sqlRoleRepository,
                            SQLRoleAssignmentRepository sqlRoleAssignmentRepository) {
-        super(Role.class, RoleDTO.class, log, transactionManager, identityContext, sqlRoleRepository, auditManager, roleAuditActionProvider, roleMapper);
+        super(Role.class, RoleDTO.class, log, transactionManager, identityContext, sqlRoleRepository, auditManager, roleAuditActionProvider);
         this.sqlRoleRepository = sqlRoleRepository;
         this.sqlRoleAssignmentRepository = sqlRoleAssignmentRepository;
     }

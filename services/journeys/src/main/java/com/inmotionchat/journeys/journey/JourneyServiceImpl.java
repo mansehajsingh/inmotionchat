@@ -14,7 +14,6 @@ import com.inmotionchat.core.data.postgres.journey.*;
 import com.inmotionchat.core.exceptions.DomainInvalidException;
 import com.inmotionchat.core.exceptions.UnauthorizedException;
 import com.inmotionchat.core.security.IdentityContext;
-import com.inmotionchat.core.util.query.SearchCriteriaMapper;
 import com.inmotionchat.journeys.graph.SQLInboxGroupEndpointRepository;
 import com.inmotionchat.journeys.graph.SQLNodeRepository;
 import com.inmotionchat.smartpersist.exception.ConflictException;
@@ -33,9 +32,6 @@ public class JourneyServiceImpl extends AbstractArchivingDomainService<Journey, 
 
     protected final static Logger log = LoggerFactory.getLogger(JourneyServiceImpl.class);
 
-    protected final static SearchCriteriaMapper mapper = new SearchCriteriaMapper()
-            .key("name", String.class);
-
     protected final SQLNodeRepository sqlNodeRepository;
 
     protected final ThrowingTransactionTemplate transactionTemplate;
@@ -50,7 +46,7 @@ public class JourneyServiceImpl extends AbstractArchivingDomainService<Journey, 
                                  SQLInboxGroupEndpointRepository sqlInboxGroupEndpointRepository,
                                  AuditManager auditManager,
                                  JourneyAuditActionProvider journeyAuditActionProvider) {
-        super(Journey.class, JourneyDTO.class, log, transactionManager, identityContext, repository, auditManager, journeyAuditActionProvider, mapper);
+        super(Journey.class, JourneyDTO.class, log, transactionManager, identityContext, repository, auditManager, journeyAuditActionProvider);
         this.sqlNodeRepository = sqlNodeRepository;
         this.transactionTemplate = TransactionTemplateFactory.getThrowingTransactionTemplate(transactionManager);
         this.sqlInboxGroupEndpointRepository = sqlInboxGroupEndpointRepository;
