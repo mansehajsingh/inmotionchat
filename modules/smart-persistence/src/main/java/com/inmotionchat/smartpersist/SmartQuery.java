@@ -53,8 +53,22 @@ public class SmartQuery<T> {
         return predicates;
     }
 
-    private List<Predicate> handleGenericEquals(String searchKey, Root<T> root, CriteriaBuilder criteriaBuilder) throws NoSuchFieldException {
-        Field field = type.getDeclaredField(searchKey);
+    private List<Predicate> handle(String searchKey, Root<T> root, CriteriaBuilder criteriaBuilder) throws NoSuchFieldException {
+        Field field = getField(searchKey);
+        Class<?> fieldType = field.getType();
+
+        if (fieldType.isPrimitive()) {
+            fieldType = Primitives.wrap(fieldType);
+        }
+
+        if (String.class.isAssignableFrom(fieldType)) {
+            return handleString(field, root, criteriaBuilder);
+        }
+
+        return handleGenericEquals(field, root, criteriaBuilder);
+    }
+
+    private List<Predicate> handleGenericEquals(Field field, Root<T> root, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
 
         Class<?> fieldType = field.getType();
@@ -63,8 +77,24 @@ public class SmartQuery<T> {
             fieldType = Primitives.wrap(fieldType);
         }
 
-        for (Object objValue : parameters.get(searchKey)) {
-            predicates.add(criteriaBuilder.equal(root.get(searchKey), fieldType.cast(objValue)));
+        for (Object objValue : parameters.get(field.getName())) {
+            predicates.add(criteriaBuilder.equal(root.get(field.getName()), fieldType.cast(objValue)));
+        }
+
+        return predicates;
+    }
+
+    private List<Predicate> handleString(Field field, Root<T> root, CriteriaBuilder criteriaBuilder) {
+        List<Predicate> predicates = new ArrayList<>();
+
+        for (Object objValue : parameters.get(field.getName())) {
+            String value = objValue.toString().replace("*", "%");
+
+            if (value.contains("%")) {
+                predicates.add(criteriaBuilder.like(root.get(field.getName()), value));
+            } else {
+                predicates.add(criteriaBuilder.equal(root.get(field.getName()),value));
+            }
         }
 
         return predicates;
@@ -120,7 +150,7 @@ public class SmartQuery<T> {
                             Long fkeyId = Long.parseLong(parameters.getFirst(searchKey).toString());
                             predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get(searchKey), fkeyId));
                         } else {
-                            Predicate[] predicates = handleGenericEquals(searchKey, root, criteriaBuilder).toArray(new Predicate[0]);
+                            Predicate[] predicates = handle(searchKey, root, criteriaBuilder).toArray(new Predicate[0]);
                             predicate = criteriaBuilder.and(predicate, criteriaBuilder.or(predicates));
                         }
 
