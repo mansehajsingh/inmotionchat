@@ -14,7 +14,7 @@
         <module>../core</module>
         <module>../services/identity-platform</module>
         <module>../services/notifications</module>
-        <module>../services/inboxes</module>
+        <module>../services/inbox-worklist</module>
         <module>../services/journeys</module>
         <module>../services/audit-records</module>
 
